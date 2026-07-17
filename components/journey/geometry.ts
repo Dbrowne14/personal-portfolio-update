@@ -15,21 +15,10 @@ export const PAD_BOTTOM = 40;
 // 01-vision.md's Act II doctrine ("text never sits inside canvases")
 // depends on this: labels are DOM elements computed from the same
 // coordinates the curve is drawn from, not a second, separately-tuned copy.
-
-function yearRange(milestones: Milestone[]) {
-  const years = milestones.map((m) => m.year);
-  return { min: Math.min(...years), max: Math.max(...years) };
-}
-
-export function yearToFraction(year: number, milestones: Milestone[]): number {
-  const { min, max } = yearRange(milestones);
-  return (year - min) / (max - min);
-}
-
-export function fractionToYear(t: number, milestones: Milestone[]): number {
-  const { min, max } = yearRange(milestones);
-  return min + t * (max - min);
-}
+//
+// Horizontal position comes from each milestone's authored `t`, not a
+// year-based calculation — the graph is deliberately narrative-weighted,
+// not a strict timeline (see lib/content/journey.ts and the M3 log entry).
 
 export function pointForFraction(
   t: number,
@@ -46,27 +35,24 @@ export function pointForFraction(
 
 export function pointForMilestone(
   milestone: Milestone,
-  milestones: Milestone[],
   bounds: ChartBounds,
 ): { x: number; y: number } {
-  return pointForFraction(
-    yearToFraction(milestone.year, milestones),
-    milestone.value,
-    bounds,
-  );
+  return pointForFraction(milestone.t, milestone.value, bounds);
 }
 
 // Linear interpolation of value between the two milestones bracketing a
-// given time fraction — used to draw the curve between sparse data points.
+// given horizontal position — used to draw the curve between sparse data
+// points.
 export function valueAtFraction(t: number, milestones: Milestone[]): number {
-  const sorted = [...milestones].sort((a, b) => a.year - b.year);
-  const fractions = sorted.map((m) => yearToFraction(m.year, milestones));
+  const sorted = [...milestones].sort((a, b) => a.t - b.t);
 
   for (let i = 0; i < sorted.length - 1; i++) {
-    if (t >= fractions[i] && t <= fractions[i + 1]) {
-      const span = fractions[i + 1] - fractions[i] || 1;
-      const localT = (t - fractions[i]) / span;
-      return sorted[i].value + (sorted[i + 1].value - sorted[i].value) * localT;
+    if (t >= sorted[i].t && t <= sorted[i + 1].t) {
+      const span = sorted[i + 1].t - sorted[i].t || 1;
+      const localT = (t - sorted[i].t) / span;
+      return (
+        sorted[i].value + (sorted[i + 1].value - sorted[i].value) * localT
+      );
     }
   }
   return sorted[sorted.length - 1].value;

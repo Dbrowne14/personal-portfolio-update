@@ -243,3 +243,60 @@ None from the frozen documents.
 ## Ready for M3
 
 **Ready for M3 — Journey, complete (Act II).**
+
+---
+
+# M3 — Journey, complete (Act II)
+
+## Status
+
+**Completed.**
+
+## What was built
+
+* `lib/content/journey.ts` — the typed content layer's first entry. Four milestones (see Architectural decisions for how this differs from the milestone content originally drafted): 2017 (technology investment banking, the derived start year), 2022 (VP — Technology Investment Banking), 2025 (the switch, `isSwitch: true`), and 2026 (Full-stack product engineer, the site's established "now").
+* `components/journey/geometry.ts` — pure coordinate-mapping functions shared by the canvas draw calls and every DOM element positioned over it (year labels, scrub tooltip), so the two can never disagree.
+* `components/journey/milestone-list.tsx` — the single accessible source for every milestone, server-rendered, visually clipped on desktop-with-fine-pointer and visually promoted to a real vertical timeline otherwise.
+* `components/journey/journey-canvas.tsx` — the signature interaction itself: hand-drawn curve quantizing into ticks at the switch, pointer-driven scrub with a DOM tooltip, DOM year labels.
+* `components/journey/journey-canvas-loader.tsx` — not named in `03-roadmap.md`'s file list, but required by its own architectural decision (capability-gated dynamic import); see below.
+* `components/journey/journey.tsx` — the section shell: the ink plate, kicker, heading, and composition of the two components above.
+* `app/page.tsx` — `<Journey />` added below `<Hero />`.
+
+## Architectural decisions
+
+**Narrative-weighted horizontal position, not chronological.** Originally implemented with three milestones (2017, 2025, 2026) positioned by a straightforward `(year − min) / (max − min)` calculation — a mathematically uniform timeline. Before approval, this was revised on review: a fourth milestone (2022, VP — Technology Investment Banking) was added as a deliberate bridge point, and the engineering phase (2025→2026) was given deliberately disproportionate visual weight — abandoning strict chronological spacing entirely. `Milestone` gained an authored `t` field (0–1, horizontal position) that `geometry.ts` now reads directly, instead of deriving position from `year`. The engineering phase occupies roughly half the graph's width (`t = 0.56` to `1.0`, plus a short tick overhang past it) despite covering the fewest real years of any phase — a visual argument for narrative importance over calendar-accurate proportion, which is explicitly what was asked for, not a compromise made for lack of a better option.
+
+A brief detour worth recording: the same review pass also tried reframing this final milestone from a fixed "2026" to an open-ended "2025–Present" label, closer to `01-vision.md`'s Act V doctrine ("the next tick isn't drawn yet"). That version was reverted at the next checkpoint — the concrete 2026 year was preferred — while keeping the 2022 milestone and the narrative-weighted `t`-based spacing, which were separately confirmed as wanted. The revert happened through direct file edits outside this process and left `journey.ts` (fully reverted) briefly inconsistent with `geometry.ts` and `journey-canvas.tsx` (which still referenced fields — `t`, `yearLabel` — the reverted type no longer had); `tsc` caught the mismatch immediately, and the fix was to restore `t` and the 2022/2026 milestone set while dropping the now-unused `yearLabel` field entirely, rather than trying to reconcile two different final designs. `year` is retained on every milestone for both positioning-adjacent semantics and display.
+
+**Content sourcing.** `lib/content/journey.ts` documents which facts are stated directly in the frozen docs (the 2025 switch year, itself only in `01-vision.md`) versus derived (2017, arithmetically, from "approximately eight years" plus the 2025 switch) versus established elsewhere in the shipped site (2026/"present", already consistent with Footer's `© 2026` and Hero's kicker). The 2022 VP milestone was supplied directly, not derived or invented. This is deliberately thinner than the reference material's multi-stage career narrative, which invents intermediate years and title changes nowhere stated in the canonical docs — the curve's hand-drawn quality comes from procedural wobble applied along its length, not from fabricating extra data points to make the line look busier.
+
+**`JourneyCanvasLoader` exists because of the roadmap's own stated architecture, not by choice.** `03-roadmap.md`'s M3 entry specifies that `JourneyCanvas` loads via a dynamic import gated on a capability check. A capability check needs `window`/`matchMedia`, which only exists in a Client Component, and `next/dynamic`'s `ssr: false` option is only valid from one — so the gate cannot live inside the server-rendered `Journey` component. `useSyncExternalStore` is used rather than `useEffect` + `setState`: the lint rule `react-hooks/set-state-in-effect` correctly flagged the first attempt, and `useSyncExternalStore` is the more correct tool regardless — the server has no `window`, so `getServerSnapshot` returning a fixed `false` is what avoids a hydration mismatch, not an incidental side effect of dodging a lint error. The check is deliberately one-shot (no live resize-based re-evaluation): deciding whether to fetch a JS chunk at all should happen once, not re-fire as a visitor resizes their window mid-session.
+
+**The capability gate's two conditions (desktop-width, fine pointer) are written identically in three places** — `JourneyCanvasLoader`'s JS check, and the CSS media condition on `MilestoneList` that decides whether it's clipped — so they can never disagree about which one is the visible content for a given visitor. This was a real edge case worth catching deliberately: a wide-viewport touch-only device (a touchscreen laptop, a tablet in landscape) would otherwise fail the JS gate (no fine pointer, no canvas) while also matching a plain `min-width` CSS breakpoint (list clipped, expecting canvas to be the visible content) — leaving nothing visible at all. Verified directly with a touch-emulated 812×375 context: canvas absent, list visible, as intended.
+
+**Text never sits inside the canvas.** Year labels and the scrub tooltip are DOM elements, computed from the same `geometry.ts` functions the canvas itself draws from. Edge milestones (the first and last) needed their own alignment handling — center-anchoring a label at the graph's extreme edge risks clipping it off-canvas regardless of how long the label is, so labels within 5% of either edge switch to left- or right-anchored instead of centered. This held up as a generally useful rule even after the milestone content changed back — it isn't tuned to any one label's length.
+
+**Wobble damps to zero at every real milestone.** Caught on review, after approval: the point markers didn't visually sit on the curve, and the switch-to-ticks handoff showed a small vertical jump. Both had the same root cause — the curve was drawn at `value + wobble(t)`, but the dot markers and the ticks were both drawn at the plain interpolated `value`, with no wobble. Wherever wobble happened to be non-zero at a milestone's own `t` (which was most of the time — the sine functions have no reason to land on zero at an arbitrary point), the dot floated visibly off the line passing through it, and at the switch specifically, the curve's last wobbled point didn't match the first (always unwobbled) tick. Fixed by damping the wobble amplitude to zero within a small radius (`0.05`) of every milestone's `t`, so the curve now passes exactly through each milestone's clean value — the dots needed no positional change at all once this was fixed, since they were already correct, only the curve was drifting away from them. This also gave each dot a thin outline in the plate's own background colour, so it reads as a distinct point marker rather than a thicker segment of the line.
+
+**No entrance-draw or idle animation, in either motion state.** Consistent with M2's precedent and `01-vision.md`'s Act II register: the curve renders once, immediately, fully formed. Scrubbing remains available under reduced motion since it's user-initiated data inspection, not decoration — there was no separate reduced-motion code path to build for the drawing itself, since there was never an animated draw-in to gate in the first place.
+
+## Roadmap alignment
+
+Matches `03-roadmap.md`'s M3 entry: all four named components exist (plus the necessary loader), `Journey` and `MilestoneList` are server-rendered, `JourneyCanvas`/`JourneyCanvasLoader` are the only client additions, the dynamic-import gating matches the roadmap's own architectural decision precisely, and the acceptance criteria (curve renders at all viewport widths, quantization is unambiguous, scrub works via mouse and touch, every milestone is real accessible text, reduced motion keeps scrubbing, `JourneyCanvas` confirmed absent from the mobile bundle via bundle inspection rather than visual inspection alone) were each verified directly rather than assumed.
+
+## Deviations
+
+None from the frozen documents. The milestone content and its narrative-weighted spacing were a pre-approval revision to this milestone's own content, not a deviation from `01-vision.md`, `02-architecture.md`, or the roadmap — none of those documents specify exact milestone data, only that the interaction and its accessible fallback exist.
+
+## Notes for review
+
+* The real Hero-to-masthead compress transition was verified end-to-end on the actual homepage for the first time this milestone (Journey now provides ~1000px of real scroll runway) — full range confirmed correct: masthead hidden through roughly the first half of the scroll range, crossing to fully visible by 85–100%, matching the same thresholds verified with an artificial spacer in M2.
+* Client-side navigation away from and back to Home was re-verified with Journey now in the page: `data-page`/`data-hero-compressed` are correctly cleared on navigating away and correctly re-established on return, with the masthead visibly transitioning back toward hidden rather than sticking at its previous state.
+* The scrub tooltip's edge-clamping was initially a fixed 90px margin, which clipped the longer "2017 — Technology investment banking" label off the left edge — caught by direct visual inspection, not the automated script, which only asserted that a tooltip existed, not that it stayed within the viewport. Fixed by measuring the tooltip's actual rendered width at scrub time instead of guessing a constant.
+* `MobileMenu`'s portal-based overlay was re-verified as a regression check (it renders no differently with Journey present, but M3 changed global page height and scroll behavior, which was worth confirming didn't affect it) — still fills the viewport correctly.
+* Confirmed at four additional breakpoints beyond the standard desktop/mobile pair: a large desktop (1920×1080), a standard laptop (1366×768), and a genuinely touch-emulated landscape phone (812×375) — no horizontal overflow, no clipping, and the capability gate behaves correctly at the trickiest of these (the landscape case, above).
+* Future milestones adding their own scroll-linked or pointer-driven interactions should follow the same pattern established here: direct DOM writes in a `ResizeObserver`/pointer-event handler, not React state per frame, and a shared pure geometry module if a canvas and DOM text ever need to agree on positions again.
+
+## Ready for M4
+
+**Ready for M4 — Home, complete.**

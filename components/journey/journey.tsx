@@ -1,6 +1,7 @@
 import { journeyMilestones } from "@/lib/content/journey";
 import { MilestoneList } from "./milestone-list";
 import { JourneyCanvasLoader } from "./journey-canvas-loader";
+import { TimelineActivator } from "./timeline-activator";
 
 // Server Component. The signature interaction (01-vision.md, Act II): the
 // site's one full-bleed colour plate, reserved for this section alone.
@@ -13,7 +14,7 @@ export function Journey() {
 
   return (
     <section className="relative min-h-screen bg-ink px-7 pt-24 pb-16 md:pt-28">
-      <div className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-[1400px] flex-col">
+      <div className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-350 flex-col">
         <div className="max-w-xl">
           <p className="font-mono text-meta text-plate-accent uppercase tracking-[0.14em]">
             The journey · {firstYear}–{lastYear}
@@ -23,8 +24,10 @@ export function Journey() {
           </h2>
         </div>
 
-        <div className="relative mt-12 min-h-[420px] flex-1 md:mt-16 md:min-h-[480px]">
-          <MilestoneList milestones={journeyMilestones} />
+        <div className="relative mt-12 min-h-105 flex-1 md:mt-16 md:min-h-120">
+          <TimelineActivator>
+            <MilestoneList milestones={journeyMilestones} />
+          </TimelineActivator>
           <JourneyCanvasLoader milestones={journeyMilestones} />
         </div>
       </div>
