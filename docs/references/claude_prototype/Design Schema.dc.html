@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#F6F4EE;color:#1B1A17;font-family:Archivo,sans-serif}a{color:#1B1A17}a:hover{color:oklch(0.47 0.11 55)}</style>
+</helmet>
+<div style="max-width:880px;margin:0 auto;padding:70px 32px 100px">
+<div style="font:500 11px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:oklch(0.47 0.11 55);margin-bottom:18px">DAVID BROWNE — PORTFOLIO · DESIGN SCHEMA · V2 — LIGHT-FIRST</div>
+<h1 style="margin:0 0 14px;font:800 54px/1 Archivo,sans-serif;letter-spacing:-0.03em">Signal, not noise.</h1>
+<p style="margin:0 0 56px;max-width:620px;font:400 16px/1.7 Archivo,sans-serif;color:rgba(27,26,23,.7)">One system, four pages, one story: a career that moved from pricing technology to building it. Every decision below serves that narrative.</p>
+
+<div style="display:flex;flex-direction:column;gap:48px">
+
+<section>
+<div style="font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;color:rgba(27,26,23,.45);border-bottom:1px solid rgba(27,26,23,.16);padding-bottom:10px;margin-bottom:18px">01 — DESIGN PHILOSOPHY</div>
+<p style="margin:0;font:400 15px/1.75 Archivo,sans-serif;color:rgba(27,26,23,.75);max-width:680px">Editorial precision with one moment of ambition per page. The site behaves like a well-typeset financial document that has learned to code: hairline rules, monospace metadata, restrained color — punctuated by exactly one signature interaction per page. Interaction is always <em>informational</em> (scrubbing data, revealing structure), never decorative. If an animation doesn't carry meaning, it doesn't ship.</p>
+</section>
+
+<section>
+<div style="font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;color:rgba(27,26,23,.45);border-bottom:1px solid rgba(27,26,23,.16);padding-bottom:10px;margin-bottom:18px">02 — GRID &amp; LAYOUT</div>
+<ul style="margin:0;padding-left:18px;font:400 14.5px/1.8 Archivo,sans-serif;color:rgba(27,26,23,.75);max-width:680px">
+<li>Full-bleed canvas with a 28px page gutter; content never boxed in a centered column on the site itself (this document is the exception).</li>
+<li>Structure is expressed by <strong>1px hairlines</strong> (var --line) and occasional full-bleed ink/bronze plates — never by grey blocks, cards, shadows, or rounded containers.</li>
+<li>Ruled grids: <code style="font-family:'IBM Plex Mono',monospace;font-size:13px">repeat(auto-fit, minmax(270–320px, 1fr))</code> — cells divided by hairlines, collapsing gracefully to a single ruled column on mobile.</li>
+<li>Section headers pair a display headline (left) with a mono section index "0N — LABEL" (right), giving every page the same scanning rhythm.</li>
+</ul>
+</section>
+
+<section>
+<div style="font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;color:rgba(27,26,23,.45);border-bottom:1px solid rgba(27,26,23,.16);padding-bottom:10px;margin-bottom:18px">03 — TYPOGRAPHY</div>
+<div style="display:grid;grid-template-columns:200px 1fr;gap:10px 24px;font:400 14px/1.7 Archivo,sans-serif;color:rgba(27,26,23,.75)">
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">DISPLAY / MONUMENT</span><span>Archivo 800 · clamp(64px, 14.5vw, 176px) · line 0.95 · track −0.025em. Homepage name only; second line stroke-outlined.</span>
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">H1 PAGE</span><span>Archivo 700 · clamp(40px, 6.4vw, 96px) · line ~1.0 · track −0.03em.</span>
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">H2 SECTION</span><span>Archivo 700 · clamp(28px, 3.4vw, 60px) · track −0.02em.</span>
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">BODY</span><span>Archivo 400 · 14.5–15.5px · line 1.7 · max-width ~560–680px · color ink-70.</span>
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">META / KICKER</span><span>IBM Plex Mono 500 · 10.5–12px · UPPERCASE · track .10–.14em. Kickers in accent; metadata in ink-45. All navigation, labels, years, coordinates.</span>
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">RULE</span><span>Two families only. Mono never exceeds 12px — it annotates, it never speaks first.</span>
+</div>
+</section>
+
+<section>
+<div style="font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;color:rgba(27,26,23,.45);border-bottom:1px solid rgba(27,26,23,.16);padding-bottom:10px;margin-bottom:18px">04 — COLOR</div>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+<div style="width:150px;border:1px solid rgba(27,26,23,.16)"><div style="height:64px;background:#F6F4EE;border-bottom:1px solid rgba(27,26,23,.1)"></div><div style="padding:8px 10px;font:500 10px/1.5 'IBM Plex Mono',monospace">--bg · BOND IVORY<br>#F6F4EE</div></div>
+<div style="width:150px;border:1px solid rgba(27,26,23,.16)"><div style="height:64px;background:#EDEAE1"></div><div style="padding:8px 10px;font:500 10px/1.5 'IBM Plex Mono',monospace">--bg2 · SECTION SHIFT<br>#EDEAE1</div></div>
+<div style="width:150px;border:1px solid rgba(27,26,23,.16)"><div style="height:64px;background:#1B1A17"></div><div style="padding:8px 10px;font:500 10px/1.5 'IBM Plex Mono',monospace">--ink · WARM INK<br>#1B1A17</div></div>
+<div style="width:150px;border:1px solid rgba(27,26,23,.16)"><div style="height:64px;background:oklch(0.47 0.11 55)"></div><div style="padding:8px 10px;font:500 10px/1.5 'IBM Plex Mono',monospace">--accent · BRONZE<br>OKLCH(.47 .11 55)</div></div>
+<div style="width:150px;border:1px solid rgba(27,26,23,.16)"><div style="height:64px;background:#15130E"></div><div style="padding:8px 10px;font:500 10px/1.5 'IBM Plex Mono',monospace">DARK --bg · UNLIT PAPER<br>#15130E</div></div>
+<div style="width:150px;border:1px solid rgba(27,26,23,.16)"><div style="height:64px;background:oklch(0.80 0.10 70)"></div><div style="padding:8px 10px;font:500 10px/1.5 'IBM Plex Mono',monospace">DARK --accent · LIFTED<br>OKLCH(.80 .10 70)</div></div>
+</div>
+<p style="margin:0;font:400 14.5px/1.75 Archivo,sans-serif;color:rgba(27,26,23,.75);max-width:680px"><strong>Designed light-first.</strong> The defining surface is warm bond ivory with a soft warm ink — a printed page, not a screen — and one accent: burnished bronze, the pigment of ledger annotations, deep enough to pass AA even at mono caption sizes. The canvas stays predominantly white; separation comes from hairlines and full-bleed <strong>plates</strong> — an ink plate behind the career chart and toolset band — plus warm bronze washes (7–9% accent tints), never grey blocks. Elsewhere color marks what is active, current, or clickable-forward. Derived tones only: ink at 72% / 50%, hairlines at 15–16%. Dark mode is the same page under different lighting: identical warm hue family (never blue-black), the bronze lifted just enough to hold contrast, swapped via CSS custom properties — no second palette exists. Brand-adjacent pairings (green on near-black, red on pink) were explicitly rejected. No gradients, no glass, no purple.</p>
+</section>
+
+<section>
+<div style="font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;color:rgba(27,26,23,.45);border-bottom:1px solid rgba(27,26,23,.16);padding-bottom:10px;margin-bottom:18px">05 — SPACING &amp; SIZING</div>
+<ul style="margin:0;padding-left:18px;font:400 14.5px/1.8 Archivo,sans-serif;color:rgba(27,26,23,.75);max-width:680px">
+<li>Base-4 scale; workhorses: 12 / 20 / 28 (page gutter) / 56 (section padding) / 90–130 (hero breathing room).</li>
+<li>Heroes claim 100vh; content sections size to content — no filler height.</li>
+<li>Interactive rows ≥ 44px tall everywhere; mobile timeline rows 76px.</li>
+<li>Radius: 0. The only rounded element is the theme-toggle pill — a deliberate quotation from the old site.</li>
+</ul>
+</section>
+
+<section>
+<div style="font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;color:rgba(27,26,23,.45);border-bottom:1px solid rgba(27,26,23,.16);padding-bottom:10px;margin-bottom:18px">06 — COMPONENT LIBRARY</div>
+<div style="display:grid;grid-template-columns:200px 1fr;gap:10px 24px;font:400 14px/1.7 Archivo,sans-serif;color:rgba(27,26,23,.75)">
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">MASTHEAD</span><span>Fixed, blurred bg, hairline bottom. Name left (fades in on home after hero compress), mono nav + DM toggle right. Active page in accent.</span>
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">GRID CELL</span><span>Mono index + tag row, Archivo title, grayscale image → color on hover, bg lifts to --bg2. Whole cell is the link.</span>
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">PROJECT ROW</span><span>Index / title+one-liner / mono stack / +. Expands in place to case study (overview, 3 numbered highlights, image, links). One open at a time; deep-linkable by hash.</span>
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">MILESTONE</span><span>Year (mono) + dot on the chart line + label. Current era always in accent.</span>
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">BUTTON</span><span>Square, 1px ink border, mono label with →. Hover: full ink/bg inversion. Secondary: hairline border, accent text on hover.</span>
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">FORM FIELD</span><span>Mono uppercase label, borderless input on a hairline baseline; baseline turns accent on focus.</span>
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">PLACEHOLDER</span><span>45° hairline stripes + mono caption (used for NDA work / missing imagery).</span>
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">MENU TAKEOVER</span><span>Mobile navigation: the burger is two unequal hairlines (ink + accent tick, quoting the chart). It opens a full-screen ledger index — numbered rows in monument type staggering in, DM toggle and coordinates at the base. Esc or × closes; body scroll locks while open.</span><span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">FOOTER</span><span>Mono strip: © / coordinates / links. Identical on every page.</span>
+</div>
+</section>
+
+<section>
+<div style="font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;color:rgba(27,26,23,.45);border-bottom:1px solid rgba(27,26,23,.16);padding-bottom:10px;margin-bottom:18px">07 — MOTION PRINCIPLES</div>
+<ul style="margin:0;padding-left:18px;font:400 14.5px/1.8 Archivo,sans-serif;color:rgba(27,26,23,.75);max-width:680px">
+<li><strong>One signature interaction per page</strong>: monument (home), chart scrub (journey), halftone portrait (about), row expansion (work). Nothing else animates on its own.</li>
+<li>Micro-interactions are limited to: grayscale→color, hairline/bg lift, border inversion. 200–250ms, ease-out.</li>
+<li>Motion is input-driven (cursor, scroll, tap) — the site is still when the visitor is still.</li>
+<li>Physics feel: lerp factor ~0.12 for magnetics, damped springs for particles; entrance choreography ≤ 900ms total, once.</li>
+<li>Performance budget: transforms + canvas only; DPR capped at 2; rAF loops cancelled on unmount; no layout-triggering animation.</li>
+</ul>
+</section>
+
+<section>
+<div style="font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;color:rgba(27,26,23,.45);border-bottom:1px solid rgba(27,26,23,.16);padding-bottom:10px;margin-bottom:18px">08 — RESPONSIVE BEHAVIOR</div>
+<ul style="margin:0;padding-left:18px;font:400 14.5px/1.8 Archivo,sans-serif;color:rgba(27,26,23,.75);max-width:680px">
+<li>Type scales fluidly via clamp(); grids collapse via auto-fit; nothing is merely shrunk.</li>
+<li><strong>Navigation / mobile:</strong> masthead reduces to name + burger; the menu is a full-screen ledger takeover (see §06), not a drawer.</li>
+<li><strong>Home / mobile:</strong> cursor magnetics off; the monument keeps its entrance assemble and the scroll-compress into the masthead — scroll is the mobile input.</li>
+<li><strong>Journey / mobile:</strong> the chart rotates 90° into a vertical timeline along the scroll axis; milestones become full-width tap targets.</li>
+<li><strong>About / mobile:</strong> halftone portrait renders as a static print-halftone artwork (dot size maps to tonal darkness in light mode, luminance in dark — always a positive image, never a negative) below the intro (coarse pointers get no scatter loop).</li>
+<li><strong>Work / mobile:</strong> ruled column; case-study grid stacks text-first, image second.</li>
+</ul>
+</section>
+
+<section>
+<div style="font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;color:rgba(27,26,23,.45);border-bottom:1px solid rgba(27,26,23,.16);padding-bottom:10px;margin-bottom:18px">09 — SECTION BY SECTION &amp; TRANSITIONS</div>
+<div style="display:grid;grid-template-columns:200px 1fr;gap:10px 24px;font:400 14px/1.7 Archivo,sans-serif;color:rgba(27,26,23,.75)">
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">01 MONUMENT</span><span>Name as a physical object; kicker + one-line thesis. <em>Transition:</em> scrolling compresses it into the masthead — the hero literally becomes the navigation, and the masthead name persists on every page as its residue.</span>
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">02 JOURNEY</span><span>The second hero: career chart on a full-bleed ink plate — the site’s dramatic centrepiece. Curve (banking) quantizes into ticks (engineering) at 2025. <em>Transition:</em> its final milestone — "Full-stack product engineer" — is the claim the work section proves.</span>
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">03 WORK</span><span>Ruled index grid, cell 04 hands off to the About story. <em>Transition:</em> grayscale→color hover foreshadows the case-study pages' full-color imagery.</span>
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">04 CLOSER</span><span>"Where the line goes next." on the white ground — an invitation to continue the conversation (roles, recruiting, collaboration), never a sales pitch. Accent lives in the typography, a ledger card and the tick-line continuing past 2026. Leads to Contact.</span>
+<span style="font:500 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">05 CONTACT</span><span>"The chart doesn't end here" + accent ticks trailing off the page — the timeline's visual language closing the narrative. Giant mailto, baseline form, elsewhere links.</span>
+</div>
+</section>
+
+<section>
+<div style="font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;color:rgba(27,26,23,.45);border-bottom:1px solid rgba(27,26,23,.16);padding-bottom:10px;margin-bottom:18px">10 — SIGNATURE INTERACTIONS</div>
+<ul style="margin:0;padding-left:18px;font:400 14.5px/1.8 Archivo,sans-serif;color:rgba(27,26,23,.75);max-width:680px">
+<li><strong>The Monument</strong> (home): magnetic letters + scroll-compress into masthead. Entrance assemble on load.</li>
+<li><strong>The Chart</strong> (home §2): scrubbable career timeline; curve→ticks quantization at the 2025 switch. The site's conceptual heart.</li>
+<li><strong>The Halftone</strong> (about): portrait as particle field, scattering and reforming around the cursor.</li>
+<li><strong>The Ledger</strong> (work): index rows expanding in place — navigation as typography.</li>
+</ul>
+</section>
+
+<section>
+<div style="font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;color:rgba(27,26,23,.45);border-bottom:1px solid rgba(27,26,23,.16);padding-bottom:10px;margin-bottom:18px">11 — ACCESSIBILITY &amp; REDUCED MOTION</div>
+<ul style="margin:0;padding-left:18px;font:400 14.5px/1.8 Archivo,sans-serif;color:rgba(27,26,23,.75);max-width:680px">
+<li><code style="font-family:'IBM Plex Mono',monospace;font-size:13px">prefers-reduced-motion</code>: all rAF loops skipped (canvases render one static frame), entrances and transitions collapse to instant states, scroll-compress becomes a threshold swap. Scrubbing remains — it's user-initiated data inspection, not motion.</li>
+<li>Text never sits inside canvases — charts and particles are decorative layers behind real HTML; milestone data also exists as DOM text (mobile timeline / experience list).</li>
+<li>Contrast: warm ink on ivory ≈ 15:1; ink-70 ≥ 8:1; bronze accent ≥ 5.5:1 on ivory; accent is never the only signal (paired with +/×, underline, or label).</li>
+<li>Keyboard: rows are focusable with visible accent focus baselines; nav is plain links; hit targets ≥ 44px.</li>
+</ul>
+</section>
+
+</div>
+<div style="margin-top:64px;padding-top:18px;border-top:1px solid rgba(27,26,23,.16);font:400 11px/1.7 'IBM Plex Mono',monospace;color:rgba(27,26,23,.45)">PAGES: <a href="Home.dc.html">HOME</a> · <a href="Projects.dc.html">PROJECTS</a> · <a href="About.dc.html">ABOUT</a> · <a href="Contact.dc.html">CONTACT</a></div>
+</div>
+</x-dc>
+</body>
+</html>

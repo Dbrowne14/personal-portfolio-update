@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCFBF8;--bg2:#F3EDE0;--ink:#1B1A17;--ink70:rgba(27,26,23,.72);--ink45:rgba(27,26,23,.5);--line:rgba(27,26,23,.16);--accent:oklch(0.47 0.11 55);--card:#FFFEF9;--plate:#1B1A17;--plate-ink:#F6F3EA;--plate-ink70:rgba(246,243,234,.68);--plate-ink45:rgba(246,243,234,.45);--plate-accent:oklch(0.82 0.11 70)}
+html[data-theme="dark"]{--bg:#15130F;--bg2:#211D14;--ink:#EDEAE0;--ink70:rgba(237,234,224,.72);--ink45:rgba(237,234,224,.5);--line:rgba(237,234,224,.15);--accent:oklch(0.80 0.10 70);--card:#1C1A14;--plate:#0D0C09;--plate-ink:#EDEAE0;--plate-ink70:rgba(237,234,224,.68);--plate-ink45:rgba(237,234,224,.45);--plate-accent:oklch(0.82 0.11 70)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Archivo,sans-serif;transition:background .3s,color .3s}
+a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+@keyframes dbRise{from{opacity:0;transform:translateY(46px)}to{opacity:1;transform:translateY(0)}}
+@keyframes dbFade{from{opacity:0}to{opacity:1}}
+input,textarea{font-family:Archivo,sans-serif}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
+</style>
+</helmet>
+<header style="position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:16px 28px;border-bottom:1px solid var(--line);background:color-mix(in srgb, var(--bg) 82%, transparent);backdrop-filter:blur(12px);font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.1em">
+<a href="Home.dc.html" style="color:var(--ink)">DAVID BROWNE</a>
+<nav style="display:{{ navDisplay }};align-items:center;gap:26px">
+<a href="Projects.dc.html" style="color:var(--ink70)" style-hover="color:var(--accent)">WORK</a>
+<a href="About.dc.html" style="color:var(--ink70)" style-hover="color:var(--accent)">ABOUT</a>
+<a href="Contact.dc.html" style="color:var(--accent)">CONTACT</a>
+<button onClick="{{ toggleTheme }}" aria-label="Toggle dark mode" style="display:inline-flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;color:var(--ink45);font:inherit;letter-spacing:inherit;padding:0">DM<span style="width:24px;height:13px;border:1px solid var(--ink45);border-radius:7px;display:inline-flex;align-items:center;padding:1px;justify-content:{{ dotSide }}"><span style="width:9px;height:9px;border-radius:50%;background:var(--accent)"></span></span></button>
+</nav>
+<button onClick="{{ openMenu }}" aria-label="Open menu" style="display:{{ burgerDisplay }};flex-direction:column;gap:7px;align-items:flex-end;justify-content:center;width:44px;height:44px;margin:-12px 0;background:none;border:none;cursor:pointer;padding:0"><span style="width:24px;height:1.5px;background:var(--ink)"></span><span style="width:15px;height:1.5px;background:var(--accent)"></span></button>
+</header>
+<sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Menu" style="position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;padding:0 28px 24px;overflow:auto">
+<div style="display:flex;justify-content:space-between;align-items:center;height:57px;border-bottom:1px solid var(--line);font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.1em"><span>DAVID BROWNE</span><button onClick="{{ closeMenu }}" aria-label="Close menu" style="position:relative;width:44px;height:44px;margin-right:-10px;background:none;border:none;cursor:pointer;padding:0"><span style="position:absolute;left:10px;top:21px;width:24px;height:1.5px;background:var(--ink);transform:rotate(45deg)"></span><span style="position:absolute;left:10px;top:21px;width:24px;height:1.5px;background:var(--accent);transform:rotate(-45deg)"></span></button></div>
+<nav style="display:flex;flex-direction:column;margin-top:14px">
+<a href="Home.dc.html" onClick="{{ closeMenu }}" style="display:flex;align-items:baseline;gap:16px;padding:20px 0;border-bottom:1px solid var(--line);animation:dbRise .45s cubic-bezier(.2,.7,.2,1) both .03s"><span style="font:500 11px/1 'IBM Plex Mono',monospace;color:var(--ink45)">01</span><span style="font:800 clamp(36px,10vw,56px)/1 Archivo,sans-serif;letter-spacing:-0.02em;color:{{ cHome }}">HOME</span><span style="margin-left:auto;font:500 9.5px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;color:var(--ink45)">THE MONUMENT</span></a>
+<a href="Projects.dc.html" onClick="{{ closeMenu }}" style="display:flex;align-items:baseline;gap:16px;padding:20px 0;border-bottom:1px solid var(--line);animation:dbRise .45s cubic-bezier(.2,.7,.2,1) both .09s"><span style="font:500 11px/1 'IBM Plex Mono',monospace;color:var(--ink45)">02</span><span style="font:800 clamp(36px,10vw,56px)/1 Archivo,sans-serif;letter-spacing:-0.02em;color:{{ cWork }}">WORK</span><span style="margin-left:auto;font:500 9.5px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;color:var(--ink45)">05 PROJECTS</span></a>
+<a href="About.dc.html" onClick="{{ closeMenu }}" style="display:flex;align-items:baseline;gap:16px;padding:20px 0;border-bottom:1px solid var(--line);animation:dbRise .45s cubic-bezier(.2,.7,.2,1) both .15s"><span style="font:500 11px/1 'IBM Plex Mono',monospace;color:var(--ink45)">03</span><span style="font:800 clamp(36px,10vw,56px)/1 Archivo,sans-serif;letter-spacing:-0.02em;color:{{ cAbout }}">ABOUT</span><span style="margin-left:auto;font:500 9.5px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;color:var(--ink45)">THE STORY</span></a>
+<a href="Contact.dc.html" onClick="{{ closeMenu }}" style="display:flex;align-items:baseline;gap:16px;padding:20px 0;border-bottom:1px solid var(--line);animation:dbRise .45s cubic-bezier(.2,.7,.2,1) both .21s"><span style="font:500 11px/1 'IBM Plex Mono',monospace;color:var(--ink45)">04</span><span style="font:800 clamp(36px,10vw,56px)/1 Archivo,sans-serif;letter-spacing:-0.02em;color:{{ cContact }}">CONTACT</span><span style="margin-left:auto;font:500 9.5px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;color:var(--ink45)">SAY HELLO</span></a>
+</nav>
+<div style="margin-top:auto;display:flex;justify-content:space-between;align-items:center;padding-top:24px;font:400 10.5px/1.6 'IBM Plex Mono',monospace;letter-spacing:.08em;color:var(--ink45)"><span>LONDON 51.5072°N</span><button onClick="{{ toggleTheme }}" aria-label="Toggle dark mode" style="display:inline-flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;color:var(--ink45);font:inherit;letter-spacing:inherit;padding:0">DM<span style="width:24px;height:13px;border:1px solid var(--ink45);border-radius:7px;display:inline-flex;align-items:center;padding:1px;justify-content:{{ dotSide }}"><span style="width:9px;height:9px;border-radius:50%;background:var(--accent)"></span></span></button></div>
+</div>
+</sc-if>
+
+<section style="padding:150px 28px 60px" data-screen-label="Contact hero">
+<div style="font:500 11px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:var(--accent);margin-bottom:20px">05 — THE CONVERSATION</div>
+<h1 style="margin:0;font:700 clamp(40px,7vw,96px)/0.98 Archivo,sans-serif;letter-spacing:-0.03em;max-width:1000px;text-wrap:balance">The chart doesn't end here.</h1>
+<p style="margin:24px 0 0;max-width:520px;font:400 15.5px/1.7 Archivo,sans-serif;color:var(--ink70)">Hiring for a role, recruiting, comparing notes on tech and finance, or talking shop with fellow builders — I answer everything personally, usually within a day.</p>
+<a href="/cdn-cgi/l/email-protection#b8d0ddd4d4d7f8dcd9ced1dcdacad7cfd6dd96dcddce" style="display:inline-block;margin-top:44px;font:700 clamp(22px,4.4vw,58px)/1.1 Archivo,sans-serif;letter-spacing:-0.02em;color:var(--accent);border-bottom:2px solid var(--accent);padding-bottom:6px;transition:color .2s" style-hover="color:var(--ink)"><span class="__cf_email__" data-cfemail="29414c454546694d485f404d4b5b465e474c074d4c5f">[email&#160;protected]</span> ↗</a>
+</section>
+
+<div style="height:44px;margin:20px 28px 0;background:repeating-linear-gradient(90deg,var(--accent) 0,var(--accent) 8px,transparent 8px,transparent 22px);opacity:.55;-webkit-mask-image:linear-gradient(90deg,#000 0%,transparent 100%);mask-image:linear-gradient(90deg,#000 0%,transparent 100%)" data-screen-label="Ticks trailing off"></div>
+<div style="padding:6px 28px 40px;font:400 11px/1.5 'IBM Plex Mono',monospace;color:var(--ink45)">2026 → THE NEXT TICK IS STILL BEING DRAWN</div>
+
+<section style="border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:0" data-screen-label="Form + details">
+<form onSubmit="{{ onSubmit }}" style="padding:56px 28px;display:flex;flex-direction:column;gap:26px;border-right:1px solid var(--line)">
+<div style="font:500 11px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:var(--accent)">OR WRITE HERE</div>
+<label style="display:flex;flex-direction:column;gap:8px;font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;color:var(--ink45)">NAME
+<input value="{{ name }}" onChange="{{ setName }}" placeholder="Your name" style="background:transparent;border:none;border-bottom:1px solid var(--line);padding:10px 0;font-size:16px;color:var(--ink);outline:none" style-focus="border-bottom:1px solid var(--accent)" />
+</label>
+<label style="display:flex;flex-direction:column;gap:8px;font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;color:var(--ink45)">EMAIL
+<input value="{{ email }}" onChange="{{ setEmail }}" type="email" placeholder="name@company.com" style="background:transparent;border:none;border-bottom:1px solid var(--line);padding:10px 0;font-size:16px;color:var(--ink);outline:none" style-focus="border-bottom:1px solid var(--accent)" />
+</label>
+<label style="display:flex;flex-direction:column;gap:8px;font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;color:var(--ink45)">MESSAGE
+<textarea value="{{ msg }}" onChange="{{ setMsg }}" rows="5" placeholder="What would you like to talk about?" style="background:transparent;border:none;border-bottom:1px solid var(--line);padding:10px 0;font-size:16px;color:var(--ink);outline:none;resize:vertical" style-focus="border-bottom:1px solid var(--accent)"></textarea>
+</label>
+<button type="submit" style="align-self:flex-start;padding:15px 28px;border:1px solid var(--ink);background:transparent;cursor:pointer;font:500 11.5px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;color:var(--ink);transition:background .2s,color .2s" style-hover="background:var(--ink);color:var(--bg)">{{ sendLabel }}</button>
+</form>
+<div style="padding:56px 28px;display:flex;flex-direction:column;gap:30px;background:var(--bg2);transition:background .3s">
+<div style="font:500 11px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:var(--accent)">ELSEWHERE</div>
+<a href="#" style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:14px;font:600 18px/1 Archivo,sans-serif" style-hover="color:var(--accent)"><span>GitHub</span><span style="font:400 11px/1 'IBM Plex Mono',monospace;color:var(--ink45)">CODE ↗</span></a>
+<a href="#" style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:14px;font:600 18px/1 Archivo,sans-serif" style-hover="color:var(--accent)"><span>LinkedIn</span><span style="font:400 11px/1 'IBM Plex Mono',monospace;color:var(--ink45)">CAREER ↗</span></a>
+<a href="#" style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:14px;font:600 18px/1 Archivo,sans-serif" style-hover="color:var(--accent)"><span>CV</span><span style="font:400 11px/1 'IBM Plex Mono',monospace;color:var(--ink45)">PDF ↗</span></a>
+<div style="margin-top:auto;font:400 11px/1.9 'IBM Plex Mono',monospace;color:var(--ink45)">BASED IN LONDON — GMT<br>OPEN TO: FULL-TIME ROLES · RECRUITER CHATS · COLLABORATION<br>· THE OCCASIONAL FREELANCE PROJECT · GOOD CONVERSATIONS<br>RESPONSE TIME: USUALLY &lt; 24H</div>
+</div>
+</section>
+
+<footer style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:20px 28px;border-top:1px solid var(--line);font:400 10.5px/1.6 'IBM Plex Mono',monospace;letter-spacing:.08em;color:var(--ink45)">
+<span>© 2026 DAVID BROWNE</span><span>LONDON 51.5072°N — 0.1276°W</span><span>BUILT BY HAND — NO TEMPLATE</span>
+</footer>
+</x-dc>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { theme: 'light', name: '', email: '', msg: '', sent: false, isMobile: false, menuOpen: false };
+  componentDidMount() {
+    document.documentElement.dataset.theme = localStorage.getItem('db-theme') || 'light';
+    this.setState({ theme: document.documentElement.dataset.theme });
+    this.mq = window.matchMedia('(max-width: 760px)');
+    this.onMq = () => { document.body.style.overflow = ''; this.setState({ menuOpen: false, isMobile: this.mq.matches }); };
+    this.mq.addEventListener('change', this.onMq);
+    this.setState({ isMobile: this.mq.matches });
+    this.onKey = e => { if (e.key === 'Escape') { document.body.style.overflow = ''; this.setState({ menuOpen: false }); } };
+    window.addEventListener('keydown', this.onKey);
+  }
+  renderVals() {
+    return {
+      navDisplay: this.state.isMobile ? 'none' : 'flex',
+      burgerDisplay: this.state.isMobile ? 'flex' : 'none',
+      menuOpen: this.state.menuOpen,
+      openMenu: () => { document.body.style.overflow = 'hidden'; this.setState({ menuOpen: true }); },
+      closeMenu: () => { document.body.style.overflow = ''; this.setState({ menuOpen: false }); },
+      cHome: 'var(--ink)', cWork: 'var(--ink)', cAbout: 'var(--ink)', cContact: 'var(--accent)',
+      dotSide: this.state.theme === 'dark' ? 'flex-end' : 'flex-start',
+      toggleTheme: () => {
+        const t = this.state.theme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('db-theme', t);
+        document.documentElement.dataset.theme = t;
+        this.setState({ theme: t });
+      },
+      name: this.state.name, email: this.state.email, msg: this.state.msg,
+      setName: e => this.setState({ name: e.target.value, sent: false }),
+      setEmail: e => this.setState({ email: e.target.value, sent: false }),
+      setMsg: e => this.setState({ msg: e.target.value, sent: false }),
+      sendLabel: this.state.sent ? 'OPENING YOUR MAIL APP…' : 'SEND MESSAGE →',
+      onSubmit: e => {
+        e.preventDefault();
+        const { name, email, msg } = this.state;
+        const body = encodeURIComponent(msg + '\n\n— ' + name + ' (' + email + ')');
+        window.location.href = 'mailto:hello@davidbrowne.dev?subject=' + encodeURIComponent('Hello from ' + (name || 'your website')) + '&body=' + body;
+        this.setState({ sent: true });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

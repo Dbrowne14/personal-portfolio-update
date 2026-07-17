@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCFBF8;--bg2:#F3EDE0;--ink:#1B1A17;--ink70:rgba(27,26,23,.72);--ink45:rgba(27,26,23,.5);--line:rgba(27,26,23,.16);--accent:oklch(0.47 0.11 55);--card:#FFFEF9;--plate:#1B1A17;--plate-ink:#F6F3EA;--plate-ink70:rgba(246,243,234,.68);--plate-ink45:rgba(246,243,234,.45);--plate-accent:oklch(0.82 0.11 70)}
+html[data-theme="dark"]{--bg:#15130F;--bg2:#211D14;--ink:#EDEAE0;--ink70:rgba(237,234,224,.72);--ink45:rgba(237,234,224,.5);--line:rgba(237,234,224,.15);--accent:oklch(0.80 0.10 70);--card:#1C1A14;--plate:#0D0C09;--plate-ink:#EDEAE0;--plate-ink70:rgba(237,234,224,.68);--plate-ink45:rgba(237,234,224,.45);--plate-accent:oklch(0.82 0.11 70)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Archivo,sans-serif;transition:background .3s,color .3s}
+a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+@keyframes dbRise{from{opacity:0;transform:translateY(46px)}to{opacity:1;transform:translateY(0)}}
+@keyframes dbFade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
+</style>
+</helmet>
+<header style="position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:16px 28px;border-bottom:1px solid var(--line);background:color-mix(in srgb, var(--bg) 82%, transparent);backdrop-filter:blur(12px);font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.1em">
+<a href="Home.dc.html" style="color:var(--ink)">DAVID BROWNE</a>
+<nav style="display:{{ navDisplay }};align-items:center;gap:26px">
+<a href="Projects.dc.html" style="color:var(--ink70)" style-hover="color:var(--accent)">WORK</a>
+<a href="About.dc.html" style="color:var(--accent)">ABOUT</a>
+<a href="Contact.dc.html" style="color:var(--ink70)" style-hover="color:var(--accent)">CONTACT</a>
+<button onClick="{{ toggleTheme }}" aria-label="Toggle dark mode" style="display:inline-flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;color:var(--ink45);font:inherit;letter-spacing:inherit;padding:0">DM<span style="width:24px;height:13px;border:1px solid var(--ink45);border-radius:7px;display:inline-flex;align-items:center;padding:1px;justify-content:{{ dotSide }}"><span style="width:9px;height:9px;border-radius:50%;background:var(--accent)"></span></span></button>
+</nav>
+<button onClick="{{ openMenu }}" aria-label="Open menu" style="display:{{ burgerDisplay }};flex-direction:column;gap:7px;align-items:flex-end;justify-content:center;width:44px;height:44px;margin:-12px 0;background:none;border:none;cursor:pointer;padding:0"><span style="width:24px;height:1.5px;background:var(--ink)"></span><span style="width:15px;height:1.5px;background:var(--accent)"></span></button>
+</header>
+<sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Menu" style="position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;padding:0 28px 24px;overflow:auto">
+<div style="display:flex;justify-content:space-between;align-items:center;height:57px;border-bottom:1px solid var(--line);font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.1em"><span>DAVID BROWNE</span><button onClick="{{ closeMenu }}" aria-label="Close menu" style="position:relative;width:44px;height:44px;margin-right:-10px;background:none;border:none;cursor:pointer;padding:0"><span style="position:absolute;left:10px;top:21px;width:24px;height:1.5px;background:var(--ink);transform:rotate(45deg)"></span><span style="position:absolute;left:10px;top:21px;width:24px;height:1.5px;background:var(--accent);transform:rotate(-45deg)"></span></button></div>
+<nav style="display:flex;flex-direction:column;margin-top:14px">
+<a href="Home.dc.html" onClick="{{ closeMenu }}" style="display:flex;align-items:baseline;gap:16px;padding:20px 0;border-bottom:1px solid var(--line);animation:dbRise .45s cubic-bezier(.2,.7,.2,1) both .03s"><span style="font:500 11px/1 'IBM Plex Mono',monospace;color:var(--ink45)">01</span><span style="font:800 clamp(36px,10vw,56px)/1 Archivo,sans-serif;letter-spacing:-0.02em;color:{{ cHome }}">HOME</span><span style="margin-left:auto;font:500 9.5px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;color:var(--ink45)">THE MONUMENT</span></a>
+<a href="Projects.dc.html" onClick="{{ closeMenu }}" style="display:flex;align-items:baseline;gap:16px;padding:20px 0;border-bottom:1px solid var(--line);animation:dbRise .45s cubic-bezier(.2,.7,.2,1) both .09s"><span style="font:500 11px/1 'IBM Plex Mono',monospace;color:var(--ink45)">02</span><span style="font:800 clamp(36px,10vw,56px)/1 Archivo,sans-serif;letter-spacing:-0.02em;color:{{ cWork }}">WORK</span><span style="margin-left:auto;font:500 9.5px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;color:var(--ink45)">05 PROJECTS</span></a>
+<a href="About.dc.html" onClick="{{ closeMenu }}" style="display:flex;align-items:baseline;gap:16px;padding:20px 0;border-bottom:1px solid var(--line);animation:dbRise .45s cubic-bezier(.2,.7,.2,1) both .15s"><span style="font:500 11px/1 'IBM Plex Mono',monospace;color:var(--ink45)">03</span><span style="font:800 clamp(36px,10vw,56px)/1 Archivo,sans-serif;letter-spacing:-0.02em;color:{{ cAbout }}">ABOUT</span><span style="margin-left:auto;font:500 9.5px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;color:var(--ink45)">THE STORY</span></a>
+<a href="Contact.dc.html" onClick="{{ closeMenu }}" style="display:flex;align-items:baseline;gap:16px;padding:20px 0;border-bottom:1px solid var(--line);animation:dbRise .45s cubic-bezier(.2,.7,.2,1) both .21s"><span style="font:500 11px/1 'IBM Plex Mono',monospace;color:var(--ink45)">04</span><span style="font:800 clamp(36px,10vw,56px)/1 Archivo,sans-serif;letter-spacing:-0.02em;color:{{ cContact }}">CONTACT</span><span style="margin-left:auto;font:500 9.5px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;color:var(--ink45)">SAY HELLO</span></a>
+</nav>
+<div style="margin-top:auto;display:flex;justify-content:space-between;align-items:center;padding-top:24px;font:400 10.5px/1.6 'IBM Plex Mono',monospace;letter-spacing:.08em;color:var(--ink45)"><span>LONDON 51.5072°N</span><button onClick="{{ toggleTheme }}" aria-label="Toggle dark mode" style="display:inline-flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;color:var(--ink45);font:inherit;letter-spacing:inherit;padding:0">DM<span style="width:24px;height:13px;border:1px solid var(--ink45);border-radius:7px;display:inline-flex;align-items:center;padding:1px;justify-content:{{ dotSide }}"><span style="width:9px;height:9px;border-radius:50%;background:var(--accent)"></span></span></button></div>
+</div>
+</sc-if>
+
+<section id="aboutHero" style="position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;background:radial-gradient(700px 480px at 18% 42%, oklch(0.47 0.11 55 / .07), transparent 70%)" data-screen-label="About hero — halftone">
+<canvas id="dotPortrait" style="position:absolute;inset:0;width:100%;height:100%;display:block"></canvas>
+<div style="position:relative;max-width:520px;padding:120px 28px 60px;pointer-events:none">
+<div style="font:500 11px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:var(--accent);margin-bottom:18px">THE PERSON BEHIND THE WORK</div>
+<h1 style="margin:0;font:700 clamp(40px,5.6vw,72px)/1.0 Archivo,sans-serif;letter-spacing:-0.03em;text-wrap:balance">Hello, I'm David.</h1>
+<p style="margin:20px 0 0;font:400 15.5px/1.7 Archivo,sans-serif;color:var(--ink70)">Full-stack developer in London. I spent eight years in investment banking — the last stretch advising purely on tech deals — before making the switch to building the products myself.</p>
+<p style="margin:14px 0 0;font:400 12px/1.7 'IBM Plex Mono',monospace;color:var(--ink45)">THE PORTRAIT REBUILDS AROUND YOUR CURSOR →</p>
+</div>
+</section>
+
+<section style="border-top:1px solid var(--line);padding:80px 28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:48px" data-screen-label="The story">
+<div>
+<div style="font:500 11px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:var(--accent);margin-bottom:20px">02 — THE STORY</div>
+<h2 style="margin:0;font:700 clamp(28px,3.2vw,42px)/1.05 Archivo,sans-serif;letter-spacing:-0.02em;text-wrap:balance">I wanted to understand how the products I was valuing were actually built.</h2>
+</div>
+<div style="max-width:620px;display:flex;flex-direction:column;gap:18px;font:400 15px/1.75 Archivo,sans-serif;color:var(--ink70)">
+<p style="margin:0">From 2017 I advised companies across the knowledge economy — boardrooms, models, term sheets. By 2022 I'd gravitated to pure tech investment banking, spending my days with the founders and teams building real products. That proximity became a problem, in the best way: advising on the deals stopped being enough.</p>
+<p style="margin:0">So I learned to build. Nights and weekends first, then fully — in 2025 I made the switch to engineering. What I kept from banking is the judgment: how to scope what's worth building, communicate clearly with stakeholders, and treat every project like it has a P&amp;L.</p>
+<p style="margin:0">I manage my own investment portfolio, I like keeping both mind and life in motion, and I care most about work at the intersection of tech and finance — where both halves of my career compound.</p>
+</div>
+</section>
+
+<section style="border-top:1px solid var(--line)" data-screen-label="Experience">
+<div style="padding:56px 28px 24px;display:flex;justify-content:space-between;align-items:baseline"><h2 style="margin:0;font:700 clamp(26px,3vw,40px)/1 Archivo,sans-serif;letter-spacing:-0.02em">Experience</h2><span style="font:500 11px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;color:var(--ink45)">03 — 2017 → NOW</span></div>
+<div style="border-top:1px solid var(--line)">
+<div style="display:grid;grid-template-columns:{{ expCols }};gap:8px 20px;align-items:baseline;padding:22px 28px;border-bottom:1px solid var(--line)"><span style="font:500 11px/1 'IBM Plex Mono',monospace;color:var(--ink45)">2017—2022</span><span style="font:600 16px/1.4 Archivo,sans-serif">Investment banking — knowledge economy<span style="display:block;font:400 13.5px/1.6 Archivo,sans-serif;color:var(--ink70)">M&amp;A and capital raises across education, information services and software.</span></span><span style="display:{{ locDisplay }};font:500 10.5px/1 'IBM Plex Mono',monospace;color:var(--ink45)">LONDON</span></div>
+<div style="display:grid;grid-template-columns:{{ expCols }};gap:8px 20px;align-items:baseline;padding:22px 28px;border-bottom:1px solid var(--line)"><span style="font:500 11px/1 'IBM Plex Mono',monospace;color:var(--ink45)">2022—2025</span><span style="font:600 16px/1.4 Archivo,sans-serif">Tech investment banking<span style="display:block;font:400 13.5px/1.6 Archivo,sans-serif;color:var(--ink70)">Pure tech mandates — fintech and software deals, working directly with product teams.</span></span><span style="display:{{ locDisplay }};font:500 10.5px/1 'IBM Plex Mono',monospace;color:var(--ink45)">LONDON</span></div>
+<div style="display:grid;grid-template-columns:{{ expCols }};gap:8px 20px;align-items:baseline;padding:22px 28px;border-bottom:1px solid var(--line);background:linear-gradient(90deg, oklch(0.47 0.11 55 / .09), transparent 65%)"><span style="font:500 11px/1 'IBM Plex Mono',monospace;color:var(--accent)">2025—NOW</span><span style="font:600 16px/1.4 Archivo,sans-serif">Full-stack product engineer<span style="display:block;font:400 13.5px/1.6 Archivo,sans-serif;color:var(--ink70)">Building and shipping complete products — React, Node, TypeScript, PostgreSQL.</span></span><span style="display:{{ locDisplay }};font:500 10.5px/1 'IBM Plex Mono',monospace;color:var(--accent)">THE SWITCH</span></div>
+</div>
+</section>
+
+<section style="background:var(--plate)" data-screen-label="Toolset">
+<div style="padding:52px 28px 26px;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px">
+<h2 style="margin:0;font:700 clamp(26px,3vw,40px)/1 Archivo,sans-serif;letter-spacing:-0.02em;color:var(--plate-ink)">Toolset</h2>
+<span style="font:500 11px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:var(--plate-accent)">04 — THE INSTRUMENTS</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));border-top:1px solid rgba(246,243,234,.16)">
+<div style="padding:26px 28px 44px;border-right:1px solid rgba(246,243,234,.14);border-bottom:1px solid rgba(246,243,234,.14)">
+<div style="font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:var(--plate-accent);margin-bottom:18px">CORE</div>
+<div style="display:flex;flex-direction:column;gap:9px;font:500 14.5px/1.4 Archivo,sans-serif;color:var(--plate-ink)"><span>TypeScript</span><span>JavaScript</span><span>React</span><span>Next.js</span></div>
+</div>
+<div style="padding:26px 28px 44px;border-right:1px solid rgba(246,243,234,.14);border-bottom:1px solid rgba(246,243,234,.14)">
+<div style="font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:var(--plate-accent);margin-bottom:18px">BACKEND</div>
+<div style="display:flex;flex-direction:column;gap:9px;font:500 14.5px/1.4 Archivo,sans-serif;color:var(--plate-ink)"><span>Node.js</span><span>Express</span></div>
+</div>
+<div style="padding:26px 28px 44px;border-right:1px solid rgba(246,243,234,.14);border-bottom:1px solid rgba(246,243,234,.14)">
+<div style="font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:var(--plate-accent);margin-bottom:18px">DATA</div>
+<div style="display:flex;flex-direction:column;gap:9px;font:500 14.5px/1.4 Archivo,sans-serif;color:var(--plate-ink)"><span>PostgreSQL</span><span>Supabase</span><span>Sanity CMS</span><span>GROQ</span></div>
+</div>
+<div style="padding:26px 28px 44px;border-right:1px solid rgba(246,243,234,.14);border-bottom:1px solid rgba(246,243,234,.14)">
+<div style="font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:var(--plate-accent);margin-bottom:18px">STYLING</div>
+<div style="display:flex;flex-direction:column;gap:9px;font:500 14.5px/1.4 Archivo,sans-serif;color:var(--plate-ink)"><span>Tailwind CSS</span><span>shadcn/ui</span><span>Framer Motion</span></div>
+</div>
+<div style="padding:26px 28px 44px;border-bottom:1px solid rgba(246,243,234,.14)">
+<div style="font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:var(--plate-accent);margin-bottom:18px">TOOLING</div>
+<div style="display:flex;flex-direction:column;gap:9px;font:500 14.5px/1.4 Archivo,sans-serif;color:var(--plate-ink)"><span>Git</span><span>GitHub</span><span>Vercel</span><span>Figma</span></div>
+</div>
+</div>
+</section>
+
+<section style="padding:90px 28px 100px;text-align:center;border-top:1px solid var(--line)" data-screen-label="About closer">
+<h2 style="margin:0;font:700 clamp(26px,3.6vw,48px)/1.06 Archivo,sans-serif;letter-spacing:-0.02em;text-wrap:balance">Now you know the story — see the work.</h2>
+<div style="display:flex;gap:14px;justify-content:center;margin-top:28px">
+<a href="Projects.dc.html" style="padding:15px 28px;border:1px solid var(--ink);font:500 11.5px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;color:var(--ink);transition:background .2s,color .2s" style-hover="background:var(--ink);color:var(--bg)">VIEW PROJECTS →</a>
+<a href="Contact.dc.html" style="padding:15px 28px;border:1px solid var(--line);font:500 11.5px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;color:var(--ink70)" style-hover="color:var(--accent)">GET IN TOUCH</a>
+</div>
+</section>
+
+<footer style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:20px 28px;border-top:1px solid var(--line);font:400 10.5px/1.6 'IBM Plex Mono',monospace;letter-spacing:.08em;color:var(--ink45)">
+<span>© 2026 DAVID BROWNE</span><span>LONDON 51.5072°N — 0.1276°W</span><span style="display:flex;gap:18px"><a href="#" style="color:var(--ink45)" style-hover="color:var(--accent)">GITHUB</a><a href="#" style="color:var(--ink45)" style-hover="color:var(--accent)">LINKEDIN</a><a href="#" style="color:var(--ink45)" style-hover="color:var(--accent)">CV</a></span>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { theme: 'light', isMobile: false, menuOpen: false };
+  componentDidMount() {
+    this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.applyTheme(localStorage.getItem('db-theme') || 'light');
+    this.setupDotPortrait();
+    this.mq = window.matchMedia('(max-width: 760px)');
+    this.onMq = () => { document.body.style.overflow = ''; this.setState({ menuOpen: false, isMobile: this.mq.matches }); };
+    this.mq.addEventListener('change', this.onMq);
+    this.setState({ isMobile: this.mq.matches });
+    this.onKey = e => { if (e.key === 'Escape') { document.body.style.overflow = ''; this.setState({ menuOpen: false }); } };
+    window.addEventListener('keydown', this.onKey);
+  }
+  componentWillUnmount() {
+    cancelAnimationFrame(this.raf);
+    window.removeEventListener('resize', this.onResize);
+    window.removeEventListener('keydown', this.onKey);
+    if (this.mq) this.mq.removeEventListener('change', this.onMq);
+  }
+  applyTheme(t) {
+    document.documentElement.dataset.theme = t;
+    this.setState({ theme: t }, () => { if (this.redrawStatic) this.redrawStatic(); });
+  }
+  setupDotPortrait() {
+    const cv = document.getElementById('dotPortrait');
+    const stage = document.getElementById('aboutHero');
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const img = new Image();
+    img.src = 'assets/portrait.png';
+    const layout = () => {
+      if (!img.complete || !img.naturalWidth) return;
+      const w = stage.clientWidth;
+      const narrow = w < 1000;
+      const size = narrow ? Math.min(440, w - 80) : Math.min(560, stage.clientHeight - 120, w - 620);
+      let oy;
+      if (narrow) {
+        stage.style.alignItems = 'flex-start';
+        const txt = stage.querySelector(':scope > div');
+        if (txt) txt.style.padding = '150px 28px 0';
+        const txtBottom = txt ? txt.offsetTop + txt.offsetHeight : 400;
+        oy = txtBottom + 72;
+        stage.style.minHeight = (oy + size + 110) + 'px';
+      } else {
+        stage.style.alignItems = 'center';
+        stage.style.minHeight = '';
+      }
+      const h = stage.clientHeight;
+      if (!narrow) oy = (h - size) / 2;
+      cv.width = w * dpr; cv.height = h * dpr;
+      const ctx = cv.getContext('2d');
+      ctx.scale(dpr, dpr);
+      const S = 96, off = document.createElement('canvas');
+      off.width = S; off.height = S;
+      const octx = off.getContext('2d');
+      octx.drawImage(img, 0, 0, S, S);
+      const data = octx.getImageData(0, 0, S, S).data;
+      const gap = size / S;
+      const ox = narrow ? (w - size) / 2 : Math.max(w - size - w * 0.08, 600);
+      const pts = [];
+      for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+        const i = (y * S + x) * 4;
+        const lum = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114) / 255;
+        pts.push({ hx: ox + x * gap, hy: oy + y * gap, x: ox + x * gap, y: oy + y * gap, vx: 0, vy: 0, lum });
+      }
+      const inkFor = () => this.state.theme === 'light' ? '#1B1A17' : '#EDEAE0';
+      const maxR = gap * 0.48;
+      const dotFor = p => {
+        const light = this.state.theme === 'light';
+        let v = light ? 1 - p.lum : p.lum;
+        v = Math.max(0, Math.min(1, (v - 0.08) / 0.8));
+        v = Math.pow(v, 0.9);
+        if (v < 0.05) return null;
+        return { r: Math.min(maxR, (0.5 + v * 2.15) * (size / 520)), a: (light ? 0.3 : 0.22) + v * 0.72 };
+      };
+      const drawStatic = () => {
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = inkFor();
+        for (const p of pts) { const d = dotFor(p); if (!d) continue; ctx.globalAlpha = d.a; ctx.beginPath(); ctx.arc(p.hx, p.hy, d.r, 0, 7); ctx.fill(); }
+        ctx.globalAlpha = 1;
+      };
+      this.redrawStatic = drawStatic;
+      if (this.reduced || !window.matchMedia('(pointer: fine)').matches) { drawStatic(); return; }
+      let mx = -9999, my = -9999;
+      stage.onmousemove = e => { const r = cv.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; };
+      stage.onmouseleave = () => { mx = -9999; my = -9999; };
+      const tick = () => {
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = inkFor();
+        for (const p of pts) {
+          const dx = p.x - mx, dy = p.y - my, d2 = dx * dx + dy * dy;
+          if (d2 < 8100) { const d = Math.sqrt(d2) || 1, f = (90 - d) / 90 * 3.2; p.vx += (dx / d) * f; p.vy += (dy / d) * f; }
+          p.vx += (p.hx - p.x) * 0.06; p.vy += (p.hy - p.y) * 0.06;
+          p.vx *= 0.82; p.vy *= 0.82;
+          p.x += p.vx; p.y += p.vy;
+          const dot = dotFor(p);
+          if (dot) { ctx.globalAlpha = dot.a; ctx.beginPath(); ctx.arc(p.x, p.y, dot.r, 0, 7); ctx.fill(); }
+        }
+        ctx.globalAlpha = 1;
+        this.raf = requestAnimationFrame(tick);
+      };
+      tick();
+    };
+    img.onload = layout;
+    let rw = window.innerWidth;
+    this.onResize = () => { clearTimeout(this.rt); this.rt = setTimeout(() => { if (window.innerWidth !== rw) { rw = window.innerWidth; cancelAnimationFrame(this.raf); layout(); } }, 150); };
+    window.addEventListener('resize', this.onResize);
+  }
+  renderVals() {
+    return {
+      navDisplay: this.state.isMobile ? 'none' : 'flex',
+      burgerDisplay: this.state.isMobile ? 'flex' : 'none',
+      expCols: this.state.isMobile ? '86px 1fr' : '110px 1fr auto',
+      locDisplay: this.state.isMobile ? 'none' : 'block',
+      menuOpen: this.state.menuOpen,
+      openMenu: () => { document.body.style.overflow = 'hidden'; this.setState({ menuOpen: true }); },
+      closeMenu: () => { document.body.style.overflow = ''; this.setState({ menuOpen: false }); },
+      cHome: 'var(--ink)', cWork: 'var(--ink)', cAbout: 'var(--accent)', cContact: 'var(--ink)',
+      dotSide: this.state.theme === 'dark' ? 'flex-end' : 'flex-start',
+      toggleTheme: () => {
+        const t = this.state.theme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('db-theme', t);
+        this.applyTheme(t);
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
