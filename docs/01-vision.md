@@ -1,6 +1,16 @@
 # Vision
 
-This document assumes `creative-direction.md` and `content-brief.md` as read. It does not restate positioning, audience, or tone. It states the narrative, visual, and architectural doctrine that governs implementation — the answer to "does this belong on the site" for every decision made from here on.
+This document is the project's primary source of truth. It assumes `creative-direction.md` and `content-brief.md` as read and does not restate positioning, audience, or tone. It states the narrative and visual doctrine that governs implementation — the answer to "does this belong on the site" for every decision made from here on.
+
+The complete documentation set:
+
+- `01-vision.md` — this document. Narrative and visual doctrine.
+- `02-architecture.md` — technical doctrine derived from this document.
+- `03-roadmap.md` — the milestone-by-milestone build plan.
+- `04-non-negotiables.md` — the review checklist distilled from the other documents.
+- `05-decisions.md` — the record of why each major decision was made.
+
+All five are frozen and treated as a set. Where any document conflicts with this one, this document wins.
 
 The central idea is stated by the site's structure before it is stated in words: analysis giving way to construction.
 
@@ -87,30 +97,6 @@ The title block is chosen; the colophon is derived. Neither substitutes for the 
 - Theme state is a `data-theme` attribute on `<html>`, set before first paint by an inline blocking script, driving CSS custom properties everywhere.
 - Canvas-driven components — the chart, the portrait — are the only components that read theme state in JavaScript, through one shared hook. No other component branches on theme.
 
-## Architecture doctrine
-
-- Server Components by default. A client boundary must be justified by a genuine interaction requirement — canvas, pointer tracking, form state, scroll listening — never by convenience.
-- Client components wrap server-rendered content through `children` and props. They own behavior, not content.
-- Case studies are real routes (`/work/[slug]`), not client-managed in-place expansion. The browser owns focus, history, and the back button.
-- The contact form is a Server Action with native `<form>` and plain inputs. Client code is limited to submit status.
-- One typed content layer (`lib/content/`) is the single source of truth for projects and journey milestones. Every derived value — About's credential line, Work's colophon, the mobile timeline — is computed from those files, never hand-authored a second time.
-- The chart's mobile experience renders without client JavaScript. The canvas and scrub interaction are a progressive enhancement on top of it, not the baseline.
-- Any component rendering decorative or duplicate information alongside real accessible text carries `aria-hidden`. The accessible text is never `display: none`.
-
-## Non-negotiables
-
-- No second full-bleed colour plate anywhere on the site—the chart's ink plate is unique.
-- The career chart is the site's only signature interaction.
-- Dark mode is a material adaptation only. Typography, spacing, hierarchy, layout and interactions remain identical.
-- No idle-looping animation.
-- Every motion must have a narrative, usability or feedback purpose.
-- No standalone skills or toolset grid.
-- No motion or hover state on the hero title block — it is text, not a component.
-- No mailto: contact form.
-- No client-managed accordion or expand state for case studies.
-- Content is server-rendered by default. Client Components exist only where behaviour requires them.
-- Content is never duplicated. Shared information is derived from common typed data.
-- No duplicated page-level chrome. Header, footer and navigation render once from the root layout.
 ---
 
 The site is not a portfolio that describes a transition. It is a transition, entered once per visit.
