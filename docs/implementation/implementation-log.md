@@ -190,3 +190,56 @@ Corrected to About, Work, Contact by reordering the single array in `components/
 ## Ready for M2
 
 **Ready for M2 — Hero, complete (Act I).**
+
+---
+
+# M2 — Hero, complete (Act I)
+
+## Status
+
+**Completed.**
+
+## What was built
+
+* `components/hero/hero.tsx` — Server Component. Every word is real, server-rendered text: the kicker ("Full-stack product engineer · London"), the monument name, the tagline (content-brief.md's core positioning line, verbatim: "From evaluating products to shipping them."), and the hero title block (content-brief.md's Core/Backend/Data tools, curated to five: TypeScript, React, Next.js, Node, PostgreSQL).
+* `components/hero/hero-stage.tsx` — the milestone's first client component. Owns the scroll-compress effect and the two DOM attributes (`data-page`, `data-hero-compressed`) that coordinate with Header, per the roadmap's specified mechanism.
+* `components/hero/magnetic-letters.tsx` — the second client component. Per-letter cursor physics on the monument name, entirely decorative (`aria-hidden`, with the real accessible name — "David Browne" — carried by the parent `<h1>`'s `aria-label`). No-ops completely (no listeners, no rAF loop) on coarse pointers or under reduced motion.
+* `components/chrome/header.tsx` — added the `masthead-name` class to the masthead link; no other change. Header still has no knowledge of the hero, the route, or scroll state — the CSS rule reading the attributes lives entirely in `globals.css`.
+* `app/globals.css` — the masthead-visibility CSS rule, plus a `:focus-visible` override discovered necessary during verification (see below).
+* `app/layout.tsx` — a small inline blocking script setting `data-page="home"` before hydration on the initial document load, plus `suppressHydrationWarning` on `<html>` (see Architectural decisions).
+* `app/page.tsx` — now renders `<Hero />` in place of the M1 placeholder heading.
+
+## Architectural decisions
+
+**No entrance animation on load.** The reference material staggers the kicker/name/tagline in with fade-and-rise animations on page load. `01-vision.md`'s Act I register is explicit — "No motion until the visitor acts" — and the acceptance criteria states this directly: "Hero renders with no motion on first paint." Skipped the entrance choreography entirely rather than softening it; everything is at full, final opacity and position in the very first frame. This is adherence to the frozen documents over the non-binding reference, not a deviation from either.
+
+**Two bugs found only by visual/browser verification, not the automated build.** Both are recorded in detail because they're the kind of defect that's invisible in code review and would have shipped unnoticed:
+
+1. *Masthead flash on load.* `HeroStage` originally set `data-page="home"` in `useEffect`, which fires after paint. Combined with `.masthead-name`'s `transition: opacity 0.3s`, this produced a real, visible ~300ms fade-out on every load — motion with no user action behind it, directly contradicting Act I's doctrine. Switching to `useLayoutEffect` (via a small inline isomorphic-effect fallback, since `useLayoutEffect` needs a browser to do anything) didn't fully fix it: CSS transitions animate from whatever value was resolved in the *first* style pass, and since the server-rendered HTML never has `data-page` at all, the browser resolves `.masthead-name` to its default `opacity: 1` before any client JS runs, regardless of how early that JS executes afterward. The actual fix is the same pattern already planned for M8's dark-mode flash: a small inline `<script>` in `<head>`, run before hydration, that sets `data-page="home"` synchronously when `location.pathname === "/"`. That script only covers the initial document load, so `HeroStage`'s own mount-time attribute-setting is still needed for client-side navigation *into* Home from another route — the two mechanisms cover different cases, not the same one twice. The inline script causes an expected hydration mismatch warning (React sees an attribute on `<html>` it didn't render server-side), silenced with `suppressHydrationWarning` on `<html>` — the same standard, targeted fix theme-switching scripts use for this exact category of intentional pre-hydration mismatch.
+2. *Invisible keyboard focus.* With the masthead hidden by default on Home, tabbing to it produced no visible focus indicator at all — a real WCAG 2.4.7 failure for a sighted keyboard user, not just a theoretical edge case (confirmed by screenshot: pressing Tab on load showed nothing happening). Fixed with a `:focus-visible` override at matching specificity to the hiding rule, forcing the masthead to full opacity whenever it holds genuine keyboard focus, regardless of hero-compression state.
+
+**Client boundaries.** `HeroStage` and `MagneticLetters` are the only two Client Components added this milestone, both exactly where the roadmap specifies. `Hero` itself stays a Server Component; both client pieces receive content as children/props rather than owning it.
+
+**Responsive decisions.** The bottom row (title block + "Scroll ↓") wraps and centers on narrow viewports rather than staying a strict `justify-between` row, and the scroll cue hides below `sm` — redundant on touch, where scrolling is the only available input anyway. Magnetics drop via `MagneticLetters`' own `pointer: fine` check; scroll-compress is untouched by viewport and still runs on mobile, matching the roadmap's explicit "mobile drops magnetics but keeps scroll-compress."
+
+**Hero height.** `min-h-[calc(100vh-4rem)]`, not `min-h-screen` — the layout's `pt-16` wrapper already accounts for the fixed header's height, so the hero's own box plus that padding together equal exactly one viewport, matching the rhythm doctrine's "heroes claim 100vh."
+
+## Roadmap alignment
+
+Matches `03-roadmap.md`'s M2 entry: all four named components exist, `Hero` is server-rendered, `HeroStage`/`MagneticLetters` are the only client additions, the masthead-coordination mechanism matches what the roadmap specified almost exactly (DOM attributes on `<html>`, read only by CSS). The one addition beyond the roadmap's literal file list — the inline script and `suppressHydrationWarning` in `app/layout.tsx` — exists only because verification surfaced the flash bug described above; the roadmap's own M2 risk note anticipated that the reduced-motion path specifically would need "an explicit test pass, not a follow-up," which is exactly what caught this (a related, but distinct, timing issue on the non-reduced-motion path).
+
+## Deviations (if any)
+
+None from the frozen documents.
+
+## Notes for review
+
+* Verified with the page's actual current content (Hero + empty space + Footer, since Journey/Act II doesn't exist until M3) by injecting a temporary spacer element in the test harness only, to exercise the full 0→1 compress range that the real page can't yet produce on its own. Nothing was added to the shipped app to manufacture scroll runway — that's M3's job.
+* Full compress-range behavior confirmed correct at both extremes and the midpoint: monument fully visible until ~55% of the compress range, fully faded by ~72%; masthead stays hidden until the same ~72–78% point, then crosses to fully visible by ~90–100%, with a brief intentional overlap rather than a gap.
+* Confirmed `data-page`/`data-hero-compressed` are correctly removed on unmount — navigating from Home to another route via client-side routing leaves neither attribute behind.
+* The dev-mode Next.js indicator badge appears in every local screenshot bottom-left; confirmed absent in a production build in M1 and not re-verified against production this milestone, since nothing about this milestone's chrome would plausibly change that.
+* Reduced motion hides the hero's content via opacity alone, without collapsing its height — the monument's full-height box remains in the document flow, just invisible, once compressed. This is an instant *state* swap as required, not an instant *layout* swap; worth knowing if a future milestone's reduced-motion work assumes hidden sections also lose their height.
+
+## Ready for M3
+
+**Ready for M3 — Journey, complete (Act II).**

@@ -8,12 +8,17 @@ import { MobileMenu } from "./mobile-menu";
 // acceptance criteria don't require it and Server Components have no
 // built-in access to the current pathname without a client boundary this
 // milestone doesn't otherwise need.
+//
+// The masthead-name class's opacity is governed entirely by CSS in
+// globals.css, keyed to data-page/data-hero-compressed attributes that
+// HeroStage sets on <html> (see components/hero/hero-stage.tsx). Header
+// itself needs no knowledge of the hero, the current route, or scroll state.
 export function Header() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between border-b border-ink/16 bg-ivory/85 px-7 backdrop-blur-md">
       <Link
         href="/"
-        className="font-mono text-meta uppercase text-ink hover:text-accent"
+        className="masthead-name font-mono text-meta uppercase text-ink hover:text-accent"
       >
         David Browne
       </Link>

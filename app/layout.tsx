@@ -19,7 +19,31 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${archivo.variable} ${ibmPlexMono.variable} h-full antialiased`}
+      // The inline script below intentionally sets data-page on this
+      // element before hydration, which the server-rendered HTML never
+      // has — otherwise identical to the standard theme-flash-prevention
+      // pattern. This is the expected mismatch that prop exists for.
+      suppressHydrationWarning
     >
+      <head>
+        {/*
+          Runs before hydration, on the initial document load only (client-
+          side navigation into "/" is handled by HeroStage's own mount
+          effect instead). Without this, the server-rendered HTML has no
+          data-page attribute at all, so the browser resolves
+          .masthead-name to its default opacity in the first style pass —
+          and once that value is established, CSS transitions animate to
+          it even if HeroStage sets the attribute before paint. Setting it
+          here, before any style resolution happens, means there is never a
+          prior value for the transition to animate from.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'if (location.pathname === "/") document.documentElement.dataset.page = "home";',
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col font-sans">
         <Header />
         <div className="flex flex-1 flex-col pt-16">{children}</div>

@@ -71,6 +71,31 @@ body {
   color: var(--color-ink);
 }
 
+/*
+ * Hero <-> masthead coordination (M2, Act I). HeroStage sets these two
+ * attributes on <html> directly; this is the only place that reads them.
+ * Two independently server-rendered regions (Header and Hero) agree on one
+ * value through the DOM and CSS alone — no React Context. See
+ * 02-architecture.md and 05-decisions.md (ADR-011).
+ */
+.masthead-name {
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+
+html[data-page="home"]:not([data-hero-compressed]) .masthead-name {
+  opacity: 0;
+}
+
+/*
+ * A genuine keyboard focus must always be visible (WCAG 2.4.7), regardless
+ * of the hero's cosmetic hidden state. Higher specificity than the rule
+ * above so it wins even while the masthead is otherwise opacity:0.
+ */
+html[data-page="home"]:not([data-hero-compressed]) .masthead-name:focus-visible {
+  opacity: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
