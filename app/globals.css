@@ -35,6 +35,37 @@
   --font-mono: var(--font-ibm-plex-mono);
 }
 
+/*
+ * Typographic scale. Unlike colour, these values do not change between
+ * themes (non-negotiable: typography is identical in light and dark), so
+ * they are static theme tokens rather than swappable custom properties.
+ * Five roles only, matching 01-vision.md's Typographic scale doctrine:
+ * monument (home hero name), h1 (page headline), h2 (section headline),
+ * body (paragraph text), meta (mono kicker/label/nav). Font weight uses
+ * Tailwind's default scale directly (font-medium, font-bold, etc.) rather
+ * than a parallel set of weight tokens.
+ */
+@theme {
+  --text-monument: clamp(4rem, 14.5vw, 11rem);
+  --text-monument--line-height: 0.95;
+  --text-monument--letter-spacing: -0.025em;
+
+  --text-h1: clamp(2.5rem, 6.4vw, 6rem);
+  --text-h1--line-height: 1;
+  --text-h1--letter-spacing: -0.03em;
+
+  --text-h2: clamp(1.75rem, 3.4vw, 3.75rem);
+  --text-h2--line-height: 1.1;
+  --text-h2--letter-spacing: -0.02em;
+
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.7;
+
+  --text-meta: 0.6875rem;
+  --text-meta--line-height: 1;
+  --text-meta--letter-spacing: 0.14em;
+}
+
 body {
   background: var(--color-ivory);
   color: var(--color-ink);

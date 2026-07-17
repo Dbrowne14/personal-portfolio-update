@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { archivo, ibmPlexMono } from "@/lib/fonts";
+import { Header } from "@/components/chrome/header";
+import { Footer } from "@/components/chrome/footer";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,7 +20,11 @@ export default function RootLayout({
       lang="en"
       className={`${archivo.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        <Header />
+        <div className="flex flex-1 flex-col pt-16">{children}</div>
+        <Footer />
+      </body>
     </html>
   );
 }
