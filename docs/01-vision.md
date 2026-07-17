@@ -95,7 +95,7 @@ The title block is chosen; the colophon is derived. Neither substitutes for the 
 - Light is the primary and only designed identity. Dark is derived from it, not designed alongside it.
 - Only colour and material change between themes. Typography, spacing, hierarchy, and interaction timing are identical in both.
 - Theme state is a `data-theme` attribute on `<html>`, set before first paint by an inline blocking script, driving CSS custom properties everywhere.
-- Canvas-driven components — the chart, the portrait — are the only components that read theme state in JavaScript, through one shared hook. No other component branches on theme.
+- Canvas-driven components — the chart, the portrait — are the only components that read theme state in JavaScript, each observing it independently. No other component branches on theme, and no shared hook or Context coordinates the two.
 
 ---
 
