@@ -149,8 +149,8 @@ If UI verification becomes a recurring workflow, a project-specific setup genera
 
 ## What was built
 
-* `components/chrome/nav-items.ts` — the shared `{ label, href }` list for Work/About/Contact, consumed by both `Header` and `MobileMenu` so the link set is defined once. Home is not in this list; it is reached via the masthead name, matching the reference material's own pattern.
-* `components/chrome/header.tsx` — Server Component. Fixed, blurred, hairline-bottomed masthead bar: the name as the Home link on the left, the desktop Work/About/Contact nav on the right (`hidden md:flex`), and `<MobileMenu />` embedded at the end of the row.
+* `components/chrome/nav-items.ts` — the shared `{ label, href }` list for About/Work/Contact, consumed by both `Header` and `MobileMenu` so the link set is defined once. Home is not in this list; it is reached via the masthead name, matching the reference material's own pattern.
+* `components/chrome/header.tsx` — Server Component. Fixed, blurred, hairline-bottomed masthead bar: the name as the Home link on the left, the desktop About/Work/Contact nav on the right (`hidden md:flex`), and `<MobileMenu />` embedded at the end of the row.
 * `components/chrome/mobile-menu.tsx` — the milestone's one genuine Client Component. Owns open/close state, a manual focus trap, `Escape`-to-close, body scroll lock while open, and focus restoration to the trigger button on close. The trigger button renders inline in Header's markup; the open dialog itself is rendered through a React portal to `document.body` (see Architectural decisions).
 * `components/chrome/footer.tsx` — Server Component. Copyright (year computed, not hand-typed), coordinates, and GitHub/LinkedIn/CV links with placeholder `#` hrefs pending real URLs.
 * `app/layout.tsx` — wired `<Header />` and `<Footer />` around `{children}`, with a `pt-16` wrapper so page content clears the fixed header's height.
@@ -163,7 +163,7 @@ If UI verification becomes a recurring workflow, a project-specific setup genera
 
 **No active-route highlighting.** The reference material colours the current page's nav link; M1's acceptance criteria don't require it, and a Server Component `Header` has no built-in access to the current pathname without either a client boundary or per-page prop-drilling that this milestone doesn't otherwise need. Deferred rather than built ahead of what's asked — not a deviation, since no frozen document mandates it.
 
-**Mobile menu lists Work/About/Contact only, not a fourth "Home" row.** The reference implementation's full-screen takeover numbers all four routes including Home. Since the masthead name remains visible and tappable at all times (mobile included), Home is already reachable without a menu open, so the menu reuses `nav-items.ts` unchanged rather than adding a Home-specific entry solely for the menu.
+**Mobile menu lists About/Work/Contact only, not a fourth "Home" row.** The reference implementation's full-screen takeover numbers all four routes including Home. Since the masthead name remains visible and tappable at all times (mobile included), Home is already reachable without a menu open, so the menu reuses `nav-items.ts` unchanged rather than adding a Home-specific entry solely for the menu.
 
 **Dialog rendered via `createPortal` to `document.body` — found during verification, not planned.** `Header` sets `backdrop-blur-md`, and `backdrop-filter` creates a new containing block for `position: fixed` descendants per the CSS spec. With the dialog nested inside `Header`, its `fixed inset-0` resolved against Header's own 64px box instead of the viewport: the visible background only covered that top strip, and the nav list below it overflowed uncontained, with the actual page showing through beneath. A screenshot caught this; the automated interaction script did not, because it only asserted focus/keyboard behaviour, not layout. Portalling the open dialog to `document.body` keeps the trigger button inline in Header's flex row (it isn't position-fixed, so it's unaffected) while letting the dialog itself establish its own containing block at the document root. **Precedent for later milestones:** any future fixed-position overlay nested under an element with `backdrop-filter`, `transform`, `filter`, or `will-change: transform` needs the same treatment or the same bug recurs.
 
@@ -180,6 +180,12 @@ None from the frozen documents. `nav-items.ts` is an addition beyond the roadmap
 * The request that opened this milestone referenced `docs/architecture/01-vision.md` and a `03-non-negotiables.md`/`04-roadmap.md` numbering that doesn't exist in the repository. Proceeded against the actual files (`docs/01-vision.md` … `05-decisions.md`), confirmed identical in content to what this log and prior sessions already treat as canonical.
 * Footer's GitHub/LinkedIn/CV links are `#` placeholders — real URLs are a content dependency, per `03-roadmap.md`'s stated assumptions, not an engineering gap.
 * `public/*.svg` (unused Create Next App assets, noted in M0) remain unaddressed — still out of scope, not forgotten.
+
+## Correction — navigation order
+
+Post-handoff, before M2 began: the nav order as originally implemented was Work, About, Contact, copied from the reference material's own convention without checking it against the narrative order this project actually agreed on. `01-vision.md`'s Five Acts place About (the Decision) as Act III, before Work (the Evidence) as Act IV — the nav order should have followed that from the start.
+
+Corrected to About, Work, Contact by reordering the single array in `components/chrome/nav-items.ts`; both `Header` and `MobileMenu` map over that array with no independent ordering logic, so no other file required a code change. Verified on both desktop and mobile after the fix. The three prose references to the old order elsewhere in this M1 section (in "What was built" and "Architectural decisions") have also been corrected in place, per this log's own rule of fixing factual inaccuracies rather than leaving them standing beside a contradicting note.
 
 ## Ready for M2
 
