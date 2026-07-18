@@ -297,6 +297,16 @@ None from the frozen documents. The milestone content and its narrative-weighted
 * Confirmed at four additional breakpoints beyond the standard desktop/mobile pair: a large desktop (1920×1080), a standard laptop (1366×768), and a genuinely touch-emulated landscape phone (812×375) — no horizontal overflow, no clipping, and the capability gate behaves correctly at the trickiest of these (the landscape case, above).
 * Future milestones adding their own scroll-linked or pointer-driven interactions should follow the same pattern established here: direct DOM writes in a `ResizeObserver`/pointer-event handler, not React state per frame, and a shared pure geometry module if a canvas and DOM text ever need to agree on positions again.
 
+## Post-approval addendum — dynamic highlighting
+
+Two further refinements, added after the dot-alignment fix above and before final approval:
+
+**Desktop: dot highlighting is now a continuous function of scrub distance, not fixed.** Each milestone's radius and glow now scale smoothly with how close the current scrub position is to it (`HIGHLIGHT_RADIUS = 0.07` in `t`-units), redrawn on every pointer-move frame — no separate eased/lerped state, no persistent animation loop, purely a function of where the pointer is right now. The year label brightens in step with its dot, both driven from the same per-milestone intensity value computed once per frame. This stayed within the existing input-driven-motion doctrine: nothing moves without a pointer event triggering a redraw.
+
+**Mobile: the vertical timeline is now scroll-active, not static.** A new client component, `components/journey/timeline-activator.tsx`, wraps `MilestoneList`'s server-rendered output and tracks scroll position (not `IntersectionObserver` — with only four items, reading each one's `getBoundingClientRect()` against a fixed activation line on scroll is cheap and gives a precise "nearest" ranking that a visibility threshold can't express as simply). The nearest item to the activation line gets a `data-active` attribute, styled via Tailwind's `group-data-active:` variant (dot grows and switches to accent colour, text brightens); a second line element grows in height to visually "fill" up to the active point as a scroll-progress indicator.
+
+This is a genuine, worth-flagging architecture change: M3's mobile experience was previously zero-JavaScript by design, explicitly documented as such. It no longer is. The trade-off was made deliberately, in response to a direct request for the mobile timeline to feel as alive as the desktop scrub interaction — a static list read acceptably but didn't meet that bar. `MilestoneList` itself is unchanged in structure and remains fully functional and accessible with no JavaScript at all (real content, correct semantics, a plain static timeline); `TimelineActivator` is additive behaviour layered on top via the same "client wraps server content as children" pattern used everywhere else, not a rewrite of the content layer. Unlike `JourneyCanvasLoader`, this component is not capability-gated behind a dynamic import — its runtime cost (one scroll listener, four bounding-rect reads per frame) is small enough that gating it added complexity without a meaningful benefit, including on desktop where it runs harmlessly against an invisible list.
+
 ## Ready for M4
 
 **Ready for M4 — Home, complete.**
