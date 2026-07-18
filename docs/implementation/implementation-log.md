@@ -310,3 +310,48 @@ This is a genuine, worth-flagging architecture change: M3's mobile experience wa
 ## Ready for M4
 
 **Ready for M4 — Home, complete.**
+
+---
+
+# M4 — Home, complete
+
+## Status
+
+**Completed.**
+
+A note on sequencing: a prior commit was labeled "m4 complete" but contained no M4 work — only M3 cleanup (deleted temp verification scripts/screenshots) and a 10-line addition to this log's M3 section. Confirmed by inspecting the commit directly (`git show --stat`) before starting, since building M5 on a homepage that wasn't actually finished would have compounded the gap. This section is the real M4 implementation.
+
+## What was built
+
+* `lib/content/projects.ts` — the second entry in the typed content layer. Full `Project` interface per `03-roadmap.md`'s shape, with one deliberate deviation (see Architectural decisions). Four featured projects populated — `slug`, `title`, `oneLiner`, `stack`, `featured`, `order` only, exactly the fields the teaser needs, per the roadmap's own note that the type is fully defined now but the data isn't.
+* `components/work/work-teaser.tsx` — Server Component. "Selected work" heading, Default Social rendered as a visually larger flagship block, the remaining three in an equal three-column row beneath it, and a quiet forward link to `/work` closing the section — no button, no call to action.
+* `app/page.tsx` — `<WorkTeaser />` added below `<Journey />`. Home now runs Hero → Journey → WorkTeaser, matching `01-vision.md`'s Act I/II/proof-teaser structure for the first time.
+
+## Architectural decisions
+
+**`heroImage` made optional, against the roadmap's literal type shape.** `03-roadmap.md` specifies `heroImage: { src: string; alt: string }` as required. No real project screenshots exist in this repository. Forcing a required field would have meant either a fake path (breaking `next/image` or silently rendering nothing) or inventing a placeholder image asset that doesn't represent anything real. Made it optional instead; `WorkTeaser` falls back to the site's own established hairline-placeholder pattern (45° stripes, mono caption) whenever it's absent. Flagged before writing any code, not discovered after. `gallery`, `evaluatorNote`, `highlights`, `links`, and `confidential` remain exactly as specified — this is the one field the roadmap's shape didn't already anticipate needing a placeholder state for.
+
+**Content sourcing, same discipline as M3.** `content-brief.md` confirms the four featured projects, their order, and that Default Social carries more visual weight — nothing else. It gives no descriptions, images, or per-project stacks. One-liners are deliberately factual and unspecific (no claimed client details, no asserted integrations) rather than inventing marketing copy; stack tags are drawn only from `content-brief.md`'s already-confirmed toolset, never a new addition. "This portfolio" is the one exception with a fully accurate stack, since it's this actual build. This is placeholder content in the ordinary sense — obviously the user's to refine — not fabricated factual claims about people or work.
+
+**Case-study links point at `/work`, not `/work/[slug]`.** Those routes don't exist until M6. Every project card and the forward link resolve to the same index page for now; this is expected to sharpen once real case-study routes exist, not a defect to track.
+
+**No new Client Components.** `WorkTeaser`, `ProjectCard`, and `ProjectImage` are all server-rendered. The grayscale-to-colour hover (for when real images replace the placeholder) is a pure CSS `filter` transition on `group-hover`/`group-focus-visible` — confirmed by inspecting the rendered page for attached listeners, not just by not having written any.
+
+## Roadmap alignment
+
+Matches `03-roadmap.md`'s M4 entry: `WorkTeaser` exists as a Server Component, the full `Project` type is defined now with only the teaser's fields populated (extending data rather than schema is deferred to M6, exactly as specified), and every acceptance criterion was verified directly — zero `<button>` elements anywhere on the page besides the always-present mobile-menu trigger, the page ends on a quiet link, and the section's density/whitespace was checked against `01-vision.md`'s Visual Rhythm doctrine (ivory canvas, generous whitespace, a real release after Journey's dark plate — not a dense card grid).
+
+## Deviations
+
+`heroImage` optional instead of required — see Architectural decisions. No other deviations.
+
+## Notes for review
+
+* Verified the real accessibility tree (`ariaSnapshot`), not just visible text: each project card's computed accessible name is clean and complete ("Default Social The flagship build — production, live, shipped. Next.js · Sanity CMS · Vercel"), correctly excluding the `aria-hidden` placeholder caption that a raw `textContent` check would have wrongly included. Heading hierarchy is correct throughout — h2 "Selected work", h3 per project, no skipped levels.
+* Keyboard tab order confirmed correct end to end: masthead → nav → Default Social → Staple → 10 Songs → This portfolio → forward link → footer links, with a visible focus outline (`outline-style: auto`) at every stop.
+* Mobile composition is a deliberate single-column stack, not a shrunk desktop grid — Default Social still leads, but the width-based hierarchy that distinguishes it on desktop doesn't apply; its position and identical content carry the same weight instead.
+* All four routes (`/`, `/about`, `/work`, `/contact`) confirmed returning 200 and still navigable.
+
+## Ready for M5
+
+**Ready for M5 — About, complete (Act III).**
