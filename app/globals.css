@@ -1,10 +1,35 @@
 @import "tailwindcss";
 
 /*
- * Theme tokens. Light values are final; dark values are placeholders equal
- * to light until M8, per docs/03-roadmap.md. Components reference these
- * tokens by name (bg-ivory, text-ink, etc.) and never branch on theme
- * themselves — [data-theme="dark"] below is the only place theme is decided.
+ * Theme tokens (M8). Light values are the primary, fully designed identity
+ * (ADR-002); dark values are mechanically derived from them — same warm
+ * hue families throughout, no independent dark palette design. `ivory` and
+ * `ink` swap roles (page-background neutral <-> foreground-text neutral),
+ * which has one deliberate structural consequence: the Journey plate
+ * (components/journey/journey.tsx, `bg-ink`) inverts from a dark panel on
+ * a light page to a light panel on a dark page in dark mode, rather than
+ * staying dark in both themes. This is intentional, not a bug — no new
+ * custom property is introduced to special-case it (see docs/03-roadmap.md,
+ * "dark values fill in the property names defined at M0"), and
+ * journey-canvas.tsx's colours are read dynamically from these same two
+ * tokens, so the plate and everything drawn on it invert together and stay
+ * legible with no code change to the canvas's colour-selection logic.
+ * `--color-accent` is lightened in dark mode, not just inverted, since the
+ * source bronze is too dark to read against a dark background at the same
+ * lightness. `--color-plate-accent` is not simply equal to `--color-accent`
+ * in either theme, even though it was at M0 — measured directly (WCAG
+ * contrast ratio) rather than assumed, `--color-plate-accent` always sits
+ * on top of `--color-ink` (the plate's own background, see journey.tsx's
+ * `bg-ink`), and because `ink` inverts in the *opposite* direction from
+ * `ivory` between themes, the bronze that reads against a light page
+ * background reads badly against the plate and vice versa: measured
+ * pre-fix light-mode contrast of the kicker text on the plate was 2.45:1
+ * (fails WCAG AA's 4.5:1 for this text's size), and naively reusing that
+ * same equality for dark mode measured 2.24:1 — both real defects, not
+ * just a dark-mode-specific one. Fixed in both themes by having each
+ * theme's `plate-accent` use the *other* theme's `accent` lightness, which
+ * is exactly the tone already proven (measured, not assumed) to contrast
+ * well against a background of that opposite polarity.
  */
 :root {
   --color-ivory: #fcfbf8;
@@ -12,15 +37,15 @@
   --color-card: #fffef9;
   --color-ink: #1b1a17;
   --color-accent: oklch(0.47 0.11 55);
-  --color-plate-accent: oklch(0.47 0.11 55);
+  --color-plate-accent: oklch(0.72 0.12 55);
 }
 
 :root[data-theme="dark"] {
-  --color-ivory: #fcfbf8;
-  --color-ivory-2: #f3ede0;
-  --color-card: #fffef9;
-  --color-ink: #1b1a17;
-  --color-accent: oklch(0.47 0.11 55);
+  --color-ivory: #17150f;
+  --color-ivory-2: #211d15;
+  --color-card: #1f1c15;
+  --color-ink: #f3efe6;
+  --color-accent: oklch(0.72 0.12 55);
   --color-plate-accent: oklch(0.47 0.11 55);
 }
 
@@ -94,6 +119,27 @@ html[data-page="home"]:not([data-hero-compressed]) .masthead-name {
  */
 html[data-page="home"]:not([data-hero-compressed]) .masthead-name:focus-visible {
   opacity: 1;
+}
+
+/*
+ * Theme toggle (M8). ThemeToggle sets data-theme on <html> directly and
+ * holds no React state of its own — the same DOM-attribute-plus-CSS
+ * coordination pattern as .masthead-name above and ADR-011. Both labels
+ * are always present in the DOM; which one is visible is decided here,
+ * declaratively, so it's correct from the very first paint (the attribute
+ * is already set by the blocking inline script in app/layout.tsx before
+ * any CSS is evaluated) with no hydration mismatch possible.
+ */
+.theme-label-dark {
+  display: none;
+}
+
+html[data-theme="dark"] .theme-label-light {
+  display: none;
+}
+
+html[data-theme="dark"] .theme-label-dark {
+  display: inline;
 }
 
 /*

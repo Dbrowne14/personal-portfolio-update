@@ -504,3 +504,55 @@ No `fieldErrors`/per-field inline error display — see Architectural decisions.
 ## Ready for M8
 
 **Ready for M8 — Dark mode (horizontal).**
+
+---
+
+# M8 — Dark mode (horizontal)
+
+## Status
+
+**Completed.**
+
+## What was built
+
+* `app/globals.css` — real dark values for the six custom properties M0 defined (`ivory`, `ivory-2`, `card`, `ink`, `accent`, `plate-accent`), plus CSS-only show/hide rules for `ThemeToggle`'s two text labels, keyed to `data-theme` the same way `.masthead-name` is keyed to `data-page`/`data-hero-compressed`.
+* `app/layout.tsx` — a second inline blocking script in `<head>`, alongside M2's existing `data-page` one. Resolves `data-theme` from `localStorage`, falling back to `prefers-color-scheme` when nothing is stored, before first paint.
+* `components/chrome/theme-toggle.tsx` — new. The milestone's one Client Component: a click handler that flips `document.documentElement.dataset.theme` and persists the choice to `localStorage`. Holds no React state; both text labels ("Dark"/"Light") always render, and `globals.css` decides which is visible.
+* `components/chrome/header.tsx` — renders `<ThemeToggle />`, always visible (not hidden at any breakpoint), between the desktop nav and the mobile hamburger.
+* `components/journey/journey-canvas.tsx`, `components/about/halftone-portrait.tsx` — a `MutationObserver` on `data-theme` added to each, calling the same draw/render function each component already calls on mount and resize. Both already read colour via `getComputedStyle` at draw time (established in M3/M5), so this was the only code either needed.
+
+## Architectural decisions
+
+**No React Context, no shared hook, no component-level theme branching beyond the two canvas components — matches ADR-002/ADR-011 exactly.** Theme is a `data-theme` attribute on `<html>`, written once by the blocking script before first paint and thereafter only by `ThemeToggle`. Every other component's theme response — including `ThemeToggle`'s own visible label — is plain CSS keyed to that attribute.
+
+**The journey plate inverts brightness in dark mode, not just recolours.** `journey.tsx`'s plate section uses `bg-ink` directly. Because `ink` has to swap from near-black to a warm off-white for its primary role (body text, borders, icon lines) to work in dark mode, the plate's background inherits that swap: a dark panel on a light page in light mode becomes a light panel on a dark page in dark mode. Raised this before writing any code (see the conversation preceding implementation) rather than silently deciding it. Chose to let it happen rather than introduce a dedicated `plate` background token to keep it dark in both themes, since the roadmap's file list authorizes filling in the six property names M0 already defined, not adding a seventh, and `journey-canvas.tsx`'s colour-selection logic (which reads the same two tokens for both the plate's background and the marks drawn on it) stays internally consistent with zero changes either way.
+
+**`--color-plate-accent` no longer equals `--color-accent` in either theme — a real, measured accessibility bug, not a stylistic choice.** Verifying dark mode's contrast empirically (see Notes for review) surfaced that the plate's kicker text was badly under-contrast against its own background in *both* themes, not just the new one: `plate-accent` always sits on `--color-ink` (the plate's own background), and because `ink` inverts in the opposite direction from `ivory` between themes, a single bronze tone tuned for one polarity fails badly against the other. Pre-fix light-mode contrast measured 2.45:1 (fails WCAG AA's 4.5:1); the naive dark-mode equality measured 2.24:1. Fixed by having each theme's `plate-accent` reuse the *other* theme's `accent` lightness — the tone already proven, by direct measurement, to read well against a background of that opposite polarity. Post-fix: 6.77:1 (light) and 6.20:1 (dark), both comfortably passing. This was flagged and fixed within this milestone rather than deferred, since M8 is exactly the milestone responsible for this token set and the defect was found while doing M8's own verification work, not a pre-existing issue rediscovered by accident later.
+
+**Toggle labels current the state, not the destination.** The visible label ("Dark" while in light mode, "Light" while in dark mode) is decided purely by CSS reading `data-theme`, with no React state and therefore no possible hydration mismatch — the same reasoning `app/layout.tsx`'s existing `suppressHydrationWarning` on `<html>` already covers for `data-page`.
+
+**Toggle reachable everywhere via one shared component, not duplicated into the mobile-menu dialog.** Placed in `Header` unconditionally visible at every breakpoint (not `hidden md:flex`, not `md:hidden`), rather than adding a second instance inside `MobileMenu`'s full-screen dialog. The only stated acceptance criterion is keyboard-operability, which this satisfies directly — confirmed the toggle is the second Tab stop on mobile (right after the masthead link, since the desktop nav is hidden there) and lands with a normal visible focus ring.
+
+## Roadmap alignment
+
+Matches `03-roadmap.md`'s M8 entry: `ThemeToggle` (client, added to `Header`) and the inline blocking script exist as named. No Context or shared hook introduced. The two canvas components are the only ones that branch on theme in JavaScript, each via its own independent `MutationObserver` — no shared event bus. Verified directly, not assumed: theme persists across a client-side navigation and a real reload; no flash of the wrong theme (checked by forcing a stored preference before the very first `goto` and reading `data-theme` immediately after — already correct, no post-load flip); both canvas components' pixels changed after toggling, confirmed via `canvas.toDataURL()` frame-diffing (the same technique used in M3's verification); toggle is keyboard-operable (`Tab` reaches it, `Enter` activates it); every page was screenshotted in both themes and compared — the only difference beyond colour is the journey plate's brightness inversion, which is a deliberate, understood consequence of the colour derivation itself (see Architectural decisions), not a typography, spacing, or layout defect.
+
+## Deviations
+
+`--color-plate-accent` diverges from `--color-accent` in both themes, where M0 had them equal — see Architectural decisions. This is a bug fix surfaced by this milestone's own verification, not a deviation from anything the roadmap specified (the roadmap only says dark values fill in the *existing* six property names; it says nothing about `accent` and `plate-accent` needing to stay equal). No other deviations.
+
+## Deferred technical debt
+
+None identified. `--color-card` (one of the six M0 tokens) still has no consumer anywhere in the codebase — filled in with a mechanically-derived dark value for completeness and consistency with the other five, but it remains unverified visually since nothing renders it yet, same as its light-mode value has been since M0.
+
+## Notes for review
+
+* Contrast was measured directly, not assumed: resolved every theme colour to sRGB via a canvas `fillStyle` round-trip (`oklch()`/`lab()` don't parse with a simple regex) and computed WCAG relative-luminance contrast ratios in-browser. Every text/background pairing in both themes: `ink`-on-`ivory` ≈ 16:1, `accent`-on-`ivory` ≈ 7:1, `plate-accent`-on-`ink` ≈ 6.2–6.8:1 — all comfortably clear of the 4.5:1 AA threshold for this text's size.
+* The no-flash claim was tested, not assumed: forced a stored dark preference via `addInitScript` (so it exists before the very first navigation), then read `data-theme` immediately after `goto` resolved — already `"dark"`, meaning the blocking script had already run and there was nothing for React or any later script to correct.
+* System-preference fallback was tested in both directions with `page.emulateMedia({ colorScheme })`: no stored preference plus `colorScheme: "light"` resolves to light; no stored preference plus `colorScheme: "dark"` resolves to dark. (One iteration of this test was itself wrong — `page.addInitScript` re-runs on every navigation for the page it's registered on, which silently re-clobbered a later `localStorage.removeItem` call in the same test and produced a false failure. Caught by re-testing the same assertion in isolation on a page with no init script registered, which passed — a reminder that a failing empirical check can be the test's own bug, not the app's, and needs the same scrutiny as a passing one before either is trusted.)
+* The journey plate's brightness inversion (see Architectural decisions) was confirmed to look intentional rather than broken by reviewing full-page screenshots of every route in both themes side by side — in dark mode the plate reads as a light "spike" against the dark page, the same structural role the dark spike plays against the light page, not a rendering defect.
+* Two things that looked like bugs in an early dark-mode screenshot were checked directly against computed styles rather than accepted at face value: the header's masthead name appeared faint in a downscaled full-page screenshot (confirmed via `getComputedStyle` to be `opacity: 1` at the correct off-white colour — a screenshot-compression artifact, not a real dim state) and the "About" nav link appeared permanently accent-highlighted across three different routes' dark screenshots (confirmed to be `:hover`'s CSS pseudo-class, not an unintended active-route indicator — Playwright's virtual cursor stayed at the same screen coordinates across navigations, and the header is fixed-position and identical on every route, so the same coordinates kept landing on that link).
+
+## Ready for M9
+
+**Ready for M9 — Hardening and launch readiness.**

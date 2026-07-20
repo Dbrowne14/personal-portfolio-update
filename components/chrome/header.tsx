@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { navItems } from "./nav-items";
 import { MobileMenu } from "./mobile-menu";
+import { ThemeToggle } from "./theme-toggle";
 
 // Server Component. The masthead name is the Home link — About/Work/Contact
-// are the only nav items, in that order (see nav-items.ts). No theme toggle yet: dark mode
-// doesn't exist until M8, and no active-route highlighting yet, since M1's
-// acceptance criteria don't require it and Server Components have no
-// built-in access to the current pathname without a client boundary this
-// milestone doesn't otherwise need.
+// are the only nav items, in that order (see nav-items.ts). ThemeToggle
+// (M8) is the one Client Component this renders; like MobileMenu, it
+// receives no props and owns its own tiny behaviour rather than Header
+// needing any client-side knowledge of theme. No active-route highlighting,
+// since M1's acceptance criteria don't require it and Server Components
+// have no built-in access to the current pathname without a client
+// boundary this milestone doesn't otherwise need.
 //
 // The masthead-name class's opacity is governed entirely by CSS in
 // globals.css, keyed to data-page/data-hero-compressed attributes that
@@ -33,7 +36,10 @@ export function Header() {
           </Link>
         ))}
       </nav>
-      <MobileMenu />
+      <div className="flex items-center gap-5">
+        <ThemeToggle />
+        <MobileMenu />
+      </div>
     </header>
   );
 }

@@ -43,6 +43,19 @@ export default function RootLayout({
               'if (location.pathname === "/") document.documentElement.dataset.page = "home";',
           }}
         />
+        {/*
+          Theme (M8, ADR-002/ADR-011). Runs before first paint so data-theme
+          is already correct when CSS is first evaluated — no flash of the
+          wrong theme, no React state, no Context. Reads a stored choice
+          first; falls back to the system preference only when the visitor
+          has never toggled it here. ThemeToggle is the only other place
+          this attribute is ever written.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem("theme");var t=s==="dark"||s==="light"?s:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t;}catch(e){}})();`,
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col font-sans">
         <Header />

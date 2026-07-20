@@ -181,9 +181,24 @@ export function HalftonePortrait({ src, alt }: HalftonePortraitProps) {
     const resizeObserver = new ResizeObserver(() => layout());
     resizeObserver.observe(container);
 
+    // M8: inkColor() already reads --color-ink fresh on every call, so a
+    // theme change just needs a redraw. drawStatic() is safe to call even
+    // while the pointer-driven tick() loop is running (fine pointer, no
+    // reduced motion) — the next animation frame simply overwrites it with
+    // the same colour a moment later. This is one of the two places
+    // 01-vision.md's colour doctrine allows a component to branch on theme
+    // in JavaScript at all; every other component's theme response is
+    // CSS-only.
+    const themeObserver = new MutationObserver(() => drawStatic());
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
     return () => {
       cancelAnimationFrame(raf);
       resizeObserver.disconnect();
+      themeObserver.disconnect();
       container.removeEventListener("pointermove", onPointerMove);
       container.removeEventListener("pointerleave", onPointerLeave);
     };

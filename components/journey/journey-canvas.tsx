@@ -250,11 +250,26 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
     resizeObserver.observe(stage);
     stage.addEventListener("pointermove", onPointerMove);
     stage.addEventListener("pointerleave", onPointerLeave);
+
+    // M8: colours above are already read fresh from computed style on
+    // every draw() call, so redrawing on theme change needs nothing more
+    // than re-running the same render() this component already calls on
+    // mount, resize, and scrub — just triggered by the attribute ThemeToggle
+    // writes instead. This is one of the two places 01-vision.md's colour
+    // doctrine allows a component to branch on theme in JavaScript at all;
+    // every other component's theme response is CSS-only.
+    const themeObserver = new MutationObserver(() => render());
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
     render();
 
     return () => {
       cancelAnimationFrame(raf);
       resizeObserver.disconnect();
+      themeObserver.disconnect();
       stage.removeEventListener("pointermove", onPointerMove);
       stage.removeEventListener("pointerleave", onPointerLeave);
     };
