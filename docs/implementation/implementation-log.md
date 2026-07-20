@@ -446,3 +446,61 @@ No `components/shared/reveal.tsx` — see Architectural decisions. No other devi
 ## Ready for M7
 
 **Ready for M7 — Contact, complete (Act V).**
+
+---
+
+# M7 — Contact, complete (Act V)
+
+## Status
+
+**Completed.**
+
+## What was built
+
+* `app/actions/submit-contact-form.ts` — the Server Action. Validates `name`/`email`/`message` server-side regardless of how the form was submitted, checks a honeypot field, and — only on a fully confirmed successful send — redirects to `/contact?sent=true`. Validation failures and provider failures return `ContactFormState` instead of redirecting, so a hydrated form can show them inline without navigating away. Uses a raw `fetch` to Resend's REST API rather than installing `resend`'s SDK, per this milestone's "no new external dependencies unless genuinely required" — a single POST with a bearer token needed no SDK.
+* `components/contact/submit-status.tsx` — the milestone's one Client Component. Binds `useActionState` to the Server Action and renders `<form action={formAction}>` around `children`, following the established client-wraps-server-content pattern (`HeroStage`, `TimelineActivator`). `useActionState`'s third return value supplies the pending boolean directly, so no separate `useFormStatus()` call — and no separate component boundary forced by React's rule that `useFormStatus` can't run in the component that renders its own enclosing `<form>`, since this component isn't using that hook at all. Also owns the honeypot field and the `aria-live="polite"` error region.
+* `components/contact/contact-form.tsx` — server. The kicker, headline ("Open to what's next.", with "Open" in accent, per `01-vision.md`'s Act V doctrine that Contact spends the site's bronze accent "at its highest concentration... on the single largest word"), intro copy, and the three labeled fields (`name`, `email`, `message`), passed into `SubmitStatus` as children.
+* `components/contact/elsewhere-card.tsx` — server. GitHub/LinkedIn/CV links using the same placeholder-`#`-href pattern already established in `Footer`, plus a "Currently open to" status line sourced from `content-brief.md`'s contact-language guidance (full-time roles, recruiter conversations, product/technical discussions, collaboration, occasional freelance work — none of the brief's banned sales phrases).
+* `components/contact/tick-motif.tsx` — server, `aria-hidden`. A row of small accent-coloured dashes echoing the Journey chart's engineering-era ticks (`journey-canvas.tsx`'s `fillRect` dashes), fading in opacity and stopping short of the container's full width — Act V's linework doctrine calls this "a single line at Contact, fading toward the page edge, unfinished on purpose," and Act IV's transition note frames it as the same motif carrying over: "the line is still running."
+* `app/contact/page.tsx` — rebuilt from the M1 stub. Awaits `searchParams` (Promise-based in this Next version, same pattern as `params` in `app/work/[slug]/page.tsx`) and renders a server-rendered confirmation in place of `ContactForm` when `sent=true`, alongside `ElsewhereCard` and `TickMotif`.
+
+## Architectural decisions
+
+**No per-field inline error text — a single combined message in one shared `aria-live` region instead.** The roadmap's component split (`ContactForm` server, `SubmitStatus` client) means the labeled inputs are static server-rendered markup passed as `children` into `SubmitStatus`; they exist before any client state does and have no mechanism to read `useActionState`'s `state` back out to position a message next to the specific field it belongs to, short of restructuring the RSC boundary around it. An earlier draft of this milestone exported a `fieldError()` helper assuming per-field lookup would be wired up later — it never could have been, given this structure, and was removed. `submitContactForm` instead joins every failing field's message into one sentence (e.g. "Enter a valid email address. Enter a message.") returned as `state.message`, rendered once inside the existing `role="alert"` region. The roadmap's own acceptance criteria only require that "a screen reader announces success or failure through the `aria-live` region" and that "every input has an associated label" — neither demands per-field inline text — so this is a simplification within the stated bar, not a shortfall against it.
+
+**Native HTML validation (`required`, `type="email"`) is left enabled — no `noValidate`.** An earlier draft set `noValidate` on the form, reasoning that it would keep JS and no-JS behaviour identical. Removed it after empirical testing showed the opposite is true without cost: with `noValidate` absent, a no-JS visitor gets instant, zero-network, screen-reader-accessible feedback on empty required fields from the browser itself, and a JS-enhanced visitor gets the same free layer before ever hitting the network. Server-side validation in `submitContactForm` remains fully independent and authoritative regardless — confirmed directly (see Notes for review) by submitting values that satisfy native constraints but fail the server's own rules (an email with no dot, a message past `MESSAGE_MAX_LENGTH`), which the server still rejected inline with no redirect.
+
+**Confirmation replaces the form rather than sitting beside it.** On `?sent=true`, `app/contact/page.tsx` swaps `ContactForm` out for a server-rendered confirmation block in the same grid position, rather than showing both. Once a message has been sent there is nothing left to submit, and Act V's doctrine calls this "the fullest release of the sequence" — a closing state, not a persistent form with a banner stacked on top.
+
+**Recipient and provider.** Per this milestone's own flagged risk, both required a decision before implementation could start. Confirmed with the user: **Resend** as the email provider, **davidbrowne1992@gmail.com** as the recipient (hardcoded as `RECIPIENT` in the Server Action — a single fixed destination, not something that needed to be configurable). The `from` address uses Resend's zero-config sandbox sender (`onboarding@resend.dev`); a verified sending domain is needed before this goes to production (see Notes for review).
+
+## Roadmap alignment
+
+Matches `03-roadmap.md`'s M7 entry: `ContactForm` (server), `SubmitStatus` (client), `ElsewhereCard` (server), and the trailing tick-motif graphic (server, `aria-hidden`) all exist as named. With JavaScript, `SubmitStatus` shows inline pending/error state via `useActionState` with no full page reload. Without JavaScript, the native `<form action={submitContactForm}>` still performs a real submission and the Server Action still executes — confirmed directly via a JS-disabled Playwright context and via a raw `curl` POST replaying the form's own hidden `$ACTION_*` fields, both showing the server-validated error text present in the response HTML at the same URL, and a valid submission (bypassing the honeypot) reaching the "not configured" branch of the action rather than crashing. Confirmation on success is delivered through the server-rendered `?sent=true` state via a real redirect, not client state, matching the roadmap's explicit architectural decision. No `mailto:` link exists anywhere on the page — checked directly against the rendered HTML.
+
+## Deviations
+
+No `fieldErrors`/per-field inline error display — see Architectural decisions. No other deviations from the roadmap's stated components, files, or acceptance criteria.
+
+## Deferred technical debt
+
+* No real `RESEND_API_KEY` exists in this environment, so the actual successful-send path through Resend's API has not been exercised end-to-end — only the validation path and the graceful "provider not configured" failure path (the actual current real state of this deployment) have been verified directly. The success path's code (a single `fetch` call and a conditional `redirect()`) is straightforward, but it is unverified against the live Resend API and should be smoke-tested once a real key is set.
+* The `from` address (`onboarding@resend.dev`) is Resend's shared sandbox sender. Before production launch this needs a verified sending domain in Resend, or messages may land in spam or be rate-limited more aggressively than a verified domain would be.
+
+## Environment variables required
+
+* `RESEND_API_KEY` — Resend API key, read via `process.env.RESEND_API_KEY` in `app/actions/submit-contact-form.ts`. Not set in this environment. Without it, the form still functions correctly end-to-end (validates, rejects malformed input, degrades gracefully) but does not send — every otherwise-valid submission returns "This form isn't fully configured yet — please email hello@davidbrowne.dev directly instead." rather than sending and redirecting. Must be set in the Vercel deployment target before launch.
+
+## Notes for review
+
+* The no-JS validation-error path was genuinely uncertain going in (flagged in this milestone's own planning) and was tested empirically rather than assumed: a raw `curl -X POST` replaying the form's server-rendered `$ACTION_REF_1`/`$ACTION_1:0`/`$ACTION_1:1`/`$ACTION_KEY` hidden fields confirmed the server returns the validation error text embedded in the same-URL response body; a Playwright context with `javaScriptEnabled: false` confirmed the same behaviour through an actual browser form submission.
+* Server-side validation was confirmed independently authoritative, not just a mirror of the native browser constraints: submitted `email=a@b` (passes native `type="email"`, which per the WHATWG spec doesn't require a dot) and a 4001-character message (no `maxlength` attribute exists to block it natively) with JS disabled — the server rejected both with its own specific messages, at the same URL, no redirect.
+* A real bug was found and fixed during this milestone's own verification, not by inspection: `<span className="text-accent">Open</span> to what's next.` — a `<span>` followed by plain text on the same JSX line — rendered with the space between them silently stripped (`Opento`, confirmed via raw SSR HTML and a Playwright bounding-box check), rather than the expected `Open to`. This is a JSX/SWC whitespace-collapsing edge case, not a CSS issue. Fixed by replacing the implicit space with an explicit `{" "}` expression in both `contact-form.tsx`'s headline and `app/contact/page.tsx`'s confirmation headline (the only two places in the codebase with this exact pattern — checked via a full-codebase grep for `</span>` immediately followed by inline text, which found no other instances).
+* Keyboard-only navigation was tested directly (Tab sequence capture): focus moves through nav → name → email → message → submit → the Elsewhere links, with the honeypot field never receiving focus (`tabIndex={-1}`), confirmed rather than assumed from the markup alone.
+* Honeypot behaviour was tested directly: filling the hidden `company` field and submitting with JS enabled produces the same `?sent=true` redirect as a genuine send, with no indication to the submitter that anything was detected.
+* Confirmed no `mailto:` link exists anywhere on the rendered page via a direct HTML search, not by code inspection alone.
+* Confirmed the page loads and renders correctly under `prefers-reduced-motion: reduce` (the only motion on this page is the existing CSS-only `.reveal-on-scroll` entrance, already established and reduced-motion-safe from M5/M6 — no new motion was introduced this milestone).
+
+## Ready for M8
+
+**Ready for M8 — Dark mode (horizontal).**
