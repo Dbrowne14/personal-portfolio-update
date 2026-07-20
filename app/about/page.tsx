@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
+import { DecisionIntro } from "@/components/about/decision-intro";
 
 export const metadata: Metadata = {
   title: "About — David Browne",
+  description:
+    "Why I switched from evaluating technology companies to building them.",
 };
 
 export default function AboutPage() {
   return (
-    <main className="flex-1 px-7 py-32">
-      <h1 className="font-sans text-h1 font-bold tracking-tight text-ink">
-        About — The Decision
-      </h1>
+    <main className="flex flex-1 flex-col">
+      <DecisionIntro />
     </main>
   );
 }

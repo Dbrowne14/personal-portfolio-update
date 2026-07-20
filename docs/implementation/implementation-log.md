@@ -355,3 +355,48 @@ Matches `03-roadmap.md`'s M4 entry: `WorkTeaser` exists as a Server Component, t
 ## Ready for M5
 
 **Ready for M5 — About, complete (Act III).**
+
+---
+
+# M5 — About, complete (Act III)
+
+## Status
+
+**Completed.**
+
+## What was built
+
+* `components/about/decision-intro.tsx` — Server Component. The page's real content: kicker, the reasoning headline ("I wanted to understand how the products I was valuing were actually built."), two short paragraphs of first-person prose, and the credential line computed from `journeyMilestones`, not hand-typed.
+* `components/about/halftone-portrait.tsx` — the milestone's one Client Component. Canvas dot-halftone rendering with cursor-scatter, gated on a fine pointer and no reduced-motion preference; a real `next/image` beneath the canvas whenever a photograph exists.
+* `app/globals.css` — a small CSS-only scroll-entrance-fade utility (`.reveal-on-scroll`), applied directly in `decision-intro.tsx`.
+* `app/about/page.tsx` — replaced the M1 placeholder heading with `<DecisionIntro />`.
+
+## Architectural decisions
+
+**No photograph exists yet — `heroImage`-equivalent optionality, same pattern as M4.** `03-roadmap.md`'s architecture note for this milestone assumes a source photograph already exists ("`HalftonePortrait` renders a real `next/image` of the source photograph"). None does. Rather than pointing `src` at a fake path, `HalftonePortrait`'s `src` prop is optional; absent, it renders the site's established hairline placeholder and mounts no canvas at all — not a canvas attempting to draw from nothing. The moment a real photo is added, the component's dot-rendering activates with no change needed at the call site. This mirrors M4's `heroImage` decision exactly, now established as a consistent pattern across the codebase for "the roadmap assumes an asset that doesn't exist yet."
+
+**The gating logic was verified with a temporary, unshipped test image, not left as untested code.** The roadmap's acceptance criteria for this milestone are specifically about behaviour — `aria-hidden` on the canvas, no animation frame loop under reduced motion or a coarse pointer — not about the halftone algorithm's visual tuning, which can't be meaningfully judged without a real photograph anyway. Temporarily pointed `src` at an existing placeholder SVG, confirmed via canvas frame-diffing (not just reading the code) that: a fine pointer with full motion produces a canvas that visibly redraws on cursor movement; reduced motion and a coarse-pointer/touch context both produce a canvas that renders once and never changes again despite cursor or time passing. Reverted the test `src` immediately after. This is the same discipline as M2 and M3's browser-verified reduced-motion passes — asserting the mechanism works, not just that the code looks like it should.
+
+**The entrance fade is pure CSS, not a Client Component.** `03-roadmap.md`'s file list for this milestone names exactly three files, with no fourth file for a fade behaviour — read as confirmation that this shouldn't be its own Client Component, consistent with the roadmap's own note that extraction into a shared `<Reveal>` component happens at M6, when a second use case exists. Used a CSS scroll-driven animation (`animation-timeline: view()`) instead, wrapped in `@supports` so unsupported browsers apply none of these properties at all — content renders at full opacity in its final position immediately, never stuck invisible. This keeps `DecisionIntro` entirely server-rendered; the reduced-motion requirement is met for free by the global rule already established in M0, which collapses this animation's duration the same way it does every other transition on the site.
+
+**Content sourcing, same discipline as M3 and M4.** The reasoning headline and its framing come directly from work already done collaboratively earlier in this project — About was deliberately reframed from "meet the person" to "the decision," specifically built around this line's function of answering *why*, not *who*. The supporting prose draws only on facts already established elsewhere in this codebase (the 2017 start, the 2022 VP milestone, the 2025 switch — all already in `journey.ts`) plus the one directly-sourced sentence in `content-brief.md` ("working alongside founders and product teams"). Deliberately excluded any specific personal claim that isn't already established or sourced (no invented hobbies, no unverifiable present-tense claims about the user's life) — the reference material's version of this page includes exactly this kind of unsourced specific claim, which is exactly what's being avoided.
+
+**Credential line, not duplicated.** `${first.year} — ${first.label} → ${last.year} — ${last.label}`, computed directly from `journeyMilestones[0]` and `journeyMilestones.at(-1)` inside `DecisionIntro`. No string matching this appears hand-typed anywhere in the component.
+
+## Roadmap alignment
+
+Matches `03-roadmap.md`'s M5 entry: all three named files exist, `DecisionIntro` is a Server Component, `HalftonePortrait` is the only Client Component, the entrance fade stayed local rather than being extracted, and every acceptance criterion was verified directly — the credential line matches `journey.ts`'s first and last entries exactly (confirmed via rendered text, not just code inspection), the canvas is `aria-hidden`, no animation frame loop starts under reduced motion or a coarse pointer (confirmed via frame-diffing), and no standalone toolset section exists anywhere on this page.
+
+## Deviations
+
+`HalftonePortrait`'s `src` optional instead of assumed-present — see Architectural decisions. No other deviations.
+
+## Notes for review
+
+* The portrait placeholder briefly looked absent on mobile during verification — a full-page screenshot appeared to show an empty gap between the credential line and the footer. Checked the element's actual computed bounding box before concluding anything: it was rendering correctly, at real dimensions, simply further down the page than an initial look at the screenshot suggested. Confirmed with a properly scrolled, cropped screenshot. Recorded here as a reminder that "the screenshot looks empty" is not the same as "the element is broken" — worth a second check before treating either as fact.
+* Heading hierarchy on this page is a single `<h1>`, no `<h2>`/`<h3>` — correct and sufficient for this page's content, not a gap; there's no subsection structure here to warrant one.
+* `journeyMilestones.length - 1` indexing (rather than `.at(-1)`) was used for the "last" entry to match the array-access style already established in `journey-canvas.tsx` and `milestone-list.tsx`, for consistency across the codebase rather than mixing idioms.
+
+## Ready for M6
+
+**Ready for M6 — Work, complete (Act IV).**
