@@ -62,7 +62,7 @@ function ProjectCard({
           flagship ? "aspect-16/9" : "aspect-4/3"
         }`}
       >
-        <ProjectImage project={project} />
+        <ProjectImage project={project} flagship={flagship} />
       </div>
       <div className="mt-4 flex items-baseline justify-between gap-4">
         <h3
@@ -81,13 +81,24 @@ function ProjectCard({
   );
 }
 
-function ProjectImage({ project }: { project: Project }) {
+function ProjectImage({
+  project,
+  flagship,
+}: {
+  project: Project;
+  flagship: boolean;
+}) {
   if (project.heroImage) {
     return (
       <Image
         src={project.heroImage.src}
         alt={project.heroImage.alt}
         fill
+        sizes={
+          flagship
+            ? "(min-width: 1400px) 1350px, 100vw"
+            : "(min-width: 640px) 33vw, 100vw"
+        }
         className="object-cover grayscale transition-[filter] duration-300 group-hover:grayscale-0 group-focus-visible:grayscale-0"
       />
     );

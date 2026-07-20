@@ -196,7 +196,13 @@ export function HalftonePortrait({ src, alt }: HalftonePortraitProps) {
     >
       {src ? (
         <>
-          <Image src={src} alt={alt} fill className="object-cover" />
+          <Image
+            src={src}
+            alt={alt}
+            fill
+            sizes="(min-width: 768px) 40vw, 100vw"
+            className="object-cover"
+          />
           <canvas
             ref={canvasRef}
             aria-hidden="true"

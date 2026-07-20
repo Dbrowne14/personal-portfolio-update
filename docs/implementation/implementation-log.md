@@ -400,3 +400,49 @@ Matches `03-roadmap.md`'s M5 entry: all three named files exist, `DecisionIntro`
 ## Ready for M6
 
 **Ready for M6 — Work, complete (Act IV).**
+
+---
+
+# M6 — Work, complete (Act IV)
+
+## Status
+
+**Completed.**
+
+## What was built
+
+* `lib/content/projects.ts` — extended, not restructured. The `Project` type from M4 already had every field this milestone needed (`highlights`, `gallery`, `evaluatorNote`, `links`, `confidential`); only the data changed — full content for the four featured projects, plus the two remaining projects from `content-brief.md`'s six-project list (an anonymised private-equity platform, marked `confidential: true`, and a personal wedding-website project).
+* `components/work/tech-credit.tsx`, `project-row.tsx`, `project-index.tsx`, `colophon.tsx` — the Work index: a ruled list, not a card grid, ordered by each project's own `order` field.
+* `components/work/case-study-hero.tsx`, `evaluator-note.tsx`, `case-study-body.tsx`, `project-gallery.tsx` — the case-study page's four named components, all server-rendered.
+* `app/work/page.tsx` — rebuilt from the M1 stub into the real index.
+* `app/work/[slug]/page.tsx` — new. `generateStaticParams` and `generateMetadata` exported directly from this file, per `02-architecture.md`.
+
+## Architectural decisions
+
+**No `components/shared/reveal.tsx` was created — the roadmap's premise for it no longer holds.** `03-roadmap.md` frames `Reveal` as something to be "extracted from About," assuming M5 built a JS-based entrance-fade component. It didn't: M5 used a pure CSS scroll-driven animation (`.reveal-on-scroll` in `globals.css`), specifically because the roadmap's own M5 file list had no room for a fourth file. There is no React component to extract, because none was ever built — the CSS utility class was already the shared mechanism, reusable by any server-rendered element simply by adding the class name. Work's pages apply the same `.reveal-on-scroll` class directly; no new file, no new abstraction, no Client Component. Raised this before writing any code, per this milestone's own instruction to explain such conflicts rather than silently extract or silently skip.
+
+**Ruled index, not a card grid.** `01-vision.md`'s Visual Rhythm doctrine calls Work "the densest, busiest stretch on the site" with "gutters narrow[ing]... where images approach full bleed" — and `creative-direction.md` separately rules out generic card grids. Chose a hairline-ruled list (index number, title, one-liner, stack or "NDA," the whole row as one link) over an image-grid, for two reasons: it matches that denser, more evidentiary register more directly than a grid of cards would, and — practically — it doesn't need six thumbnail images to look complete. Six simultaneous hairline placeholders on one index page would read as obviously unfinished in a way a single placeholder per case study doesn't. The image-forward treatment lives on each case study's own `CaseStudyHero` instead, where "evidence" actually means something once real screenshots exist.
+
+**Confidential projects get restraint at index level too, not just on their own page.** The fifth project shows "NDA" in place of a real stack line in `ProjectRow`, not just in its case study — `project.confidential` gates this consistently everywhere the project appears, rather than the restraint being a property of one page.
+
+**Content sourcing, same discipline as M3–M5.** `evaluatorNote` is a new field this milestone actually populates — the "analyst's margin note" device raised during the earlier design conversation, now implemented. Every note is an editorial judgment, not a factual claim, and every other new field (`highlights`, the two new projects' full data) stays within what's directly sourced (`content-brief.md`'s six-project list and ordering) or safely generic (no specific client details, no invented metrics or integrations). `links` was left unpopulated for every project rather than filled with placeholder `#` hrefs — a fake-looking working link is worse than an absent one, and the case-study page already conditionally omits the links row entirely when empty.
+
+**`sizes` added to every `next/image fill` usage in the codebase, not just this milestone's new ones.** Auditing this milestone's own images surfaced that `WorkTeaser` (M4) and `HalftonePortrait` (M5) had the same gap — no `sizes` prop, meaning Next.js would default to assuming each image spans the full viewport width regardless of its actual rendered size, downloading unnecessarily large images once real photographs exist. Fixed all four call sites (the two new to this milestone plus the two pre-existing ones), since "images load efficiently and responsively" is this milestone's own explicit QA requirement and leaving two already-shipped instances of the same bug in place while fixing only the new ones would have been inconsistent.
+
+## Roadmap alignment
+
+Matches `03-roadmap.md`'s M6 entry on every point that still applied after the `Reveal` premise was corrected: all named components exist and are server-rendered, `generateStaticParams`/`generateMetadata` are exported directly from `app/work/[slug]/page.tsx`, `ProjectGallery` is CSS scroll-snap with no client controller (none was needed), and the colophon is computed from `projects.flatMap(...)`, deduplicated — verified by editing one project's stack and confirming both the colophon and that project's own index row updated with no second edit, not just by reading the derivation and assuming it was correct.
+
+## Deviations
+
+No `components/shared/reveal.tsx` — see Architectural decisions. No other deviations.
+
+## Notes for review
+
+* `next/image`'s `sizes` gap (see above) was a real, if currently invisible, bug — invisible because no project has a real `heroImage` yet, so the affected `<Image>` components never actually mount during normal use. Worth remembering that "no visible symptom" isn't the same as "no bug" when an asset-gated code path is involved; this one was only caught by directly auditing every `fill` usage, not by anything a screenshot could have shown.
+* Manual QA item "Colophon updates automatically when project metadata changes" was tested literally: temporarily added a marker string to one project's stack, confirmed it appeared in both the colophon and that project's index row, then reverted — not inferred from reading the derivation.
+* Manual QA item "Case studies remain fully readable with JavaScript disabled" was tested with a JS-disabled browser context, confirming full text content (title, evaluator's note, both highlights, stack line) and plain-link navigation back to the index — not assumed from the Server Component architecture alone.
+
+## Ready for M7
+
+**Ready for M7 — Contact, complete (Act V).**
