@@ -1,7 +1,7 @@
 import { SubmitStatus } from "./submit-status";
 
 const fieldLabelClass =
-  "font-mono text-meta text-ink/45 uppercase tracking-[0.1em]";
+  "font-mono text-meta text-ink/62 uppercase tracking-[0.1em]";
 const fieldClass =
   "border-b border-ink/25 bg-transparent py-2 text-body text-ink outline-none transition-colors duration-200 focus:border-accent";
 

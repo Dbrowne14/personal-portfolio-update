@@ -24,7 +24,11 @@ export function ThemeToggle() {
       type="button"
       onClick={toggleTheme}
       aria-label="Toggle colour theme"
-      className="font-mono text-meta text-ink/70 uppercase tracking-[0.1em] hover:text-accent"
+      // M9: py-2/-my-2 expands the tap target to clear the 24x24 CSS px
+      // minimum (WCAG 2.5.8) without changing the visible text size or the
+      // header's layout — the extra padding is invisible, only the hit
+      // area grows.
+      className="-my-2 py-2 font-mono text-meta text-ink/70 uppercase tracking-[0.1em] hover:text-accent"
     >
       <span className="theme-label-light">Dark</span>
       <span className="theme-label-dark">Light</span>

@@ -556,3 +556,55 @@ None identified. `--color-card` (one of the six M0 tokens) still has no consumer
 ## Ready for M9
 
 **Ready for M9 — Hardening and launch readiness.**
+
+---
+
+# M9 — Hardening and launch readiness
+
+## Status
+
+**Completed.**
+
+## What was built
+
+* `app/robots.ts`, `app/sitemap.ts` — sitemap computed from the same `projects` array `generateStaticParams` already uses (ADR-006), not a hand-maintained slug list.
+* `app/not-found.tsx`, `app/error.tsx` — styled to match the site rather than left as framework defaults. `error.tsx` is a general safety net; no specific throw path in the app is currently expected to reach it (every Server Component renders from static, typed `lib/content/` data, and the contact form's Server Action already catches its own errors and returns state).
+* `app/opengraph-image.tsx` — a generated, typographic social-preview card (`next/og`'s `ImageResponse`), applied site-wide via Next's file-convention inheritance. No real project photography exists yet, so a generated card was the honest choice over faking a screenshot.
+* `app/layout.tsx` — `metadataBase`, full Open Graph/Twitter defaults, Person + WebSite JSON-LD, and a skip-navigation link (WCAG 2.4.1) targeting a newly-focusable `#main-content`.
+* `app/about/page.tsx`, `app/work/page.tsx`, `app/contact/page.tsx` — `alternates.canonical` and per-page Open Graph/Twitter metadata added, each reusing the page's own existing title/description rather than re-authoring copy.
+* `app/work/[slug]/page.tsx` — `generateMetadata` extended with canonical/OG/Twitter; CreativeWork + BreadcrumbList JSON-LD added, computed from `project` data with no invented claims (confidential projects get exactly their existing public copy, nothing more).
+* `components/chrome/header.tsx` — a `<noscript>` fallback nav, fixing a real gap: `MobileMenu` is entirely `onClick`-driven, so with client JavaScript unavailable there was previously no way to reach About/Work/Contact below the `md` breakpoint at all.
+* `components/chrome/theme-toggle.tsx` — touch target expanded from 30.8×11px to 30.8×27px via padding (invisible; the visible text is unchanged) to clear the 24×24 CSS px minimum.
+* 18 call sites across 12 files — `text-ink/45` raised to `text-ink/62` (ADR-012).
+* `components/hero/magnetic-letters.tsx` — the letters' spring-physics loop now stops scheduling frames once settled and the pointer is away, restarting only on the next `pointermove`/`pointerleave`, instead of running `requestAnimationFrame` forever.
+* `components/contact/tick-motif.tsx` — `overflow-hidden` added, fixing a real page-level horizontal-scroll bug on narrow viewports.
+* `public/file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg` — removed. Unused `create-next-app` scaffold, confirmed unreferenced anywhere in the codebase.
+
+## Architectural decisions
+
+**Structured data omits `sameAs`.** GitHub/LinkedIn are still placeholder `#` hrefs (`components/chrome/footer.tsx`, `components/contact/elsewhere-card.tsx`); emitting them as `Person.sameAs` would be false structured data. Add once those are real URLs.
+
+**One shared `opengraph-image.tsx`, not per-route variants.** Keeps this milestone's scope to hardening rather than opening a new per-page design surface; every route inherits the same generated card via Next's file-convention. Uses system fonts, not the site's own Archivo/IBM Plex Mono — `ImageResponse` needs font data as a fetched binary, not `next/font`'s React components, and fetching one for a single static image wasn't judged worth the added complexity. Documented as a deliberate, accepted trade-off, not an oversight.
+
+**The confidential project stays indexable.** `app/sitemap.ts` includes `/work/private-equity-platform` like every other case study — the page itself carries no confidential detail, only NDA-safe copy already meant to be public, so there's no reason to exclude it from discovery.
+
+**Tertiary text opacity raised, `text-ink/45` → `text-ink/62` (ADR-012).** A genuine, measured, pre-existing WCAG AA contrast failure (2.87:1 light / 4.09:1 dark, both under 4.5:1), not a stylistic preference — see ADR-012 for the full measurement and reasoning. This is the same category of finding as M8's `plate-accent` fix: caught by this milestone's own rigor, not inherited from a prior milestone's review.
+
+**The magnetic-letters idle loop is a non-negotiables violation, not a style nit.** `04-non-negotiables.md` states plainly: "No idle-looping animation." The pre-fix code called `requestAnimationFrame(tick)` unconditionally at the end of every frame, forever, from mount — confirmed empirically at 120 calls/second while completely idle (two frames' worth of scheduling overlap during the fix's verification, since the very first tick already begins winding down). Fixed rather than left as a known issue, since it directly contradicts an explicit rule this project holds itself to, not a soft aspiration.
+
+## Roadmap alignment
+
+Matches `03-roadmap.md`'s M9 entry across every listed area — see the completion report delivered alongside this entry for the full measured results (build/typecheck/lint, contrast, bundle size, Core Web Vitals, responsive sweep, internal-link validation). Two of M9's own listed components (`not-found.tsx`, `error.tsx`) exist; `loading.tsx` was deliberately not added anywhere, per the roadmap's own instruction to avoid loading UI on fully static routes without genuine need — none of this site's routes have an async data-fetching boundary that would benefit from one.
+
+## Deviations
+
+None from the roadmap's stated scope. The `text-ink/62` change and the `magnetic-letters.tsx` idle-loop fix touch code approved in earlier, already-reviewed milestones (M2, and the meta-text pattern established from M1 onward) — flagged explicitly here and in the completion report rather than folded in silently, since both are genuine bug fixes surfaced by this milestone's own verification, not new work outside its scope.
+
+## Notes for review
+
+* Every finding in this milestone was caught by direct measurement, not code review: contrast via canvas-composited pixel readback (not regex-parsed computed styles, which produced false results on a first pass — see the completion report), idle-loop cost via monkey-patched `requestAnimationFrame` counting, layout overflow via `document.documentElement.scrollWidth` across five real breakpoints, JS bundle size via Chrome DevTools Protocol's `encodedDataLength` (actual compressed wire bytes, not decompressed body size, which a first pass over-reported by roughly 3-4x).
+* One verification false alarm worth recording: after fixing the idle-loop bug, an initial retest showed the hover interaction itself appeared to stop working entirely. Traced to a stale `next start` process left bound to the test port from before the fix, serving mismatched chunk references after the rebuild (visible as 500s on `_next/static/chunks/*`) — not a regression in the fix. Caught by checking for HTTP errors directly rather than trusting an unexplained result, and re-verified cleanly against a freshly-started production server.
+
+## Ready for launch
+
+**M0–M9 complete.** Launch readiness is conditional on the environment/deployment checklist in the M9 completion report (production domain, `RESEND_API_KEY`, Vercel environment variables) — not on any further implementation work.

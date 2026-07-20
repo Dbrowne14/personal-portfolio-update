@@ -37,6 +37,6 @@ export function ElsewhereCard() {
 }
 
 const labelClass =
-  "font-mono text-meta text-ink/45 uppercase tracking-[0.1em]";
+  "font-mono text-meta text-ink/62 uppercase tracking-[0.1em]";
 const linkClass =
   "font-mono text-meta text-ink uppercase tracking-[0.1em] transition-colors duration-200 hover:text-accent";

@@ -21,9 +21,14 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = projects.find((p) => p.slug === slug);
   if (!project) return {};
+  const title = `${project.title} — David Browne`;
+  const url = `/work/${project.slug}`;
   return {
-    title: `${project.title} — David Browne`,
+    title,
     description: project.oneLiner,
+    alternates: { canonical: url },
+    openGraph: { title, description: project.oneLiner, url },
+    twitter: { title, description: project.oneLiner },
   };
 }
 
@@ -36,8 +41,48 @@ export default async function CaseStudyPage({
   const project = projects.find((p) => p.slug === slug);
   if (!project) notFound();
 
+  // Structured data (M9). CreativeWork over SoftwareApplication: these are
+  // web products described editorially (a title, a one-liner, a stack),
+  // not installable software with the version/OS metadata that schema
+  // expects — CreativeWork fits without overclaiming. Confidential
+  // projects get exactly the same public copy the page itself shows, never
+  // more — no invented client name, no invented metrics. BreadcrumbList
+  // mirrors the real Home -> Work -> [project] path visitors and the "All
+  // work" link already use.
+  const breadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "/" },
+      { "@type": "ListItem", position: 2, name: "Work", item: "/work" },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: project.title,
+        item: `/work/${project.slug}`,
+      },
+    ],
+  };
+  const creativeWork = {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    name: project.title,
+    description: project.oneLiner,
+    url: `/work/${project.slug}`,
+    creator: { "@type": "Person", name: "David Browne" },
+    ...(project.confidential ? {} : { keywords: project.stack.join(", ") }),
+  };
+
   return (
     <main className="flex flex-1 flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(creativeWork) }}
+      />
       <CaseStudyHero project={project} />
 
       <section className="bg-ivory px-7 pb-24">

@@ -22,12 +22,12 @@ export function Hero() {
           />
         </h1>
 
-        <p className="mt-8 max-w-md text-center font-mono text-meta uppercase tracking-[0.04em] text-ink/45">
+        <p className="mt-8 max-w-md text-center font-mono text-meta uppercase tracking-[0.04em] text-ink/62">
           From evaluating products to shipping them.
         </p>
       </HeroStage>
 
-      <div className="absolute inset-x-7 bottom-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center font-mono text-meta text-ink/45 sm:justify-between sm:text-left">
+      <div className="absolute inset-x-7 bottom-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center font-mono text-meta text-ink/62 sm:justify-between sm:text-left">
         <span>TypeScript · React · Next.js · Node · PostgreSQL</span>
         <span aria-hidden="true" className="hidden sm:inline">
           Scroll ↓

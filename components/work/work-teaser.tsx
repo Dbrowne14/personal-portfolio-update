@@ -18,7 +18,7 @@ export function WorkTeaser() {
       <div className="mx-auto max-w-350">
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="text-h2 font-bold text-ink">Selected work</h2>
-          <p className="font-mono text-meta text-ink/45 uppercase tracking-[0.1em]">
+          <p className="font-mono text-meta text-ink/62 uppercase tracking-[0.1em]">
             {featured.length} projects
           </p>
         </div>
@@ -35,7 +35,7 @@ export function WorkTeaser() {
           </div>
         ) : null}
 
-        <p className="mt-16 font-mono text-meta text-ink/45">
+        <p className="mt-16 font-mono text-meta text-ink/62">
           <Link
             href="/work"
             className="border-b border-ink/16 pb-0.5 transition-colors duration-200 hover:border-accent hover:text-accent"
@@ -74,7 +74,7 @@ function ProjectCard({
       <p className="mt-1 max-w-md text-body text-ink/70">
         {project.oneLiner}
       </p>
-      <p className="mt-3 font-mono text-meta text-ink/45 uppercase tracking-[0.08em]">
+      <p className="mt-3 font-mono text-meta text-ink/62 uppercase tracking-[0.08em]">
         {project.stack.join(" · ")}
       </p>
     </Link>
@@ -111,7 +111,7 @@ function ProjectImage({
       aria-hidden="true"
       className="absolute inset-0 flex items-center justify-center bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,color-mix(in_srgb,var(--color-ink)_16%,transparent)_10px,color-mix(in_srgb,var(--color-ink)_16%,transparent)_11px)]"
     >
-      <span className="bg-ivory px-3 py-1.5 font-mono text-meta text-ink/45 uppercase tracking-[0.1em] transition-colors duration-300 group-hover:text-accent">
+      <span className="bg-ivory px-3 py-1.5 font-mono text-meta text-ink/62 uppercase tracking-[0.1em] transition-colors duration-300 group-hover:text-accent">
         Case study to follow
       </span>
     </div>

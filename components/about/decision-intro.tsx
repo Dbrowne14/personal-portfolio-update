@@ -44,7 +44,7 @@ export function DecisionIntro() {
               treat a product like it has to earn its keep.
             </p>
           </div>
-          <p className="mt-8 font-mono text-meta text-ink/45 uppercase tracking-[0.08em]">
+          <p className="mt-8 font-mono text-meta text-ink/62 uppercase tracking-[0.08em]">
             {credentialLine}
           </p>
         </div>

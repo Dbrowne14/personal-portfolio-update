@@ -3,10 +3,19 @@ import { ContactForm } from "@/components/contact/contact-form";
 import { ElsewhereCard } from "@/components/contact/elsewhere-card";
 import { TickMotif } from "@/components/contact/tick-motif";
 
+const TITLE = "Contact — David Browne";
+const DESCRIPTION =
+  "Open to full-time engineering roles, recruiter conversations, and product or technical discussions.";
+
+// Static, not generateMetadata: correct regardless of ?sent=true, since
+// alternates.canonical always points at the parameterless URL — the
+// confirmation state doesn't need its own metadata variant.
 export const metadata: Metadata = {
-  title: "Contact — David Browne",
-  description:
-    "Open to full-time engineering roles, recruiter conversations, and product or technical discussions.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: "/contact" },
+  openGraph: { title: TITLE, description: DESCRIPTION, url: "/contact" },
+  twitter: { title: TITLE, description: DESCRIPTION },
 };
 
 // searchParams is Promise-based in this Next version and must be awaited

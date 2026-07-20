@@ -11,7 +11,7 @@ export function CaseStudyBody({ highlights }: { highlights: Highlight[] }) {
     <ol className="grid grid-cols-1 gap-8 py-10 sm:grid-cols-2">
       {highlights.map((highlight, i) => (
         <li key={highlight.title} className="flex gap-4">
-          <span className="font-mono text-meta text-ink/45">
+          <span className="font-mono text-meta text-ink/62">
             {String(i + 1).padStart(2, "0")}
           </span>
           <div>

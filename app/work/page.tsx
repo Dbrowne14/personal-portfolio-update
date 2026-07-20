@@ -3,10 +3,16 @@ import { projects } from "@/lib/content/projects";
 import { ProjectIndex } from "@/components/work/project-index";
 import { Colophon } from "@/components/work/colophon";
 
+const TITLE = "Work — David Browne";
+const DESCRIPTION =
+  "Six shipped projects, each chosen to prove something different.";
+
 export const metadata: Metadata = {
-  title: "Work — David Browne",
-  description:
-    "Six shipped projects, each chosen to prove something different.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: "/work" },
+  openGraph: { title: TITLE, description: DESCRIPTION, url: "/work" },
+  twitter: { title: TITLE, description: DESCRIPTION },
 };
 
 // Server Component throughout. Act IV (01-vision.md): "maximum contact

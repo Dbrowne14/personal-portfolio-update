@@ -30,7 +30,7 @@ export function ProjectRow({ project }: { project: Project }) {
 
         <span className="col-span-2 col-start-2 sm:col-span-1 sm:col-start-3 sm:text-right">
           {project.confidential ? (
-            <span className="font-mono text-meta text-ink/45 uppercase tracking-[0.08em]">
+            <span className="font-mono text-meta text-ink/62 uppercase tracking-[0.08em]">
               NDA
             </span>
           ) : (

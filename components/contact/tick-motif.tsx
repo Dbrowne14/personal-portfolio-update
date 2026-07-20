@@ -11,7 +11,13 @@ export function TickMotif() {
   return (
     <div
       aria-hidden="true"
-      className="mx-auto flex max-w-350 items-center gap-2.5 px-7"
+      // M9: overflow-hidden fixes a real page-level horizontal-scroll bug
+      // on narrow viewports — 28 fixed-width ticks don't fit under ~530px,
+      // and nothing was clipping the excess. Clipping the already-fading
+      // tail ticks changes nothing visible (they were nearly transparent
+      // there anyway) and if anything reinforces "fading toward the page
+      // edge, unfinished on purpose."
+      className="mx-auto flex max-w-350 items-center gap-2.5 overflow-hidden px-7"
     >
       {Array.from({ length: TICK_COUNT }).map((_, index) => (
         <span

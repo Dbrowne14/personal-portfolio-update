@@ -13,7 +13,7 @@ export function Colophon({ projects }: { projects: Project[] }) {
 
   return (
     <footer className="border-t border-ink/16 py-10">
-      <p className="font-mono text-meta text-ink/45 uppercase tracking-[0.08em]">
+      <p className="font-mono text-meta text-ink/62 uppercase tracking-[0.08em]">
         Built with {stack.join(" · ")}.
       </p>
     </footer>

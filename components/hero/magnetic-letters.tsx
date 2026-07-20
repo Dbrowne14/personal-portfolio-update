@@ -37,19 +37,30 @@ export function MagneticLetters({ lines }: MagneticLettersProps) {
     let mouseY = -9999;
     let raf = 0;
 
+    // Settled once every letter is within a fraction of a pixel of its
+    // target and the pointer is away — below that, per-frame movement is
+    // visually imperceptible, so continuing to render it is pure idle cost
+    // with no usability or feedback value (04-non-negotiables.md: "No
+    // idle-looping animation"). tick() stops scheduling itself once
+    // settled instead of running forever; onPointerMove restarts it.
+    const REST_EPSILON = 0.02;
+
     function onPointerMove(event: PointerEvent) {
       const rect = stage!.getBoundingClientRect();
       mouseX = event.clientX - rect.left;
       mouseY = event.clientY - rect.top;
+      if (!raf) raf = requestAnimationFrame(tick);
     }
 
     function onPointerLeave() {
       mouseX = -9999;
       mouseY = -9999;
+      if (!raf) raf = requestAnimationFrame(tick);
     }
 
     function tick() {
       const stageRect = stage!.getBoundingClientRect();
+      let settled = mouseX === -9999;
       letters.forEach((el, i) => {
         const r = el.getBoundingClientRect();
         const cx = r.left - stageRect.left + r.width / 2;
@@ -72,9 +83,16 @@ export function MagneticLetters({ lines }: MagneticLettersProps) {
         s.x += (targetX - s.x) * 0.12;
         s.y += (targetY - s.y) * 0.12;
         s.rot += (targetRot - s.rot) * 0.12;
+        if (
+          Math.abs(targetX - s.x) > REST_EPSILON ||
+          Math.abs(targetY - s.y) > REST_EPSILON ||
+          Math.abs(targetRot - s.rot) > REST_EPSILON
+        ) {
+          settled = false;
+        }
         el.style.transform = `translate(${s.x.toFixed(1)}px, ${s.y.toFixed(1)}px) rotate(${s.rot.toFixed(2)}deg)`;
       });
-      raf = requestAnimationFrame(tick);
+      raf = settled ? 0 : requestAnimationFrame(tick);
     }
 
     stage.addEventListener("pointermove", onPointerMove);

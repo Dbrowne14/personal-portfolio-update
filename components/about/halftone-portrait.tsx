@@ -226,7 +226,7 @@ export function HalftonePortrait({ src, alt }: HalftonePortraitProps) {
         </>
       ) : (
         <div className="absolute inset-0 flex items-center justify-center bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,color-mix(in_srgb,var(--color-ink)_16%,transparent)_10px,color-mix(in_srgb,var(--color-ink)_16%,transparent)_11px)]">
-          <span className="bg-ivory px-3 py-1.5 font-mono text-meta text-ink/45 uppercase tracking-[0.1em]">
+          <span className="bg-ivory px-3 py-1.5 font-mono text-meta text-ink/62 uppercase tracking-[0.1em]">
             Portrait to follow
           </span>
         </div>

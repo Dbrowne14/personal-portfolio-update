@@ -5,7 +5,7 @@
 // call sites, not spun out speculatively.
 export function TechCredit({ stack }: { stack: string[] }) {
   return (
-    <p className="font-mono text-meta text-ink/45 uppercase tracking-[0.08em]">
+    <p className="font-mono text-meta text-ink/62 uppercase tracking-[0.08em]">
       {stack.join(" · ")}
     </p>
   );

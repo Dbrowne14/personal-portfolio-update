@@ -39,6 +39,28 @@ export function Header() {
       <div className="flex items-center gap-5">
         <ThemeToggle />
         <MobileMenu />
+        {/*
+          M9: MobileMenu's hamburger is entirely onClick-driven — with no
+          client JavaScript, it renders but does nothing, leaving no way to
+          reach About/Work/Contact below the md breakpoint at all. This
+          <noscript> block only exists in the DOM when scripting is
+          unavailable, so JS-enabled visitors never see it duplicated
+          alongside the real mobile menu; md:hidden keeps it out of the way
+          on wider viewports, where the plain nav above already shows.
+        */}
+        <noscript>
+          <nav className="md:hidden">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="ml-4 font-mono text-meta uppercase text-ink/70 hover:text-accent"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </noscript>
       </div>
     </header>
   );

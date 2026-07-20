@@ -210,6 +210,8 @@ interface Project {
 
 ## M9 — Hardening and launch readiness
 
+**Status: Complete.** All acceptance criteria below verified — see `docs/implementation/implementation-log.md`'s M9 section for measured results and `docs/05-decisions.md`'s ADR-012 for the one material decision this milestone required.
+
 **Objective.** A cross-cutting quality pass verifying that discipline held across the previous eight milestones, not new feature work.
 
 **Components.** `not-found.tsx`, `error.tsx`, `robots.ts`, `sitemap.ts`, `generateMetadata` per route, structured data (JSON-LD) for the person and for each case study.
