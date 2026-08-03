@@ -2,8 +2,7 @@
 
 This document assumes `01-vision.md` and `02-architecture.md` as read. It is the checklist, not the argument — every line here is a distillation of doctrine stated in full elsewhere. Use it during review; use the other two documents to understand why a line exists.
 
-- No second full-bleed colour plate anywhere on the site — the chart's ink plate is unique.
-- The career chart is the site's only signature interaction.
+- No full-bleed colour plate anywhere on the site. The career chart remains the site's only signature interaction, expressed through composition and typography rather than colour inversion (ADR-013).
 - Dark mode is a material adaptation only. Typography, spacing, hierarchy, and interaction timing remain identical.
 - No idle-looping animation.
 - Every motion must have a narrative, usability, or feedback purpose.

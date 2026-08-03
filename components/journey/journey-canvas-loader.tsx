@@ -21,10 +21,7 @@ function subscribe() {
 }
 
 function getSnapshot(): boolean {
-  return (
-    window.matchMedia("(min-width: 768px)").matches &&
-    window.matchMedia("(pointer: fine)").matches
-  );
+  return window.matchMedia("(min-width: 768px)").matches;
 }
 
 function getServerSnapshot(): boolean {
@@ -38,15 +35,19 @@ function getServerSnapshot(): boolean {
 // next/dynamic's ssr:false option is only valid from one — so the gate
 // can't live inside the server-rendered Journey component itself.
 //
+// Width-only gate: the chart is now a permanent tablet-and-desktop
+// composition alongside the timeline (journey.tsx), not a fine-pointer-only
+// enhancement, so touch tablets get it too — only viewport size decides.
+// 768px matches Header's own md breakpoint and the `md:` grid columns in
+// journey.tsx, so this and the layout can never disagree about which
+// visitors get the chart at all.
+//
 // useSyncExternalStore rather than useEffect+setState: the server has no
 // window, so the server-rendered (and initial client hydration) value must
 // be a fixed false — exactly what getServerSnapshot provides, avoiding a
-// hydration mismatch. The check still only ever runs once per mount: the
-// 768px breakpoint matches Header's own md breakpoint and MilestoneList's
-// CSS media condition, so the two can never disagree about which one is
-// the visible content for a given visitor, and deciding whether to fetch a
-// JS chunk at all shouldn't re-fire as someone resizes their window
-// mid-session.
+// hydration mismatch. The check still only ever runs once per mount:
+// deciding whether to fetch a JS chunk at all shouldn't re-fire as someone
+// resizes their window mid-session.
 export function JourneyCanvasLoader({ milestones }: JourneyCanvasLoaderProps) {
   const capable = useSyncExternalStore(
     subscribe,

@@ -2,26 +2,37 @@
 
 import { useEffect, useRef } from "react";
 
-// Tracks which timeline item is "active" as the visitor scrolls, and grows
-// the fill line up to it — the mobile equivalent of the desktop scrub
-// interaction, since there's no hover on touch. Wraps MilestoneList's
-// server-rendered output as children rather than owning the content itself
-// (02-architecture.md): this only ever reads/writes attributes on DOM
-// nodes MilestoneList already rendered.
+// Drives the one shared "active milestone" state consumed by both
+// MilestoneList's own data-active styling and JourneyCanvas's matching
+// graph emphasis (via the "journey:active" CustomEvent below) — the DOM-
+// event mechanism ADR-011 prefers over React Context for cross-component
+// coordination. Wraps MilestoneList's server-rendered output as children
+// rather than owning the content itself (02-architecture.md): this only
+// ever reads/writes attributes on DOM nodes MilestoneList already rendered.
+//
+// Two independent sources feed the same effectiveIndex:
+// - hoverIndex: pointerenter/focus on a `<li>` (every breakpoint) — always
+//   takes priority when set. This is what makes desktop's sync interaction
+//   (JourneyCanvas) event-conditioned: nothing is active at rest.
+// - scrollIndex: an IntersectionObserver-driven "current reading position",
+//   but only below `lg` (see isDesktop) — the always-on "current chapter"
+//   feel the brief asks for on mobile/tablet, where there's no hover to
+//   drive it instead. At `lg` and up scrollIndex stays inert (-1), so
+//   desktop's resting state is neutral until a visitor actually engages.
+//
+// IntersectionObserver, not scroll + rAF + getBoundingClientRect: the
+// callback only fires on actual threshold crossings (a handful of times
+// per visit for four items), never on a continuous per-frame poll. The fill
+// line's height is still a real pixel measurement, but only taken once per
+// crossing, not once per scroll event.
 //
 // Deliberately not capability-gated the way JourneyCanvasLoader is. That
 // gate exists to keep a genuinely heavy chunk (canvas drawing, resize
 // handling, pointer tracking) out of the initial bundle for visitors who
-// will never see it. This component's runtime cost — a scroll listener and
-// a handful of getBoundingClientRect() reads for four items — is small
-// enough that skipping the gate is simpler and not a meaningful cost even
-// on desktop, where MilestoneList is visually clipped and this produces no
-// visible effect.
-//
-// Scroll position, not IntersectionObserver: with only a handful of items,
-// reading each one's position on scroll is cheap, and gives a precise
-// "nearest to a fixed activation line" ranking that a visibility threshold
-// can't express as simply.
+// will never see it. This component's runtime cost — one IntersectionObserver
+// and a handful of pointer/focus listeners for four items — is small enough
+// that skipping the gate is simpler and not a meaningful cost even where
+// nothing is listening (mobile, where JourneyCanvas never mounts).
 export function TimelineActivator({
   children,
 }: {
@@ -39,45 +50,78 @@ export function TimelineActivator({
     const fill = container.querySelector<HTMLElement>("[data-timeline-fill]");
     if (items.length === 0) return;
 
-    let raf = 0;
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
 
-    function update() {
-      const activationY = window.innerHeight * 0.35;
-      let activeIndex = 0;
-      for (let i = 0; i < items.length; i++) {
-        if (items[i].getBoundingClientRect().top <= activationY) {
-          activeIndex = i;
-        }
-      }
+    let hoverIndex = -1;
+    let scrollIndex = isDesktop ? -1 : 0;
 
+    function applyEffective() {
+      const effectiveIndex = hoverIndex >= 0 ? hoverIndex : scrollIndex;
       items.forEach((item, i) => {
-        item.toggleAttribute("data-active", i === activeIndex);
+        item.toggleAttribute("data-active", i === effectiveIndex);
       });
-
-      if (fill) {
-        const activeRect = items[activeIndex].getBoundingClientRect();
-        const containerRect = container!.getBoundingClientRect();
-        const height =
-          activeRect.top - containerRect.top + activeRect.height / 2;
-        fill.style.height = `${Math.max(height, 0)}px`;
-      }
+      container!.dispatchEvent(
+        new CustomEvent("journey:active", {
+          detail: { index: effectiveIndex },
+          bubbles: true,
+        }),
+      );
     }
 
-    function onScroll() {
-      if (!raf) {
-        raf = requestAnimationFrame(() => {
-          raf = 0;
-          update();
-        });
-      }
+    function updateFill(index: number) {
+      if (!fill || index < 0) return;
+      const activeRect = items[index].getBoundingClientRect();
+      const containerRect = container!.getBoundingClientRect();
+      const height =
+        activeRect.top - containerRect.top + activeRect.height / 2;
+      fill.style.height = `${Math.max(height, 0)}px`;
     }
 
-    window.addEventListener("scroll", onScroll, { passive: true });
-    update();
+    updateFill(scrollIndex);
+    applyEffective();
+
+    // Reading-zone band roughly a third of the way down the viewport,
+    // replacing the old activationY = innerHeight * 0.35 line with an
+    // equivalent thin band expressed as rootMargin.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const index = items.indexOf(entry.target as HTMLElement);
+          if (index === -1) continue;
+          scrollIndex = index;
+          updateFill(index);
+          applyEffective();
+        }
+      },
+      { rootMargin: "-30% 0px -65% 0px", threshold: 0 },
+    );
+    items.forEach((item) => observer.observe(item));
+
+    const hoverCleanups = items.map((item, i) => {
+      const onEnter = () => {
+        hoverIndex = i;
+        applyEffective();
+      };
+      const onLeave = () => {
+        hoverIndex = -1;
+        applyEffective();
+      };
+      item.addEventListener("pointerenter", onEnter);
+      item.addEventListener("pointerleave", onLeave);
+      item.addEventListener("focus", onEnter);
+      item.addEventListener("blur", onLeave);
+      return () => {
+        item.removeEventListener("pointerenter", onEnter);
+        item.removeEventListener("pointerleave", onLeave);
+        item.removeEventListener("focus", onEnter);
+        item.removeEventListener("blur", onLeave);
+      };
+    });
 
     return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", onScroll);
+      observer.disconnect();
+      hoverCleanups.forEach((cleanup) => cleanup());
     };
   }, []);
 

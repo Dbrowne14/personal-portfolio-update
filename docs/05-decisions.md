@@ -70,6 +70,8 @@ Entries are numbered in the order the decisions were made, not by importance.
 
 ## ADR-009 — One full-bleed colour plate only
 
+**Superseded by ADR-013.**
+
 **Decision.** The chart's ink plate is the only section on the entire site permitted a full-bleed colour field. Every other section is built on the ivory canvas with colour used as a mark, not a field.
 
 **Reason.** Reserves the site's single largest visual gesture for its single most important interaction, rather than letting colour intensity recur and lose its impact.
@@ -99,3 +101,11 @@ Entries are numbered in the order the decisions were made, not by importance.
 **Reason.** Surfaced during M9's hardening pass, measured rather than assumed: composited against its actual rendered background (accounting for real alpha blending, not just the raw ink/ivory pair), `text-ink/45` measured 2.87:1 in light mode and 4.09:1 in dark mode — both fail WCAG AA's 4.5:1 requirement for this text's size. This was a genuine, pre-existing defect present since M1, not something M9 introduced; M9's own rigor is what caught it. `62%` was chosen as the lowest opacity that clears 4.5:1 with a safety margin in the worse of the two themes (light: 4.79:1 measured; dark: 6.65:1 measured), keeping this role as visually quiet as the contrast requirement allows rather than promoting it all the way to the `text-ink/70` secondary-body-text role's weight.
 
 **Consequences.** Every file using `text-ink/45` was updated to `text-ink/62` in a single mechanical pass (18 call sites across 12 files). No other opacity role changed. `text-ink/70` was independently measured and already passes (6.36:1 light, 8.23:1 dark) — left untouched.
+
+## ADR-013 — Journey integrates into the ivory canvas
+
+**Decision.** The career chart no longer renders on a full-bleed inverted colour plate. It is built on the same ivory canvas, in the same colour system, as every other section, in both light and dark mode.
+
+**Reason.** After the wider editorial language matured (Hero, About, Work all converging on one material — ivory canvas, `border-ink/16` hairlines, `text-ink` typography, bronze as a mark only), the plate read as a second, competing visual identity rather than the site's defining moment — the same failure ADR-001 warned against, just relocated from *interaction* to *colour*. Requested directly: the chart should remain the site's one signature interaction, but earn that status through typographic hierarchy, whitespace, linework, and the chart's own motion, not a unique background.
+
+**Consequences.** Supersedes ADR-009. `--color-plate-accent` is removed from `app/globals.css` — a token that existed solely to keep the bronze accent legible against the plate's inverted background no longer has a purpose once the chart sits on the same ivory canvas as everything else, where `--color-accent` already contrasts correctly (see ADR-012's measurements for `accent`-on-`ivory`, ~7:1 in both themes). `components/journey/journey.tsx`, `journey-canvas.tsx`, and `milestone-list.tsx` are updated to read `ink`/`ivory`/`accent` the same way every other section does; the interaction itself (scrub, scroll-activation, curve/tick geometry) is unchanged. `01-vision.md`'s Interaction doctrine and Visual rhythm section (Density, Colour distribution, Compression and release) and `04-non-negotiables.md` are reworded to match; `docs/implementation/*.md` is left as a historical record of the original decision and is not rewritten.

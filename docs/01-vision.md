@@ -38,7 +38,7 @@ The axis has four distinct voices, not one uniform tone:
 ### II — The Inflection
 **Purpose.** State the thesis as data, not adjective. The signature interaction; nothing else on the site rivals it.
 **Effect.** The pivot. The one moment the site is permitted to surprise.
-**Register.** The single full-bleed dark plate on the site. A hand-drawn curve resolves into quantized ticks at the 2025 switch — uncertainty becoming precision, rendered as a line, not asserted as a claim.
+**Register.** The site's one signature interaction, built on the same ivory canvas as everything else (ADR-013). A hand-drawn curve resolves into quantized ticks at the 2025 switch — uncertainty becoming precision, rendered as a line, not asserted as a claim.
 **Transition.** The final milestone is a claim ("full-stack product engineer"). Home closes on a brief proof-teaser, not a call to action — the ask belongs at the end of the journey, not the middle.
 
 ### III — The Decision
@@ -61,7 +61,7 @@ The axis has four distinct voices, not one uniform tone:
 
 ## Interaction doctrine
 
-- One signature interaction: the career chart. It is the only full-bleed colour plate, the only place canvas fully drives the composition, the only interaction with cross-page recurrence.
+- One signature interaction: the career chart. It is the only place canvas fully drives the composition and the only interaction with cross-page recurrence — its weight comes from composition and motion, not a unique background (ADR-013).
 - Supporting interactions reinforce the register of their own act and never compete with the chart: hero entrance and compress, magnetic letters, hover states, the halftone portrait, gallery and page transitions.
 - No supporting interaction runs on a persistent loop. Motion fires on load, on scroll, or on pointer input — never on a timer.
 - Every motion answers one of the five questions in `creative-direction.md`'s motion principle. A motion that answers none of them does not ship, regardless of how it looks.
@@ -78,7 +78,7 @@ The title block is chosen; the colophon is derived. Neither substitutes for the 
 
 ## Visual rhythm
 
-**Density.** Near-empty at the hero. A sharp, contained spike at the chart plate. Open again through the proof-teaser. Locally variable at the portrait, where density itself does figurative work. Sustained and high through Work — the densest, busiest stretch on the site, deliberately cluttered. Emptiest of all at Contact.
+**Density.** Near-empty at the hero. A sharp, contained spike at the chart, carried by typographic hierarchy and whitespace rather than a background change. Open again through the proof-teaser. Locally variable at the portrait, where density itself does figurative work. Sustained and high through Work — the densest, busiest stretch on the site, deliberately cluttered. Emptiest of all at Contact.
 
 **Whitespace.** Most abundant at the hero, where it reads as poise. Generous and warm at About, scaled to a page of prose rather than a gallery wall. Tightest at Work, where gutters narrow and images approach full bleed. Most abundant again at Contact, where the same physical quantity now reads as openness rather than stillness.
 
@@ -86,9 +86,9 @@ The title block is chosen; the colophon is derived. Neither substitutes for the 
 
 **Linework.** Absent at the hero — pure typography, no structure yet visible. At its most expressive at the chart, where the line is the content, not decoration. Quiet and infrequent at About. Present at Work only as structural infrastructure, dividing dense content rather than composing it. A single line at Contact, fading toward the page edge, unfinished on purpose.
 
-**Colour distribution.** Ivory and warm ink dominate throughout; bronze is a mark, never a field, except once. The hero spends it as a whisper. The chart plate is the one full colour event on the site. About uses it as a soft, intimate wash. Work cedes the site's own palette discipline to the uncontrolled colour of real product screenshots. Contact spends bronze at its highest concentration of the whole site, on the single largest word — the site's own colour, undiluted, saved for last.
+**Colour distribution.** Ivory and warm ink dominate throughout; bronze is a mark, never a field, anywhere on the site (ADR-013). The hero spends it as a whisper. The chart uses it as pacing and emphasis — the switch marker, the ticks, the active state — never as a background. About uses it as a soft, intimate wash. Work cedes the site's own palette discipline to the uncontrolled colour of real product screenshots. Contact spends bronze at its highest concentration of the whole site, on the single largest word — the site's own colour, undiluted, saved for last.
 
-**Compression and release.** The site breathes once. Near-silence, a sudden dark inhale at the chart, a slow exhale into intimacy at About, a long held breath of density through Work, and the fullest release of the sequence at Contact — paler, calmer, and warmer than the opening, closing on the one colour the site allowed itself to spend freely.
+**Compression and release.** The site breathes once. Near-silence, a sudden compositional inhale at the chart — scale and whitespace tightening around the line, not colour — a slow exhale into intimacy at About, a long held breath of density through Work, and the fullest release of the sequence at Contact — paler, calmer, and warmer than the opening, closing on the one colour the site allowed itself to spend freely.
 
 ## Colour and material
 
