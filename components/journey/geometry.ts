@@ -5,9 +5,14 @@ export interface ChartBounds {
   height: number;
 }
 
-export const PAD_X = 32;
-export const PAD_TOP = 40;
-export const PAD_BOTTOM = 40;
+// Tightened from the original 32/40/40: less frame around the plotted
+// content means the curve/ticks/markers occupy more of the stage at any
+// given box size — one of two levers (with the stage's own min-height in
+// journey-interaction.tsx) behind the graph's larger presence, instead of
+// just letting the responsive column stretch it wider.
+export const PAD_X = 28;
+export const PAD_TOP = 34;
+export const PAD_BOTTOM = 36;
 
 // Pure mapping functions, shared by JourneyCanvas's own draw calls and its
 // DOM overlay (year labels, scrub tooltip) — the one thing that guarantees

@@ -27,15 +27,6 @@ interface JourneyCanvasProps {
   onHoverIndexChange: (index: number | null) => void;
 }
 
-// Returns the label's alignment relative to its anchor point, so an edge
-// milestone's text never runs off the stage regardless of label length —
-// centering a label at t=0 or t=1 would clip half of it past the edge.
-function edgeAlignment(t: number): "left" | "center" | "right" {
-  if (t <= 0.05) return "left";
-  if (t >= 0.95) return "right";
-  return "center";
-}
-
 // Wobble amplitude damps to zero within 0.05 of any real milestone, so the
 // curve passes exactly through each milestone's own value there. Without
 // this, the point markers (drawn at the clean, un-wobbled value) visibly
@@ -52,7 +43,7 @@ const HIGHLIGHT_RADIUS = 0.07;
 const FUTURE_DIM_ALPHA = 0.4;
 
 function wobbleAt(t: number, milestones: Milestone[]): number {
-  const raw = Math.sin(t * 60) * 0.012 + Math.sin(t * 13 + 1) * 0.018;
+  const raw = Math.sin(t * 60) * 0.015 + Math.sin(t * 13 + 1) * 0.022;
   let damp = 1;
   for (const milestone of milestones) {
     damp = Math.min(damp, Math.abs(t - milestone.t) / 0.05);
@@ -120,7 +111,6 @@ export function JourneyCanvas({
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const labelRefs = useRef<Array<HTMLSpanElement | null>>([]);
 
   // Latest-callback ref. Kept current from a plain effect (no deps, runs
   // after every render) rather than read/written during render — it's only
@@ -222,7 +212,7 @@ export function JourneyCanvas({
         if (to <= from) return;
         ctx!.globalAlpha = alpha;
         ctx!.strokeStyle = lineColor;
-        ctx!.lineWidth = 2;
+        ctx!.lineWidth = 2.5;
         ctx!.beginPath();
         let firstPoint = true;
         for (let t = from; t <= to; t += 0.005) {
@@ -251,13 +241,19 @@ export function JourneyCanvas({
       // width (t=0.56 to 1.0+) despite covering the fewest real years —
       // a deliberate narrative weighting, not a chronological one. Same
       // future-dim split as the curve, per tick rather than per segment.
+      // Past t=1 (the final milestone itself) an additional taper fades
+      // the overhang toward the edge, rather than letting it run at full
+      // strength into a hard stop — the line settles past arrival instead
+      // of looking like it was simply cut off by the canvas.
       ctx!.fillStyle = accentColor;
       for (let t = tSwitch; t <= 1.06; t += 0.022) {
         const value = valueAtFraction(Math.min(t, 1), milestones);
         const { x, y } = pointForFraction(t, value, bounds);
+        const overhangFade = t > 1 ? Math.max(0, 1 - (t - 1) / 0.06) : 1;
         ctx!.globalAlpha =
-          activeT !== null && t > activeT ? FUTURE_DIM_ALPHA : 1;
-        ctx!.fillRect(x, y - 1.5, 9, 3);
+          (activeT !== null && t > activeT ? FUTURE_DIM_ALPHA : 1) *
+          overhangFade;
+        ctx!.fillRect(x, y - 1.75, 10, 3.5);
       }
       ctx!.globalAlpha = 1;
 
@@ -273,7 +269,7 @@ export function JourneyCanvas({
       // where the pointer is right now, redrawn only on pointer move.
       // Growing and glowing as the pointer approaches, easing back out as
       // it recedes, entirely input-driven.
-      milestones.forEach((milestone, i) => {
+      milestones.forEach((milestone) => {
         const { x, y } = pointForMilestone(milestone, bounds);
         // Continuous distance from whichever point is effectively "hovered"
         // right now — the real pointer for direct scrubbing, or the
@@ -294,9 +290,11 @@ export function JourneyCanvas({
         // The switch gets a larger base radius than every other marker —
         // permanently, not just on hover — so it reads as the pivot even
         // at rest, matching the timeline's own always-visible emphasis for
-        // this one milestone.
-        const baseRadius = milestone.isSwitch ? 5.5 : 4.5;
-        const radius = baseRadius + intensity * 4;
+        // this one milestone. Colour stays restrained (era-based ink/accent
+        // only, same at rest and on hover) — size is what carries emphasis:
+        // a modest resting radius, growing considerably further on hover.
+        const baseRadius = milestone.isSwitch ? 7.5 : 6.5;
+        const radius = baseRadius + intensity * 7.5;
 
         // Halo bloom: a function of proximity to effectiveScrubT, so it
         // blooms for direct pointer proximity exactly as before, and blooms
@@ -337,18 +335,47 @@ export function JourneyCanvas({
           ctx!.globalAlpha = 1;
         }
 
-        // Year label: real DOM text, positioned from the same bounds the
-        // canvas just drew from (so the two can never disagree), brightening
-        // in step with its dot.
-        const label = labelRefs.current[i];
-        if (label) {
-          label.style.left = `${x}px`;
-          label.style.top = `${height - PAD_BOTTOM * 0.55}px`;
-          label.style.opacity = String(
-            isFuture ? 0.35 : 0.6 + intensity * 0.4,
-          );
+        // A permanent, soft glow behind the final milestone — the
+        // destination, not just where the data stops. Restrained
+        // deliberately: a filled bloom rather than the switch's ring, so
+        // "arrival" reads differently from "pivot" without introducing a
+        // new colour to do it. Never dimmed by isFuture — nothing is ever
+        // "past" the last milestone.
+        if (milestone === milestones[milestones.length - 1]) {
+          ctx!.beginPath();
+          ctx!.arc(x, y, radius + 10, 0, Math.PI * 2);
+          ctx!.fillStyle = color;
+          ctx!.globalAlpha = 0.1;
+          ctx!.fill();
+          ctx!.globalAlpha = 1;
         }
       });
+
+      // Editorial baseline: replaces the year-label axis entirely. A
+      // grounding line, not a chart axis — no numeric scale, no per-year
+      // ticks. The short marks below only echo where a milestone's point
+      // sits above them, not a measurement; this is meant to read as
+      // bespoke illustration, not data visualisation. Deliberately static
+      // (no dim/active states) — a fixed structural element the
+      // interaction plays out above, not another thing it drives.
+      const baselineY = height - PAD_BOTTOM * 0.35;
+      ctx!.strokeStyle = lineColor;
+      ctx!.lineWidth = 1;
+      ctx!.globalAlpha = 0.14;
+      ctx!.beginPath();
+      ctx!.moveTo(PAD_X, baselineY);
+      ctx!.lineTo(width - PAD_X, baselineY);
+      ctx!.stroke();
+
+      ctx!.globalAlpha = 0.22;
+      milestones.forEach((milestone) => {
+        const { x } = pointForFraction(milestone.t, 0, bounds);
+        ctx!.beginPath();
+        ctx!.moveTo(x, baselineY - 4);
+        ctx!.lineTo(x, baselineY + 4);
+        ctx!.stroke();
+      });
+      ctx!.globalAlpha = 1;
 
       // Guide line: at effectiveScrubT, so it appears exactly under the
       // pointer during direct scrubbing, or exactly at the active
@@ -449,26 +476,6 @@ export function JourneyCanvas({
   return (
     <div ref={stageRef} aria-hidden="true" className="absolute inset-0">
       <canvas ref={canvasRef} className="block h-full w-full" />
-      {milestones.map((milestone, i) => {
-        const align = edgeAlignment(milestone.t);
-        return (
-          <span
-            key={milestone.year}
-            ref={(el) => {
-              labelRefs.current[i] = el;
-            }}
-            className={`pointer-events-none absolute font-mono text-sm font-semibold tracking-[0.06em] whitespace-nowrap text-ink ${
-              align === "left"
-                ? "translate-x-0"
-                : align === "right"
-                  ? "-translate-x-full"
-                  : "-translate-x-1/2"
-            }`}
-          >
-            {milestone.year}
-          </span>
-        );
-      })}
       <div
         ref={tooltipRef}
         className="pointer-events-none absolute -translate-x-1/2 border border-ink/16 bg-ivory px-3.5 py-2.5 font-mono text-sm font-semibold tracking-[0.02em] whitespace-nowrap text-ink opacity-0"

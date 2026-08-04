@@ -68,8 +68,12 @@ export function MilestoneList({ milestones }: MilestoneListProps) {
               {milestone.year}
               {milestone.isSwitch ? " — the switch" : ""}
             </p>
+            {/* Bronze on activation is deliberately scoped to the headline
+                alone — the subtitle below stays in the ink family even
+                when active, so the chapter title is the one thing that
+                reads as "current." */}
             <p
-              className={`mt-3 max-w-lg font-sans text-xl font-bold tracking-tight transition-colors duration-300 md:text-2xl group-data-active:text-ink ${
+              className={`mt-3 max-w-lg font-sans text-xl font-bold tracking-tight transition-colors duration-300 md:text-2xl group-data-active:text-accent ${
                 milestone.isSwitch ? "text-ink" : "text-ink/80"
               }`}
             >

@@ -29,16 +29,21 @@ interface JourneyInteractionProps {
 // side, rather than that grid living in journey.tsx.
 //
 // hoverIndex and scrollIndex are two independent sources feeding
-// activeIndex:
+// activeIndex, deliberately asymmetric by breakpoint — desktop has a
+// precise pointer, so hover (and keyboard focus) is the only activator;
+// touch devices have no hover, so scroll is:
 // - hoverIndex: pointerenter/focus on a timeline `<li>` (every breakpoint),
 //   or a graph pointer move (via onHoverIndexChange, `lg` and up only,
 //   since JourneyCanvas never mounts below that) — always takes priority
-//   when set. This is what makes desktop's sync interaction
-//   event-conditioned: nothing is active at rest.
+//   when set.
 // - scrollIndex: an IntersectionObserver-driven "current reading
-//   position." Starts at the first milestone on mobile/tablet (no hover to
-//   drive it instead) and at null on desktop, so desktop's resting state
-//   stays neutral until a visitor actually engages.
+//   position," but the observer is only ever created below `lg` (see
+//   isDesktop in the mount effect) — starting at the first milestone,
+//   since there's no hover there to drive it instead. On desktop the
+//   observer is never created at all, not merely defaulted to neutral —
+//   scrolling the section must never activate anything, and the section
+//   must load, and stay, neutral until a visitor actually hovers or
+//   focuses something.
 //
 // A pointer leaving the graph reports hoverIndex → null through
 // onHoverIndexChange; it never touches scrollIndex, so activeIndex falls
@@ -96,13 +101,38 @@ export function JourneyInteraction({
       fill.style.height = `${Math.max(height, 0)}px`;
     }
 
-    // scrollIndex's React state is already correctly seeded by the
-    // useState initializer above (0 on mobile, null on desktop) — this
-    // just needs the fill line's actual pixel height to match that on the
-    // very first paint, not a fresh matchMedia check or a setState call.
-    if (!window.matchMedia("(min-width: 1024px)").matches) {
-      updateFill(0);
+    const hoverCleanups = items.map((item, i) => {
+      const onEnter = () => setHoverIndex(i);
+      const onLeave = () => setHoverIndex(null);
+      item.addEventListener("pointerenter", onEnter);
+      item.addEventListener("pointerleave", onLeave);
+      item.addEventListener("focus", onEnter);
+      item.addEventListener("blur", onLeave);
+      return () => {
+        item.removeEventListener("pointerenter", onEnter);
+        item.removeEventListener("pointerleave", onLeave);
+        item.removeEventListener("focus", onEnter);
+        item.removeEventListener("blur", onLeave);
+      };
+    });
+
+    // Scroll-driven activation is a mobile/tablet affordance only. Desktop
+    // has a precise pointer, so hover and keyboard focus (wired above,
+    // unconditionally) are the only activators there — the observer is
+    // never created, so scrolling the section can never activate anything
+    // and the resting state stays neutral until a visitor actually
+    // engages, on both load and re-scroll.
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+    if (isDesktop) {
+      return () => {
+        hoverCleanups.forEach((cleanup) => cleanup());
+      };
     }
+
+    // scrollIndex's React state is already correctly seeded by the
+    // useState initializer above (0 on mobile) — this just needs the fill
+    // line's actual pixel height to match that on the very first paint.
+    updateFill(0);
 
     // Reading-zone band roughly a third of the way down the viewport,
     // replacing the old activationY = innerHeight * 0.35 line with an
@@ -120,21 +150,6 @@ export function JourneyInteraction({
       { rootMargin: "-30% 0px -65% 0px", threshold: 0 },
     );
     items.forEach((item) => observer.observe(item));
-
-    const hoverCleanups = items.map((item, i) => {
-      const onEnter = () => setHoverIndex(i);
-      const onLeave = () => setHoverIndex(null);
-      item.addEventListener("pointerenter", onEnter);
-      item.addEventListener("pointerleave", onLeave);
-      item.addEventListener("focus", onEnter);
-      item.addEventListener("blur", onLeave);
-      return () => {
-        item.removeEventListener("pointerenter", onEnter);
-        item.removeEventListener("pointerleave", onLeave);
-        item.removeEventListener("focus", onEnter);
-        item.removeEventListener("blur", onLeave);
-      };
-    });
 
     return () => {
       observer.disconnect();
@@ -154,7 +169,7 @@ export function JourneyInteraction({
   return (
     <div className="grid grid-cols-1 gap-0 md:gap-16 lg:grid-cols-[minmax(24rem,2fr)_3fr] lg:gap-20">
       <div ref={containerRef}>{children}</div>
-      <div className="relative md:h-80 lg:h-auto lg:min-h-120">
+      <div className="relative md:h-90 lg:h-auto lg:min-h-135">
         <JourneyCanvasLoader
           milestones={milestones}
           activeIndex={activeIndex}
