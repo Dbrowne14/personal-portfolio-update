@@ -76,38 +76,13 @@ body {
 }
 
 /*
- * Hero <-> masthead coordination (M2, Act I). HeroStage sets these two
- * attributes on <html> directly; this is the only place that reads them.
- * Two independently server-rendered regions (Header and Hero) agree on one
- * value through the DOM and CSS alone — no React Context. See
- * 02-architecture.md and 05-decisions.md (ADR-011).
- */
-.masthead-name {
-  opacity: 1;
-  transition: opacity 0.3s;
-}
-
-html[data-page="home"]:not([data-hero-compressed]) .masthead-name {
-  opacity: 0;
-}
-
-/*
- * A genuine keyboard focus must always be visible (WCAG 2.4.7), regardless
- * of the hero's cosmetic hidden state. Higher specificity than the rule
- * above so it wins even while the masthead is otherwise opacity:0.
- */
-html[data-page="home"]:not([data-hero-compressed]) .masthead-name:focus-visible {
-  opacity: 1;
-}
-
-/*
  * Theme toggle (M8). ThemeToggle sets data-theme on <html> directly and
- * holds no React state of its own — the same DOM-attribute-plus-CSS
- * coordination pattern as .masthead-name above and ADR-011. Both labels
- * are always present in the DOM; which one is visible is decided here,
- * declaratively, so it's correct from the very first paint (the attribute
- * is already set by the blocking inline script in app/layout.tsx before
- * any CSS is evaluated) with no hydration mismatch possible.
+ * holds no React state of its own — DOM-attribute-plus-CSS coordination
+ * (ADR-011). Both labels are always present in the DOM; which one is
+ * visible is decided here, declaratively, so it's correct from the very
+ * first paint (the attribute is already set by the blocking inline script
+ * in app/layout.tsx before any CSS is evaluated) with no hydration
+ * mismatch possible.
  */
 .theme-label-dark {
   display: none;

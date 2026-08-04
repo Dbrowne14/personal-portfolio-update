@@ -3,12 +3,15 @@ export interface NavItem {
   href: string;
 }
 
-// Home is reached via the masthead name, not a nav item — see header.tsx.
-// Order matches the agreed narrative in 01-vision.md's Five Acts:
-// Home (Opening Position + Inflection) -> About (the Decision) ->
-// Work (the Evidence) -> Contact (the Open Position).
+// Home is reached via the masthead monogram, not a nav item — see
+// header.tsx. Order is the numbered chapter sequence from the navigation
+// reference (docs/references/screenshots/navigation-prototype.jpeg) — 01
+// Work, 02 About, 03 Contact — which now takes precedence over the earlier
+// Five Acts ordering (About before Work) once the header numbers the items:
+// numbering makes the order itself part of the design, not an incidental
+// detail free to diverge from the reference.
 export const navItems: NavItem[] = [
-  { label: "About", href: "/about" },
   { label: "Work", href: "/work" },
+  { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];

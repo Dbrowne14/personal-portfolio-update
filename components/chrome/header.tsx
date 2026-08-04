@@ -1,40 +1,32 @@
 import Link from "next/link";
 import { navItems } from "./nav-items";
 import { MobileMenu } from "./mobile-menu";
+import { NavLinks } from "./nav-links";
 import { ThemeToggle } from "./theme-toggle";
 
 // Server Component. The masthead name is the Home link — About/Work/Contact
-// are the only nav items, in that order (see nav-items.ts). ThemeToggle
-// (M8) is the one Client Component this renders; like MobileMenu, it
-// receives no props and owns its own tiny behaviour rather than Header
-// needing any client-side knowledge of theme. No active-route highlighting,
-// since M1's acceptance criteria don't require it and Server Components
-// have no built-in access to the current pathname without a client
-// boundary this milestone doesn't otherwise need.
+// are the only nav items, in that order (see nav-items.ts). ThemeToggle and
+// NavLinks are the two Client Components this renders; like MobileMenu,
+// each owns its own narrow slice of behaviour (theme, and — NavLinks —
+// active-route detection via usePathname) rather than Header needing any
+// client-side knowledge of theme or the current route itself.
 //
-// The masthead-name class's opacity is governed entirely by CSS in
-// globals.css, keyed to data-page/data-hero-compressed attributes that
-// HeroStage sets on <html> (see components/hero/hero-stage.tsx). Header
-// itself needs no knowledge of the hero, the current route, or scroll state.
+// The masthead is a small circular monogram, not a text repeat of the hero
+// name — it doesn't compete with the monumental "DAVID BROWNE" below it the
+// way full text would, so unlike the previous treatment it's permanently
+// visible rather than faded in only once the hero scroll-compresses.
 export function Header() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between border-b border-ink/16 bg-ivory/85 px-7 backdrop-blur-md">
       <Link
         href="/"
-        className="masthead-name font-mono text-xs font-medium uppercase tracking-[0.08em] leading-none text-ink hover:text-accent"
+        aria-label="David Browne — home"
+        className="flex h-10 w-10 items-center justify-center rounded-full border border-ink font-mono text-xs font-semibold text-ink hover:border-accent hover:text-accent"
       >
-        David Browne
+        DB
       </Link>
       <nav className="hidden items-center gap-7 md:flex">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="font-mono text-xs font-medium uppercase tracking-[0.08em] leading-none text-ink/70 hover:text-accent"
-          >
-            {item.label}
-          </Link>
-        ))}
+        <NavLinks />
       </nav>
       <div className="flex items-center gap-5">
         <ThemeToggle />
@@ -50,12 +42,13 @@ export function Header() {
         */}
         <noscript>
           <nav className="md:hidden">
-            {navItems.map((item) => (
+            {navItems.map((item, index) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="ml-4 font-mono text-xs font-medium uppercase tracking-[0.08em] leading-none text-ink/70 hover:text-accent"
+                className="ml-4 font-mono text-xs font-medium uppercase tracking-[0.08em] leading-none text-ink hover:text-accent"
               >
+                <span className="text-accent">0{index + 1}</span>{" "}
                 {item.label}
               </Link>
             ))}

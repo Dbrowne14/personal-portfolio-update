@@ -27,7 +27,7 @@ export function Hero() {
         </p>
       </HeroStage>
 
-      <div className="absolute inset-x-7 bottom-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center font-mono text-meta text-ink/62 sm:justify-between sm:text-left">
+      <div className="absolute inset-x-7 text-[14px] bottom-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center font-mono text-meta text-ink/62 sm:justify-between sm:text-left">
         <span>TypeScript · React · Next.js · Node · PostgreSQL</span>
         <span aria-hidden="true" className="hidden sm:inline">
           Scroll ↓

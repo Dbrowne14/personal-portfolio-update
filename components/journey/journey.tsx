@@ -9,7 +9,7 @@ export function Journey() {
   return (
     <section className="relative border-t border-ink/16 bg-ivory px-7 py-28 md:py-36 h-full">
       <div className="mx-auto flex max-w-350 flex-col">
-        <div className="max-w-[76ch]">
+        <div className="max-w-[96ch]">
           <p className="font-mono text-meta text-accent uppercase tracking-[0.14em]">
             The journey · {firstYear}–{lastYear}
           </p>
