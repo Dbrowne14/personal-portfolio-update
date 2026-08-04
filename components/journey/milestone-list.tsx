@@ -27,7 +27,7 @@ interface MilestoneListProps {
 // exception to leaving static content unfocusable, not an oversight.
 export function MilestoneList({ milestones }: MilestoneListProps) {
   return (
-    <div className="relative max-w-md lg:max-w-none">
+    <div className="relative h-full max-w-md lg:max-w-none">
       <div
         aria-hidden="true"
         className="absolute top-1 bottom-1 left-0.75 w-px bg-ink/16"
@@ -60,8 +60,11 @@ export function MilestoneList({ milestones }: MilestoneListProps) {
               {milestone.year}
               {milestone.isSwitch ? " — the switch" : ""}
             </p>
-            <p className="mt-2 max-w-lg font-sans text-body text-ink/70 transition-colors duration-300 group-data-active:text-ink">
-              {milestone.label}
+            <p className="mt-3 max-w-lg font-sans text-xl font-bold tracking-tight text-ink/80 transition-colors duration-300 md:text-2xl group-data-active:text-ink">
+              {milestone.headline}
+            </p>
+            <p className="mt-1.5 max-w-lg font-sans text-body text-ink/45 transition-colors duration-300 group-data-active:text-ink/70">
+              {milestone.subtitle}
             </p>
           </li>
         ))}

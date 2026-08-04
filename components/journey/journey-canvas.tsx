@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { Milestone } from "@/lib/content/journey";
+import { onActiveMilestone, setActiveMilestone } from "./active-milestone";
 import {
   PAD_BOTTOM,
   PAD_TOP,
@@ -35,6 +36,10 @@ function edgeAlignment(t: number): "left" | "center" | "right" {
 // nearest-milestone logic, but a smooth falloff rather than a binary pick.
 const HIGHLIGHT_RADIUS = 0.07;
 
+// Opacity applied to the curve/ticks and markers beyond the active
+// milestone — "subtly reduce emphasis on future milestones," not hide them.
+const FUTURE_DIM_ALPHA = 0.4;
+
 function wobbleAt(t: number, milestones: Milestone[]): number {
   const raw = Math.sin(t * 60) * 0.012 + Math.sin(t * 13 + 1) * 0.018;
   let damp = 1;
@@ -44,6 +49,26 @@ function wobbleAt(t: number, milestones: Milestone[]): number {
   return raw * Math.min(Math.max(damp, 0), 1);
 }
 
+// The one nearest-milestone lookup, shared by the tooltip, the marker
+// growth/halo intensity, and the trace-up-to/dim-future split — so there is
+// exactly one notion of "which milestone is active," not a tooltip-side
+// copy and a marker-side copy that could drift apart.
+function nearestMilestone(
+  t: number,
+  milestones: Milestone[],
+): { index: number; distance: number } {
+  let index = 0;
+  let distance = Infinity;
+  milestones.forEach((milestone, i) => {
+    const d = Math.abs(milestone.t - t);
+    if (d < distance) {
+      distance = d;
+      index = i;
+    }
+  });
+  return { index, distance };
+}
+
 // Client Component. Only ever mounted by JourneyCanvasLoader after a
 // capability check passes, so everything here can assume a tablet-or-wider
 // stage — not necessarily a fine pointer, since touch tablets mount this
@@ -51,21 +76,27 @@ function wobbleAt(t: number, milestones: Milestone[]): number {
 // duplicate of what MilestoneList already provides as real, accessible
 // text — not a second source of information. Draws once, immediately, on
 // mount and on resize; the only things that redraw afterward are
-// pointer-driven scrubbing and the "journey:active" event TimelineActivator
-// dispatches whenever the shared timeline/graph active milestone changes
-// (hover, keyboard focus, or — below `lg` — scroll position; see
-// activeIndex below) — both user-initiated and not gated by reduced motion
-// (01-vision.md's Interaction doctrine: this is data inspection, not
-// decoration). There is no idle loop and no entrance-draw animation in
-// either motion state, so there is nothing additional for reduced motion
-// to drop.
+// pointer-driven scrubbing on this canvas and the shared active-milestone
+// event (active-milestone.ts) that TimelineActivator — or this component's
+// own scrubbing — dispatches whenever the active milestone changes (hover,
+// keyboard focus, or — below `lg` — scroll position, on the timeline side;
+// direct pointer proximity, on this side) — both user-initiated and not
+// gated by reduced motion (01-vision.md's Interaction doctrine: this is
+// data inspection, not decoration). There is no idle loop and no
+// entrance-draw animation in either motion state, so there is nothing
+// additional for reduced motion to drop.
 //
-// Two distinct emphasis mechanisms, deliberately kept separate:
-// scrubIntensity (direct pointer movement over this canvas — pre-existing,
-// unchanged) drives the translucent halo bloom; activeIndex (the timeline's
-// shared state) drives a plain radius/colour change and a slight dimming of
-// the other markers, with no halo — restrained, per the brief that this
-// sync effect should avoid glowing/dramatic treatments.
+// One active-milestone model, not two: everything below — marker growth,
+// halo bloom, the tooltip, the guide line, and the trace-up-to/dim-future
+// split — is a function of a single derived `effectiveScrubT`. When this
+// canvas is being hovered directly, it's the real pointer position (the
+// reference interaction: continuous, magnetic growth as you approach a
+// point). When a milestone is active via the timeline instead, it's that
+// milestone's own `t` — which makes the nearest-milestone distance exactly
+// zero, so the same code path that gives a directly-hovered point its full
+// treatment does it here too. There's no separate "restrained sync"
+// branch; hovering the timeline is meant to look exactly like hovering
+// that point on the graph.
 export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -83,9 +114,25 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
       milestones.find((m) => m.isSwitch) ?? milestones[milestones.length - 1];
     const tSwitch = switchMilestone.t;
 
+    // scrubT: this canvas's own pointer position, unset (-1) when not
+    // hovered. externalIndex: the shared active milestone as last reported
+    // by active-milestone.ts, from whichever input (usually the timeline)
+    // last set it. Direct pointer scrubbing always wins while it's
+    // happening — externalIndex only matters once the pointer leaves.
     let scrubT = -1;
-    let activeIndex = -1;
+    let externalIndex = -1;
+    let lastDispatched: number | null = null;
     let raf = 0;
+
+    // Single derivation every render reads: the real pointer position when
+    // this canvas is being hovered directly, or the externally-active
+    // milestone's own coordinate otherwise — simulating a pointer sitting
+    // exactly on that point. -1 means genuinely idle.
+    function getEffectiveScrubT(): number {
+      if (scrubT >= 0) return scrubT;
+      if (externalIndex >= 0) return milestones[externalIndex].t;
+      return -1;
+    }
 
     function readColor(name: string): string {
       return getComputedStyle(document.documentElement)
@@ -113,84 +160,69 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
       const accentColor = readColor("--color-accent") || lineColor;
       const bgColor = readColor("--color-ivory") || "#fcfbf8";
 
+      const effectiveScrubT = getEffectiveScrubT();
+      const active =
+        effectiveScrubT >= 0
+          ? nearestMilestone(effectiveScrubT, milestones)
+          : null;
+      // "Trace up to" the active milestone, "subtly reduce emphasis" past
+      // it — a boundary in t-space the curve and ticks are both split
+      // against below. null (idle) means no boundary: the whole graph
+      // draws at full strength, same as before this feature existed.
+      const activeT = active ? milestones[active.index].t : null;
+
       // Curve: banking era, procedural wobble for a hand-drawn quality —
       // the wobble is a fixed spatial pattern along the curve, not an
       // animation over time, so it needs no reduced-motion treatment.
-      ctx!.strokeStyle = lineColor;
-      ctx!.lineWidth = 1.5;
-      ctx!.beginPath();
-      let first = true;
-      for (let t = 0; t <= tSwitch; t += 0.005) {
-        const value = valueAtFraction(t, milestones);
-        const wobble = wobbleAt(t, milestones);
-        const { x, y } = pointForFraction(t, value + wobble, bounds);
-        if (first) {
-          ctx!.moveTo(x, y);
-          first = false;
-        } else {
-          ctx!.lineTo(x, y);
+      // Drawn as two strokes split at activeT (clamped into the curve's own
+      // range) rather than one, so the portion past the active milestone
+      // can be dimmed independently — same coordinates either way, just a
+      // different globalAlpha per segment.
+      const curveBoundary =
+        activeT === null ? tSwitch : Math.min(Math.max(activeT, 0), tSwitch);
+
+      function strokeCurve(from: number, to: number, alpha: number) {
+        if (to <= from) return;
+        ctx!.globalAlpha = alpha;
+        ctx!.strokeStyle = lineColor;
+        ctx!.lineWidth = 1.5;
+        ctx!.beginPath();
+        let firstPoint = true;
+        for (let t = from; t <= to; t += 0.005) {
+          const value = valueAtFraction(t, milestones);
+          const wobble = wobbleAt(t, milestones);
+          const { x, y } = pointForFraction(t, value + wobble, bounds);
+          if (firstPoint) {
+            ctx!.moveTo(x, y);
+            firstPoint = false;
+          } else {
+            ctx!.lineTo(x, y);
+          }
         }
+        ctx!.stroke();
+        ctx!.globalAlpha = 1;
       }
-      ctx!.stroke();
+
+      strokeCurve(0, curveBoundary, 1);
+      if (activeT !== null && curveBoundary < tSwitch) {
+        strokeCurve(curveBoundary, tSwitch, FUTURE_DIM_ALPHA);
+      }
 
       // Ticks: the engineering era, quantized — spanning from the switch
       // to a short overhang past the final milestone ("the line
       // continues"). This phase is allocated roughly half the graph's
       // width (t=0.56 to 1.0+) despite covering the fewest real years —
-      // a deliberate narrative weighting, not a chronological one.
+      // a deliberate narrative weighting, not a chronological one. Same
+      // future-dim split as the curve, per tick rather than per segment.
       ctx!.fillStyle = accentColor;
       for (let t = tSwitch; t <= 1.06; t += 0.022) {
         const value = valueAtFraction(Math.min(t, 1), milestones);
         const { x, y } = pointForFraction(t, value, bounds);
+        ctx!.globalAlpha =
+          activeT !== null && t > activeT ? FUTURE_DIM_ALPHA : 1;
         ctx!.fillRect(x, y - 1, 7, 2);
       }
-
-      // Local emphasis: when the timeline has a shared active milestone,
-      // re-stroke a narrow window of the curve (or a couple of ticks, past
-      // the switch) around it slightly bolder, over the base draw above but
-      // *before* the markers below so a marker's own circle still reads
-      // cleanly on top rather than a bold line cutting across it. Same
-      // coordinates as the base draw — no geometry change, no blur/shadow.
-      // "Strengthen the associated portion of the line... where practical."
-      if (activeIndex >= 0) {
-        const target = milestones[activeIndex];
-        const windowStart = Math.max(0, target.t - 0.05);
-        const windowEnd = Math.min(1.06, target.t + 0.05);
-
-        if (target.t <= tSwitch) {
-          ctx!.strokeStyle = lineColor;
-          ctx!.lineWidth = 2.5;
-          ctx!.beginPath();
-          let firstEmphasis = true;
-          for (
-            let t = windowStart;
-            t <= Math.min(windowEnd, tSwitch);
-            t += 0.005
-          ) {
-            const value = valueAtFraction(t, milestones);
-            const wobble = wobbleAt(t, milestones);
-            const { x, y } = pointForFraction(t, value + wobble, bounds);
-            if (firstEmphasis) {
-              ctx!.moveTo(x, y);
-              firstEmphasis = false;
-            } else {
-              ctx!.lineTo(x, y);
-            }
-          }
-          ctx!.stroke();
-        } else {
-          ctx!.fillStyle = accentColor;
-          for (
-            let t = Math.max(windowStart, tSwitch);
-            t <= windowEnd;
-            t += 0.022
-          ) {
-            const value = valueAtFraction(Math.min(t, 1), milestones);
-            const { x, y } = pointForFraction(t, value, bounds);
-            ctx!.fillRect(x, y - 1.5, 7, 3);
-          }
-        }
-      }
+      ctx!.globalAlpha = 1;
 
       // Milestone point markers. Wobble is damped to zero at each
       // milestone's own t (see wobbleAt), so this point sits exactly on
@@ -206,33 +238,40 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
       // it recedes, entirely input-driven.
       milestones.forEach((milestone, i) => {
         const { x, y } = pointForMilestone(milestone, bounds);
-        const distance = scrubT >= 0 ? Math.abs(milestone.t - scrubT) : Infinity;
-        const scrubIntensity = Math.max(0, 1 - distance / HIGHLIGHT_RADIUS);
-        const timelineActive = i === activeIndex;
-        const intensity = timelineActive ? 1 : scrubIntensity;
+        // Continuous distance from whichever point is effectively "hovered"
+        // right now — the real pointer for direct scrubbing, or the
+        // externally-active milestone's own t (distance 0 for itself) when
+        // driven by the timeline. One formula covers both: growth/halo for
+        // a directly-scrubbed near-miss, and a clean full-intensity hit for
+        // the exact milestone the timeline just activated.
+        const distance =
+          effectiveScrubT >= 0
+            ? Math.abs(milestone.t - effectiveScrubT)
+            : Infinity;
+        const intensity = Math.max(0, 1 - distance / HIGHLIGHT_RADIUS);
+        const isFuture = activeT !== null && milestone.t > activeT;
         const color =
           milestone.isSwitch || milestone.era === "engineering"
             ? accentColor
             : lineColor;
         const radius = 3.5 + intensity * 3.5;
 
-        // Halo bloom: purely a function of direct pointer proximity
-        // (scrubIntensity), unrelated to the timeline's active state — the
-        // pre-existing scrub interaction, unchanged. The timeline sync
-        // deliberately doesn't add one (see the file's top comment).
-        if (scrubIntensity > 0.01) {
+        // Halo bloom: a function of proximity to effectiveScrubT, so it
+        // blooms for direct pointer proximity exactly as before, and blooms
+        // fully around the exact milestone a timeline hover activates too —
+        // "exactly the same visual state," not a restrained variant of it.
+        if (intensity > 0.01) {
           ctx!.beginPath();
-          ctx!.arc(x, y, radius + scrubIntensity * 7, 0, Math.PI * 2);
+          ctx!.arc(x, y, radius + intensity * 7, 0, Math.PI * 2);
           ctx!.fillStyle = color;
-          ctx!.globalAlpha = scrubIntensity * 0.18;
+          ctx!.globalAlpha = intensity * 0.18;
           ctx!.fill();
           ctx!.globalAlpha = 1;
         }
 
-        // When some other milestone is the shared active one, dim this
-        // marker slightly rather than recolouring it — the graph-side half
-        // of "de-emphasise the others, without making them hard to read."
-        ctx!.globalAlpha = activeIndex >= 0 && !timelineActive ? 0.6 : 1;
+        // Dim only markers past the active milestone — "reduce emphasis on
+        // future milestones," not on every other one.
+        ctx!.globalAlpha = isFuture ? FUTURE_DIM_ALPHA : 1;
         ctx!.beginPath();
         ctx!.arc(x, y, radius, 0, Math.PI * 2);
         ctx!.fillStyle = color;
@@ -250,16 +289,16 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
           label.style.left = `${x}px`;
           label.style.top = `${height - PAD_BOTTOM * 0.55}px`;
           label.style.opacity = String(
-            activeIndex >= 0 && !timelineActive
-              ? 0.35
-              : 0.45 + intensity * 0.55,
+            isFuture ? 0.35 : 0.45 + intensity * 0.55,
           );
         }
       });
 
-      // Scrub guide line.
-      if (scrubT >= 0) {
-        const { x } = pointForFraction(scrubT, 0, bounds);
+      // Guide line: at effectiveScrubT, so it appears exactly under the
+      // pointer during direct scrubbing, or exactly at the active
+      // milestone's own position when driven by the timeline.
+      if (effectiveScrubT >= 0) {
+        const { x } = pointForFraction(effectiveScrubT, 0, bounds);
         ctx!.strokeStyle = lineColor;
         ctx!.globalAlpha = 0.25;
         ctx!.lineWidth = 1;
@@ -275,23 +314,17 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
     function updateTooltip() {
       const width = stage!.clientWidth;
       const height = stage!.clientHeight;
-      if (scrubT < 0 || !width || !height) {
+      const effectiveScrubT = getEffectiveScrubT();
+      if (effectiveScrubT < 0 || !width || !height) {
         tooltip!.style.opacity = "0";
         return;
       }
 
-      let nearest = milestones[0];
-      let nearestDistance = Infinity;
-      for (const milestone of milestones) {
-        const distance = Math.abs(milestone.t - scrubT);
-        if (distance < nearestDistance) {
-          nearestDistance = distance;
-          nearest = milestone;
-        }
-      }
+      const { index } = nearestMilestone(effectiveScrubT, milestones);
+      const nearest = milestones[index];
 
       const { x, y } = pointForMilestone(nearest, { width, height });
-      tooltip!.textContent = `${nearest.year} — ${nearest.label}`;
+      tooltip!.textContent = `${nearest.year} — ${nearest.headline}`;
       tooltip!.style.opacity = "1";
       // Clamp against the tooltip's actual rendered width, not a guessed
       // constant — a longer label needs more clearance than a short one.
@@ -305,6 +338,21 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
       updateTooltip();
     }
 
+    // Guards the synchronous re-entrant call into the onActiveMilestone
+    // subscription below that dispatching triggers on its own — this
+    // canvas already renders from the pointermove/leave that caused the
+    // dispatch, so it doesn't need the echo of its own event to trigger a
+    // second one.
+    let isSelfDispatch = false;
+
+    function dispatchActive(index: number | null) {
+      if (index === lastDispatched) return;
+      lastDispatched = index;
+      isSelfDispatch = true;
+      setActiveMilestone(index);
+      isSelfDispatch = false;
+    }
+
     function onPointerMove(event: PointerEvent) {
       const rect = stage!.getBoundingClientRect();
       const x = event.clientX - rect.left;
@@ -312,26 +360,26 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
         Math.max((x - PAD_X) / (rect.width - PAD_X * 2), 0),
         1,
       );
+      dispatchActive(nearestMilestone(scrubT, milestones).index);
       if (!raf) raf = requestAnimationFrame(() => { raf = 0; render(); });
     }
 
     function onPointerLeave() {
       scrubT = -1;
+      dispatchActive(null);
       render();
     }
 
-    // Timeline sync: TimelineActivator dispatches this on document (via
-    // bubbling) whenever the shared active milestone changes — hover,
-    // keyboard focus, or (below `lg`) scroll position. No guide line or
-    // tooltip appears for it (those stay reserved for direct pointer-scrub
-    // on this canvas); see the file's top comment for how this differs
-    // from scrubIntensity.
-    function onTimelineActive(event: Event) {
-      const detail = (event as CustomEvent<{ index: number | null }>).detail;
-      activeIndex = detail?.index ?? -1;
+    // Shared active-milestone sync: fires whenever TimelineActivator's own
+    // hover/focus/scroll — or this canvas's own dispatchActive above —
+    // changes the shared value. Self-dispatches are skipped (see
+    // isSelfDispatch) since this canvas already re-renders from the input
+    // handler that caused them.
+    const unsubscribeActive = onActiveMilestone((index) => {
+      if (isSelfDispatch) return;
+      externalIndex = index ?? -1;
       render();
-    }
-    document.addEventListener("journey:active", onTimelineActive);
+    });
 
     const resizeObserver = new ResizeObserver(() => render());
     resizeObserver.observe(stage);
@@ -359,7 +407,7 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
       themeObserver.disconnect();
       stage.removeEventListener("pointermove", onPointerMove);
       stage.removeEventListener("pointerleave", onPointerLeave);
-      document.removeEventListener("journey:active", onTimelineActive);
+      unsubscribeActive();
     };
   }, [milestones]);
 

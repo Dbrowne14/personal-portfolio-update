@@ -3,29 +3,14 @@ import { MilestoneList } from "./milestone-list";
 import { JourneyCanvasLoader } from "./journey-canvas-loader";
 import { TimelineActivator } from "./timeline-activator";
 
-// Server Component. The site's one signature interaction (01-vision.md, Act
-// II; ADR-013), built on the same ivory canvas as every other section — its
-// weight comes from typographic hierarchy, whitespace, and the chart's own
-// motion, not from a unique background. Real, server-rendered text
-// throughout — only JourneyCanvasLoader (and, conditionally, JourneyCanvas
-// beneath it) is client-side, and it receives the milestone data as a prop
-// rather than owning it.
-//
-// The grid below is the site's primary responsive pattern for this section:
-// single column below `md` (timeline only — JourneyCanvasLoader renders
-// nothing, so the second cell collapses to zero height), both stacked
-// between `md` and `lg` (chart reduced via `md:h-80`), and a permanent
-// two-column composition at `lg` and up (timeline left, chart right, same
-// row). The timeline is never a fallback the chart hides — it's always the
-// visible, accessible content; the chart is its visual counterpart.
 export function Journey() {
   const firstYear = journeyMilestones[0]?.year;
   const lastYear = journeyMilestones[journeyMilestones.length - 1]?.year;
 
   return (
-    <section className="relative border-t border-ink/16 bg-ivory px-7 py-28 md:py-36">
+    <section className="relative border-t border-ink/16 bg-ivory px-7 py-28 md:py-36 h-full">
       <div className="mx-auto flex max-w-350 flex-col">
-        <div className="max-w-xl">
+        <div className="max-w-[76ch]">
           <p className="font-mono text-meta text-accent uppercase tracking-[0.14em]">
             The journey · {firstYear}–{lastYear}
           </p>

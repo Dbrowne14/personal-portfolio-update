@@ -14,7 +14,11 @@ import { HalftonePortrait } from "./halftone-portrait";
 export function DecisionIntro() {
   const first = journeyMilestones[0];
   const last = journeyMilestones[journeyMilestones.length - 1];
-  const credentialLine = `${first.year} — ${first.label} → ${last.year} — ${last.label}`;
+  // Headline, not subtitle: both are short, symmetric chapter titles
+  // ("Learning the markets" → "Shipping products") that read as a bookend
+  // in this compact strip — the subtitle text is full-sentence length on
+  // the 2026 end and would overrun the uppercase/tracked treatment here.
+  const credentialLine = `${first.year} — ${first.headline} → ${last.year} — ${last.headline}`;
 
   return (
     <section className="border-t border-ink/16 bg-ivory px-7 py-24 md:py-28">
