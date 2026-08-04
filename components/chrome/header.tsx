@@ -21,7 +21,7 @@ export function Header() {
     <header className="fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between border-b border-ink/16 bg-ivory/85 px-7 backdrop-blur-md">
       <Link
         href="/"
-        className="masthead-name font-mono text-meta uppercase text-ink hover:text-accent"
+        className="masthead-name font-mono text-xs font-medium uppercase tracking-[0.08em] leading-none text-ink hover:text-accent"
       >
         David Browne
       </Link>
@@ -30,7 +30,7 @@ export function Header() {
           <Link
             key={item.href}
             href={item.href}
-            className="font-mono text-meta uppercase text-ink/70 hover:text-accent"
+            className="font-mono text-xs font-medium uppercase tracking-[0.08em] leading-none text-ink/70 hover:text-accent"
           >
             {item.label}
           </Link>
@@ -54,7 +54,7 @@ export function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="ml-4 font-mono text-meta uppercase text-ink/70 hover:text-accent"
+                className="ml-4 font-mono text-xs font-medium uppercase tracking-[0.08em] leading-none text-ink/70 hover:text-accent"
               >
                 {item.label}
               </Link>

@@ -51,7 +51,7 @@
  */
 @theme {
   --text-monument: clamp(4rem, 14.5vw, 11rem);
-  --text-monument--line-height: 0.95;
+  --text-monument--line-height: 0.9;
   --text-monument--letter-spacing: -0.025em;
 
   --text-h1: clamp(2.5rem, 6.4vw, 6rem);

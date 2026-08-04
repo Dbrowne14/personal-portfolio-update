@@ -22,7 +22,7 @@ export function Hero() {
           />
         </h1>
 
-        <p className="mt-8 max-w-md text-center font-mono text-meta uppercase tracking-[0.04em] text-ink/62">
+        <p className="mt-10 max-w-md text-center font-sans text-lg font-medium text-ink/62 md:text-xl">
           From evaluating products to shipping them.
         </p>
       </HeroStage>

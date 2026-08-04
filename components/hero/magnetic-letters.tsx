@@ -111,11 +111,11 @@ export function MagneticLetters({ lines }: MagneticLettersProps) {
       {lines.map((line) => (
         <div
           key={line.text}
-          className="flex font-sans text-monument font-extrabold"
+          className="flex font-sans text-monument font-bold"
           style={
             line.variant === "outline"
               ? {
-                  WebkitTextStroke: "1.5px var(--color-ink)",
+                  WebkitTextStroke: "2px var(--color-ink)",
                   color: "transparent",
                 }
               : { color: "var(--color-ink)" }

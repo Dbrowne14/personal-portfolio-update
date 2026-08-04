@@ -28,7 +28,7 @@ export function ThemeToggle() {
       // minimum (WCAG 2.5.8) without changing the visible text size or the
       // header's layout — the extra padding is invisible, only the hit
       // area grows.
-      className="-my-2 py-2 font-mono text-meta text-ink/70 uppercase tracking-[0.1em] hover:text-accent"
+      className="-my-2 py-2 font-mono text-xs font-medium text-ink/70 uppercase tracking-[0.08em] leading-none hover:text-accent"
     >
       <span className="theme-label-light">Dark</span>
       <span className="theme-label-dark">Light</span>
