@@ -1,7 +1,6 @@
 import { journeyMilestones } from "@/lib/content/journey";
 import { MilestoneList } from "./milestone-list";
-import { JourneyCanvasLoader } from "./journey-canvas-loader";
-import { TimelineActivator } from "./timeline-activator";
+import { JourneyInteraction } from "./journey-interaction";
 
 export function Journey() {
   const firstYear = journeyMilestones[0]?.year;
@@ -20,14 +19,9 @@ export function Journey() {
         </div>
 
         <div className="mt-16 md:mt-20">
-          <div className="grid grid-cols-1 gap-0 md:gap-16 lg:grid-cols-[minmax(24rem,2fr)_3fr] lg:gap-20">
-            <TimelineActivator>
-              <MilestoneList milestones={journeyMilestones} />
-            </TimelineActivator>
-            <div className="relative md:h-80 lg:h-auto lg:min-h-120">
-              <JourneyCanvasLoader milestones={journeyMilestones} />
-            </div>
-          </div>
+          <JourneyInteraction milestones={journeyMilestones}>
+            <MilestoneList milestones={journeyMilestones} />
+          </JourneyInteraction>
         </div>
       </div>
     </section>

@@ -15,12 +15,12 @@ interface MilestoneListProps {
 //
 // The fill line and each item's data-timeline-item/[data-active] styling
 // are inert markup by default — real content and correct appearance with
-// zero JavaScript. TimelineActivator (client), which wraps this component
+// zero JavaScript. JourneyInteraction (client), which wraps this component
 // in journey.tsx, is what actually moves the fill and toggles the active
-// state as the visitor scrolls, and (at `md` and up, where the chart
-// exists) dispatches the hover/focus event JourneyCanvas listens for to
-// glow the matching point on the graph. Without it mounting, this renders
-// as a plain static timeline, not a broken one.
+// state as the visitor scrolls, and (at `lg` and up, where the chart
+// exists) feeds the same active index to JourneyCanvas as a prop to glow
+// the matching point on the graph. Without it mounting, this renders as a
+// plain static timeline, not a broken one.
 //
 // Each `<li>` is a `tabIndex={0}` focus target purely so keyboard users get
 // the same graph-highlight affordance as a mouse hover — a deliberate
@@ -50,17 +50,29 @@ export function MilestoneList({ milestones }: MilestoneListProps) {
           >
             <span
               aria-hidden="true"
-              className={`absolute top-1.5 -left-10 h-2 w-2 rounded-full transition-all duration-300 group-data-active:h-3 group-data-active:w-3 ${
-                milestone.isSwitch || milestone.era === "engineering"
-                  ? "bg-accent"
-                  : "bg-ink/35 group-data-active:bg-accent"
+              className={`absolute -left-10 rounded-full transition-all duration-300 ${
+                milestone.isSwitch
+                  ? "top-1 h-3 w-3 bg-accent ring-4 ring-accent/20 group-data-active:h-3.5 group-data-active:w-3.5"
+                  : milestone.era === "engineering"
+                    ? "top-1.5 h-2 w-2 bg-accent group-data-active:h-3 group-data-active:w-3"
+                    : "top-1.5 h-2 w-2 bg-ink/35 group-data-active:h-3 group-data-active:w-3 group-data-active:bg-accent"
               }`}
             />
-            <p className="font-mono text-meta text-ink/50 transition-colors duration-300 group-data-active:text-ink">
+            <p
+              className={`font-mono text-meta transition-colors duration-300 ${
+                milestone.isSwitch
+                  ? "font-semibold text-accent"
+                  : "text-ink/50 group-data-active:text-ink"
+              }`}
+            >
               {milestone.year}
               {milestone.isSwitch ? " — the switch" : ""}
             </p>
-            <p className="mt-3 max-w-lg font-sans text-xl font-bold tracking-tight text-ink/80 transition-colors duration-300 md:text-2xl group-data-active:text-ink">
+            <p
+              className={`mt-3 max-w-lg font-sans text-xl font-bold tracking-tight transition-colors duration-300 md:text-2xl group-data-active:text-ink ${
+                milestone.isSwitch ? "text-ink" : "text-ink/80"
+              }`}
+            >
               {milestone.headline}
             </p>
             <p className="mt-1.5 max-w-lg font-sans text-body text-ink/45 transition-colors duration-300 group-data-active:text-ink/70">

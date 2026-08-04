@@ -6,6 +6,8 @@ import type { Milestone } from "@/lib/content/journey";
 
 interface JourneyCanvasLoaderProps {
   milestones: Milestone[];
+  activeIndex: number | null;
+  onHoverIndexChange: (index: number | null) => void;
 }
 
 const JourneyCanvas = dynamic(
@@ -48,7 +50,11 @@ function getServerSnapshot(): boolean {
 // hydration mismatch. The check still only ever runs once per mount:
 // deciding whether to fetch a JS chunk at all shouldn't re-fire as someone
 // resizes their window mid-session.
-export function JourneyCanvasLoader({ milestones }: JourneyCanvasLoaderProps) {
+export function JourneyCanvasLoader({
+  milestones,
+  activeIndex,
+  onHoverIndexChange,
+}: JourneyCanvasLoaderProps) {
   const capable = useSyncExternalStore(
     subscribe,
     getSnapshot,
@@ -56,5 +62,11 @@ export function JourneyCanvasLoader({ milestones }: JourneyCanvasLoaderProps) {
   );
 
   if (!capable) return null;
-  return <JourneyCanvas milestones={milestones} />;
+  return (
+    <JourneyCanvas
+      milestones={milestones}
+      activeIndex={activeIndex}
+      onHoverIndexChange={onHoverIndexChange}
+    />
+  );
 }

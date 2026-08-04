@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import type { Milestone } from "@/lib/content/journey";
-import { onActiveMilestone, setActiveMilestone } from "./active-milestone";
 import {
   PAD_BOTTOM,
   PAD_TOP,
@@ -14,6 +13,18 @@ import {
 
 interface JourneyCanvasProps {
   milestones: Milestone[];
+  /** The shared active milestone, owned by JourneyInteraction — from
+   *  timeline hover/focus, mobile scroll, or this canvas's own pointer
+   *  activity reported back via onHoverIndexChange. null means nothing is
+   *  externally active; this canvas's own direct scrubbing still wins
+   *  regardless (see getEffectiveScrubT in the effect below). */
+  activeIndex: number | null;
+  /** Reports this canvas's own pointer activity up to JourneyInteraction —
+   *  the nearest milestone while scrubbing, or null on pointer leave.
+   *  JourneyInteraction folds this into the same hoverIndex a timeline
+   *  hover would set; it does not clear scrollIndex, so the shared state
+   *  naturally falls back to the mobile reading position where relevant. */
+  onHoverIndexChange: (index: number | null) => void;
 }
 
 // Returns the label's alignment relative to its anchor point, so an edge
@@ -69,39 +80,67 @@ function nearestMilestone(
   return { index, distance };
 }
 
-// Client Component. Only ever mounted by JourneyCanvasLoader after a
-// capability check passes, so everything here can assume a tablet-or-wider
-// stage — not necessarily a fine pointer, since touch tablets mount this
-// too. The whole subtree is aria-hidden: it is a decorative, interactive
-// duplicate of what MilestoneList already provides as real, accessible
-// text — not a second source of information. Draws once, immediately, on
-// mount and on resize; the only things that redraw afterward are
-// pointer-driven scrubbing on this canvas and the shared active-milestone
-// event (active-milestone.ts) that TimelineActivator — or this component's
-// own scrubbing — dispatches whenever the active milestone changes (hover,
-// keyboard focus, or — below `lg` — scroll position, on the timeline side;
-// direct pointer proximity, on this side) — both user-initiated and not
-// gated by reduced motion (01-vision.md's Interaction doctrine: this is
-// data inspection, not decoration). There is no idle loop and no
-// entrance-draw animation in either motion state, so there is nothing
-// additional for reduced motion to drop.
+// Client Component, and controlled: activeIndex is owned by the parent
+// (JourneyInteraction), not by this component. Only ever mounted by
+// JourneyCanvasLoader after a capability check passes, so everything here
+// can assume a tablet-or-wider stage — not necessarily a fine pointer,
+// since touch tablets mount this too. The whole subtree is aria-hidden: it
+// is a decorative, interactive duplicate of what MilestoneList already
+// provides as real, accessible text — not a second source of information.
+// Draws once, immediately, on mount and on resize; the only things that
+// redraw afterward are pointer-driven scrubbing on this canvas and changes
+// to the activeIndex prop (hover, keyboard focus, or — below `lg` — scroll
+// position, on the timeline side) — both user-initiated and not gated by
+// reduced motion (01-vision.md's Interaction doctrine: this is data
+// inspection, not decoration). There is no idle loop and no entrance-draw
+// animation in either motion state, so there is nothing additional for
+// reduced motion to drop.
 //
 // One active-milestone model, not two: everything below — marker growth,
 // halo bloom, the tooltip, the guide line, and the trace-up-to/dim-future
 // split — is a function of a single derived `effectiveScrubT`. When this
 // canvas is being hovered directly, it's the real pointer position (the
 // reference interaction: continuous, magnetic growth as you approach a
-// point). When a milestone is active via the timeline instead, it's that
-// milestone's own `t` — which makes the nearest-milestone distance exactly
-// zero, so the same code path that gives a directly-hovered point its full
-// treatment does it here too. There's no separate "restrained sync"
-// branch; hovering the timeline is meant to look exactly like hovering
-// that point on the graph.
-export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
+// point). When a milestone is active via the activeIndex prop instead,
+// it's that milestone's own `t` — which makes the nearest-milestone
+// distance exactly zero, so the same code path that gives a
+// directly-hovered point its full treatment does it here too. There's no
+// separate "restrained sync" branch; a timeline-driven activeIndex is
+// meant to look exactly like hovering that point on the graph.
+//
+// Listeners and observers (pointermove/leave, resize, theme) are set up
+// once per `milestones` change, not torn down and recreated every time
+// activeIndex changes — that prop is read from a ref inside a second,
+// focused effect that only triggers a redraw.
+export function JourneyCanvas({
+  milestones,
+  activeIndex,
+  onHoverIndexChange,
+}: JourneyCanvasProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const labelRefs = useRef<Array<HTMLSpanElement | null>>([]);
+
+  // Latest-callback ref. Kept current from a plain effect (no deps, runs
+  // after every render) rather than read/written during render — it's only
+  // ever read later, from event handlers, so this just needs to be settled
+  // before the next one fires, not synchronous with render itself.
+  const onHoverIndexChangeRef = useRef(onHoverIndexChange);
+  useEffect(() => {
+    onHoverIndexChangeRef.current = onHoverIndexChange;
+  });
+
+  const activeIndexRef = useRef(activeIndex);
+  const renderRef = useRef<() => void>(() => {});
+
+  // The one thing activeIndex changes cause: update the ref the draw
+  // effect reads, then redraw via the render function that effect stored.
+  // No listener/observer teardown, no re-subscription — just a repaint.
+  useEffect(() => {
+    activeIndexRef.current = activeIndex;
+    renderRef.current();
+  }, [activeIndex]);
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -115,22 +154,20 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
     const tSwitch = switchMilestone.t;
 
     // scrubT: this canvas's own pointer position, unset (-1) when not
-    // hovered. externalIndex: the shared active milestone as last reported
-    // by active-milestone.ts, from whichever input (usually the timeline)
-    // last set it. Direct pointer scrubbing always wins while it's
-    // happening — externalIndex only matters once the pointer leaves.
+    // hovered. Direct pointer scrubbing always wins while it's happening —
+    // the activeIndex prop (read via activeIndexRef) only matters once the
+    // pointer leaves.
     let scrubT = -1;
-    let externalIndex = -1;
-    let lastDispatched: number | null = null;
     let raf = 0;
 
     // Single derivation every render reads: the real pointer position when
-    // this canvas is being hovered directly, or the externally-active
-    // milestone's own coordinate otherwise — simulating a pointer sitting
-    // exactly on that point. -1 means genuinely idle.
+    // this canvas is being hovered directly, or the activeIndex prop's own
+    // milestone coordinate otherwise — simulating a pointer sitting exactly
+    // on that point. -1 means genuinely idle.
     function getEffectiveScrubT(): number {
       if (scrubT >= 0) return scrubT;
-      if (externalIndex >= 0) return milestones[externalIndex].t;
+      const external = activeIndexRef.current;
+      if (external !== null) return milestones[external].t;
       return -1;
     }
 
@@ -185,7 +222,7 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
         if (to <= from) return;
         ctx!.globalAlpha = alpha;
         ctx!.strokeStyle = lineColor;
-        ctx!.lineWidth = 1.5;
+        ctx!.lineWidth = 2;
         ctx!.beginPath();
         let firstPoint = true;
         for (let t = from; t <= to; t += 0.005) {
@@ -220,7 +257,7 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
         const { x, y } = pointForFraction(t, value, bounds);
         ctx!.globalAlpha =
           activeT !== null && t > activeT ? FUTURE_DIM_ALPHA : 1;
-        ctx!.fillRect(x, y - 1, 7, 2);
+        ctx!.fillRect(x, y - 1.5, 9, 3);
       }
       ctx!.globalAlpha = 1;
 
@@ -254,7 +291,12 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
           milestone.isSwitch || milestone.era === "engineering"
             ? accentColor
             : lineColor;
-        const radius = 3.5 + intensity * 3.5;
+        // The switch gets a larger base radius than every other marker —
+        // permanently, not just on hover — so it reads as the pivot even
+        // at rest, matching the timeline's own always-visible emphasis for
+        // this one milestone.
+        const baseRadius = milestone.isSwitch ? 5.5 : 4.5;
+        const radius = baseRadius + intensity * 4;
 
         // Halo bloom: a function of proximity to effectiveScrubT, so it
         // blooms for direct pointer proximity exactly as before, and blooms
@@ -276,10 +318,24 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
         ctx!.arc(x, y, radius, 0, Math.PI * 2);
         ctx!.fillStyle = color;
         ctx!.fill();
-        ctx!.lineWidth = 1.5;
+        ctx!.lineWidth = 2;
         ctx!.strokeStyle = bgColor;
         ctx!.stroke();
         ctx!.globalAlpha = 1;
+
+        // A permanent, low-key ring around the switch marker — unlike the
+        // halo above, not tied to intensity at all, so it's visible at
+        // rest. The one thing on this graph that says "pivot" without
+        // requiring a hover to notice it.
+        if (milestone.isSwitch) {
+          ctx!.beginPath();
+          ctx!.arc(x, y, radius + 5, 0, Math.PI * 2);
+          ctx!.strokeStyle = accentColor;
+          ctx!.lineWidth = 1.5;
+          ctx!.globalAlpha = isFuture ? FUTURE_DIM_ALPHA * 0.7 : 0.35;
+          ctx!.stroke();
+          ctx!.globalAlpha = 1;
+        }
 
         // Year label: real DOM text, positioned from the same bounds the
         // canvas just drew from (so the two can never disagree), brightening
@@ -289,7 +345,7 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
           label.style.left = `${x}px`;
           label.style.top = `${height - PAD_BOTTOM * 0.55}px`;
           label.style.opacity = String(
-            isFuture ? 0.35 : 0.45 + intensity * 0.55,
+            isFuture ? 0.35 : 0.6 + intensity * 0.4,
           );
         }
       });
@@ -337,21 +393,9 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
       draw();
       updateTooltip();
     }
-
-    // Guards the synchronous re-entrant call into the onActiveMilestone
-    // subscription below that dispatching triggers on its own — this
-    // canvas already renders from the pointermove/leave that caused the
-    // dispatch, so it doesn't need the echo of its own event to trigger a
-    // second one.
-    let isSelfDispatch = false;
-
-    function dispatchActive(index: number | null) {
-      if (index === lastDispatched) return;
-      lastDispatched = index;
-      isSelfDispatch = true;
-      setActiveMilestone(index);
-      isSelfDispatch = false;
-    }
+    // Stored so the activeIndex-sync effect above can trigger a redraw
+    // without re-running this setup effect.
+    renderRef.current = render;
 
     function onPointerMove(event: PointerEvent) {
       const rect = stage!.getBoundingClientRect();
@@ -360,26 +404,18 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
         Math.max((x - PAD_X) / (rect.width - PAD_X * 2), 0),
         1,
       );
-      dispatchActive(nearestMilestone(scrubT, milestones).index);
+      onHoverIndexChangeRef.current(nearestMilestone(scrubT, milestones).index);
       if (!raf) raf = requestAnimationFrame(() => { raf = 0; render(); });
     }
 
     function onPointerLeave() {
       scrubT = -1;
-      dispatchActive(null);
+      // Reports only this canvas's own hover state — JourneyInteraction
+      // folds it into hoverIndex alone, so scrollIndex (the mobile reading
+      // position) is untouched and activeIndex falls back to it naturally.
+      onHoverIndexChangeRef.current(null);
       render();
     }
-
-    // Shared active-milestone sync: fires whenever TimelineActivator's own
-    // hover/focus/scroll — or this canvas's own dispatchActive above —
-    // changes the shared value. Self-dispatches are skipped (see
-    // isSelfDispatch) since this canvas already re-renders from the input
-    // handler that caused them.
-    const unsubscribeActive = onActiveMilestone((index) => {
-      if (isSelfDispatch) return;
-      externalIndex = index ?? -1;
-      render();
-    });
 
     const resizeObserver = new ResizeObserver(() => render());
     resizeObserver.observe(stage);
@@ -407,7 +443,6 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
       themeObserver.disconnect();
       stage.removeEventListener("pointermove", onPointerMove);
       stage.removeEventListener("pointerleave", onPointerLeave);
-      unsubscribeActive();
     };
   }, [milestones]);
 
@@ -422,7 +457,7 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
             ref={(el) => {
               labelRefs.current[i] = el;
             }}
-            className={`pointer-events-none absolute font-mono text-meta whitespace-nowrap text-ink ${
+            className={`pointer-events-none absolute font-mono text-sm font-semibold tracking-[0.06em] whitespace-nowrap text-ink ${
               align === "left"
                 ? "translate-x-0"
                 : align === "right"
@@ -436,7 +471,7 @@ export function JourneyCanvas({ milestones }: JourneyCanvasProps) {
       })}
       <div
         ref={tooltipRef}
-        className="pointer-events-none absolute -translate-x-1/2 border border-ink/16 bg-ivory px-3 py-2 font-mono text-meta whitespace-nowrap text-ink opacity-0"
+        className="pointer-events-none absolute -translate-x-1/2 border border-ink/16 bg-ivory px-3.5 py-2.5 font-mono text-sm font-semibold tracking-[0.02em] whitespace-nowrap text-ink opacity-0"
       />
     </div>
   );
