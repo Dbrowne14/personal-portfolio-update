@@ -182,6 +182,25 @@ export function JourneyCanvas({
         .trim();
     }
 
+    // Applies alpha to whatever colour syntax readColor returns — the
+    // theme tokens are authored as oklch()/other function colours, so this
+    // is just "insert `/ alpha` before the closing paren" (valid CSS Color
+    // 4 syntax, which canvas fillStyle parses the same as any stylesheet);
+    // '#rrggbb' fallbacks get an appended alpha hex pair instead.
+    function withAlpha(color: string, alpha: number): string {
+      const a = Math.max(0, Math.min(1, alpha));
+      if (color.startsWith("#")) {
+        const hex =
+          color.length === 4
+            ? color.replace(/^#([0-9a-f])([0-9a-f])([0-9a-f])$/i, "#$1$1$2$2$3$3")
+            : color;
+        return `${hex}${Math.round(a * 255)
+          .toString(16)
+          .padStart(2, "0")}`;
+      }
+      return color.replace(/\)\s*$/, ` / ${a})`);
+    }
+
     function draw() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const width = stage!.clientWidth;
@@ -315,13 +334,18 @@ export function JourneyCanvas({
         // blooms for direct pointer proximity exactly as before, and blooms
         // fully around the exact milestone a timeline hover activates too —
         // "exactly the same visual state," not a restrained variant of it.
+        // A radial gradient fading to transparent, not a flat low-alpha
+        // disc — a true soft blur/glow, matching the blurred halo
+        // MilestoneList's own active dot now grows behind itself.
         if (intensity > 0.01) {
+          const haloRadius = radius + intensity * 10;
+          const halo = ctx!.createRadialGradient(x, y, 0, x, y, haloRadius);
+          halo.addColorStop(0, withAlpha(color, intensity * 0.35));
+          halo.addColorStop(1, withAlpha(color, 0));
           ctx!.beginPath();
-          ctx!.arc(x, y, radius + intensity * 7, 0, Math.PI * 2);
-          ctx!.fillStyle = color;
-          ctx!.globalAlpha = intensity * 0.18;
+          ctx!.arc(x, y, haloRadius, 0, Math.PI * 2);
+          ctx!.fillStyle = halo;
           ctx!.fill();
-          ctx!.globalAlpha = 1;
         }
 
         // Dim only markers past the active milestone — "reduce emphasis on
