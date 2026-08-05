@@ -15,6 +15,19 @@ export interface Project {
   highlights?: { title: string; body: string }[];
   links?: { label: string; href: string }[];
   confidential?: boolean;
+  // A short second line of description, beyond the one-liner — used by
+  // WorkTeaser wherever a project's homepage treatment has room for more
+  // than one sentence (the featured card, and This Portfolio's link-only
+  // artefact layout). Not every project needs one: evaluatorNote's
+  // reflective, wry register doesn't fit a plain factual paragraph, and
+  // highlights are sized for the full case-study page, not a homepage
+  // aside.
+  detail?: string;
+  // Short factual tags for the featured project's editorial footer on the
+  // homepage (e.g. "Live.", "Commercial client.") — kept as data rather
+  // than hardcoded JSX so a future featured project swap doesn't leave
+  // Default Social's specifics behind in the component.
+  featuredTags?: string[];
 }
 
 // content-brief.md confirms all six projects, their order, that Default
@@ -35,6 +48,18 @@ export const projects: Project[] = [
     stack: ["Next.js", "Sanity CMS", "Vercel"],
     featured: true,
     order: 1,
+    detail:
+      "Built for a real client using Next.js, Sanity CMS and a modern editorial architecture. Designed, developed and shipped into production with accessibility, performance and maintainability as first-class priorities.",
+    // First tag is the WorkTeaser footer's own group heading (no trailing
+    // period, unlike the rest) — rendered separately from the tags that
+    // follow it, not just another item in the same flat list.
+    featuredTags: [
+      "Production build",
+      "Commercial client.",
+      "Editorial CMS.",
+      "Accessible.",
+      "Live.",
+    ],
     evaluatorNote:
       "Low technical risk, real client, real deadline — the kind of build that proves delivery discipline as much as craft.",
     highlights: [
@@ -91,10 +116,22 @@ export const projects: Project[] = [
   {
     slug: "this-portfolio",
     title: "This portfolio",
-    oneLiner: "The site you're looking at right now.",
+    oneLiner: "The site you're browsing now.",
     stack: ["TypeScript", "React", "Next.js", "Tailwind CSS"],
     featured: true,
     order: 4,
+    detail:
+      "Built in public. Design system, architecture and implementation documented.",
+    // The one project that links off-site — WorkTeaser's link-only
+    // artefact layout (no thumbnail; showing a screenshot of the site
+    // you're already on is redundant) renders these alongside the usual
+    // case-study link.
+    links: [
+      {
+        label: "GitHub",
+        href: "https://github.com/Dbrowne14/personal-portfolio-update",
+      },
+    ],
     evaluatorNote:
       "The one project where the deliverable and the pitch are the same object — the site is its own case study.",
     highlights: [
