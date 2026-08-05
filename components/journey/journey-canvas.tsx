@@ -42,6 +42,19 @@ const HIGHLIGHT_RADIUS = 0.07;
 // milestone — "subtly reduce emphasis on future milestones," not hide them.
 const FUTURE_DIM_ALPHA = 0.4;
 
+// Clearance, in px, between the active point's centre and the bottom of the
+// year annotation (hairline included) — keeps the label "close to the
+// point" per the design brief without sitting on top of the marker/halo.
+const ANNOTATION_GAP = 18;
+// Extra px the annotation sits below its resting position while hidden, so
+// appearing is a small rise rather than a flat fade — collapses to no
+// movement under reduced motion via the transition itself being disabled.
+const ANNOTATION_ENTER_SHIFT = 4;
+// Minimum clearance from the stage's own top edge — for a milestone near
+// the top of the curve, the annotation's usual position above the point
+// would otherwise clip out of the canvas.
+const ANNOTATION_MIN_TOP = 8;
+
 function wobbleAt(t: number, milestones: Milestone[]): number {
   const raw = Math.sin(t * 60) * 0.015 + Math.sin(t * 13 + 1) * 0.022;
   let damp = 1;
@@ -111,6 +124,7 @@ export function JourneyCanvas({
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
+  const yearLabelRef = useRef<HTMLSpanElement>(null);
 
   // Latest-callback ref. Kept current from a plain effect (no deps, runs
   // after every render) rather than read/written during render — it's only
@@ -136,8 +150,9 @@ export function JourneyCanvas({
     const stage = stageRef.current;
     const canvas = canvasRef.current;
     const tooltip = tooltipRef.current;
+    const yearLabel = yearLabelRef.current;
     const ctx = canvas?.getContext("2d");
-    if (!stage || !canvas || !tooltip || !ctx) return;
+    if (!stage || !canvas || !tooltip || !yearLabel || !ctx) return;
 
     const switchMilestone =
       milestones.find((m) => m.isSwitch) ?? milestones[milestones.length - 1];
@@ -400,6 +415,7 @@ export function JourneyCanvas({
       const effectiveScrubT = getEffectiveScrubT();
       if (effectiveScrubT < 0 || !width || !height) {
         tooltip!.style.opacity = "0";
+        tooltip!.style.transform = `translateX(-50%) translateY(${ANNOTATION_ENTER_SHIFT}px)`;
         return;
       }
 
@@ -407,13 +423,23 @@ export function JourneyCanvas({
       const nearest = milestones[index];
 
       const { x, y } = pointForMilestone(nearest, { width, height });
-      tooltip!.textContent = `${nearest.year} — ${nearest.headline}`;
+      yearLabel!.textContent = `${nearest.year}`;
       tooltip!.style.opacity = "1";
-      // Clamp against the tooltip's actual rendered width, not a guessed
-      // constant — a longer label needs more clearance than a short one.
+      tooltip!.style.transform = "translateX(-50%) translateY(0)";
+      // Clamp against the annotation's actual rendered size, not a guessed
+      // constant — "2026" and "2016" don't take the same clearance, and the
+      // hairline adds a fixed amount of height beneath the year itself.
       const halfWidth = tooltip!.offsetWidth / 2 + 8;
-      tooltip!.style.left = `${Math.min(Math.max(x, halfWidth), width - halfWidth)}px`;
-      tooltip!.style.top = `${Math.max(y - 44, 8)}px`;
+      const clampedX = Math.min(Math.max(x, halfWidth), width - halfWidth);
+      // Usual position is fully above the point; only a milestone near the
+      // very top of the curve (small y) needs the extra clamp against
+      // ANNOTATION_MIN_TOP to avoid clipping the canvas's top edge.
+      const clampedTop = Math.max(
+        y - ANNOTATION_GAP - tooltip!.offsetHeight,
+        ANNOTATION_MIN_TOP,
+      );
+      tooltip!.style.left = `${clampedX}px`;
+      tooltip!.style.top = `${clampedTop}px`;
     }
 
     function render() {
@@ -476,10 +502,24 @@ export function JourneyCanvas({
   return (
     <div ref={stageRef} aria-hidden="true" className="absolute inset-0">
       <canvas ref={canvasRef} className="block h-full w-full" />
+      {/* Minimal year annotation — no box/border/background, the timeline
+          (MilestoneList) remains the one place headline/role/detail text
+          lives. left/top/transform/opacity are all imperative (updateTooltip
+          above); only the transition itself is declared here, so
+          prefers-reduced-motion's global override (globals.css) collapses it
+          to an instant state change with no extra branching needed. */}
       <div
         ref={tooltipRef}
-        className="pointer-events-none absolute -translate-x-1/2 border border-ink/16 bg-ivory px-3.5 py-2.5 font-mono text-sm font-semibold tracking-[0.02em] whitespace-nowrap text-ink opacity-0"
-      />
+        className="pointer-events-none absolute flex flex-col items-center opacity-0 transition-[opacity,transform] duration-150 ease-out motion-reduce:transition-none"
+      >
+        <span
+          ref={yearLabelRef}
+          className="font-mono text-meta font-semibold whitespace-nowrap text-accent"
+        />
+        {/* Short, restrained hairline down toward the active point — an
+            orientation cue, not a second tooltip element. */}
+        <span aria-hidden="true" className="mt-1.5 h-2 w-px bg-accent/50" />
+      </div>
     </div>
   );
 }

@@ -62,7 +62,7 @@ export function MilestoneList({ milestones }: MilestoneListProps) {
               className={`font-mono text-meta transition-colors duration-300 ${
                 milestone.isSwitch
                   ? "font-semibold text-accent"
-                  : "text-ink/50 group-data-active:text-ink"
+                  : "text-ink/50 group-data-active:text-ink group-data-active:font-extrabold"
               }`}
             >
               {milestone.year}
@@ -79,9 +79,23 @@ export function MilestoneList({ milestones }: MilestoneListProps) {
             >
               {milestone.headline}
             </p>
-            <p className="mt-1.5 max-w-lg font-sans text-body text-ink/45 transition-colors duration-300 group-data-active:text-ink/70">
-              {milestone.subtitle}
-            </p>
+            {/* The factual role/title — hidden at rest so the resting
+                timeline is just year + headline, revealed underneath the
+                headline once this item is active. Stays in the neutral ink
+                family even when active (never bronze): supporting context
+                for the headline, not a second one.
+                grid-rows-[0fr] -> [1fr] on the wrapper animates height
+                smoothly without measuring/animating an explicit px value;
+                padding (not margin) carries the gap from the headline so
+                nothing peeks out of the overflow-hidden clip while
+                collapsed. */}
+            <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out group-data-active:grid-rows-[1fr] motion-reduce:transition-none">
+              <div className="overflow-hidden">
+                <p className="max-w-lg translate-y-1 pt-1.5 font-sans text-body text-ink/45 opacity-0 transition-[opacity,transform] duration-200 ease-out group-data-active:translate-y-0 group-data-active:opacity-100 motion-reduce:transition-none">
+                  {milestone.subtitle}
+                </p>
+              </div>
+            </div>
           </li>
         ))}
       </ol>
