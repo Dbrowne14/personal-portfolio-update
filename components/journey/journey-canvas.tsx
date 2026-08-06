@@ -55,23 +55,23 @@ const ANNOTATION_ENTER_SHIFT = 4;
 // would otherwise clip out of the canvas.
 const ANNOTATION_MIN_TOP = 8;
 
-function wobbleAt(t: number, milestones: Milestone[]): number {
+const wobbleAt = (t: number, milestones: Milestone[]): number => {
   const raw = Math.sin(t * 60) * 0.015 + Math.sin(t * 13 + 1) * 0.022;
   let damp = 1;
   for (const milestone of milestones) {
     damp = Math.min(damp, Math.abs(t - milestone.t) / 0.05);
   }
   return raw * Math.min(Math.max(damp, 0), 1);
-}
+};
 
 // The one nearest-milestone lookup, shared by the tooltip, the marker
 // growth/halo intensity, and the trace-up-to/dim-future split — so there is
 // exactly one notion of "which milestone is active," not a tooltip-side
 // copy and a marker-side copy that could drift apart.
-function nearestMilestone(
+const nearestMilestone = (
   t: number,
   milestones: Milestone[],
-): { index: number; distance: number } {
+): { index: number; distance: number } => {
   let index = 0;
   let distance = Infinity;
   milestones.forEach((milestone, i) => {
@@ -82,7 +82,7 @@ function nearestMilestone(
     }
   });
   return { index, distance };
-}
+};
 
 // Client Component, and controlled: activeIndex is owned by the parent
 // (JourneyInteraction), not by this component. Only ever mounted by
@@ -116,11 +116,11 @@ function nearestMilestone(
 // once per `milestones` change, not torn down and recreated every time
 // activeIndex changes — that prop is read from a ref inside a second,
 // focused effect that only triggers a redraw.
-export function JourneyCanvas({
+export const JourneyCanvas = ({
   milestones,
   activeIndex,
   onHoverIndexChange,
-}: JourneyCanvasProps) {
+}: JourneyCanvasProps) => {
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -169,25 +169,25 @@ export function JourneyCanvas({
     // this canvas is being hovered directly, or the activeIndex prop's own
     // milestone coordinate otherwise — simulating a pointer sitting exactly
     // on that point. -1 means genuinely idle.
-    function getEffectiveScrubT(): number {
+    const getEffectiveScrubT = (): number => {
       if (scrubT >= 0) return scrubT;
       const external = activeIndexRef.current;
       if (external !== null) return milestones[external].t;
       return -1;
-    }
+    };
 
-    function readColor(name: string): string {
+    const readColor = (name: string): string => {
       return getComputedStyle(document.documentElement)
         .getPropertyValue(name)
         .trim();
-    }
+    };
 
     // Applies alpha to whatever colour syntax readColor returns — the
     // theme tokens are authored as oklch()/other function colours, so this
     // is just "insert `/ alpha` before the closing paren" (valid CSS Color
     // 4 syntax, which canvas fillStyle parses the same as any stylesheet);
     // '#rrggbb' fallbacks get an appended alpha hex pair instead.
-    function withAlpha(color: string, alpha: number): string {
+    const withAlpha = (color: string, alpha: number): string => {
       const a = Math.max(0, Math.min(1, alpha));
       if (color.startsWith("#")) {
         const hex =
@@ -199,9 +199,9 @@ export function JourneyCanvas({
           .padStart(2, "0")}`;
       }
       return color.replace(/\)\s*$/, ` / ${a})`);
-    }
+    };
 
-    function draw() {
+    const draw = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const width = stage!.clientWidth;
       const height = stage!.clientHeight;
@@ -242,7 +242,7 @@ export function JourneyCanvas({
       const curveBoundary =
         activeT === null ? tSwitch : Math.min(Math.max(activeT, 0), tSwitch);
 
-      function strokeCurve(from: number, to: number, alpha: number) {
+      const strokeCurve = (from: number, to: number, alpha: number) => {
         if (to <= from) return;
         ctx!.globalAlpha = alpha;
         ctx!.strokeStyle = lineColor;
@@ -262,7 +262,7 @@ export function JourneyCanvas({
         }
         ctx!.stroke();
         ctx!.globalAlpha = 1;
-      }
+      };
 
       strokeCurve(0, curveBoundary, 1);
       if (activeT !== null && curveBoundary < tSwitch) {
@@ -431,9 +431,9 @@ export function JourneyCanvas({
         ctx!.globalAlpha = 1;
       }
 
-    }
+    };
 
-    function updateTooltip() {
+    const updateTooltip = () => {
       const width = stage!.clientWidth;
       const height = stage!.clientHeight;
       const effectiveScrubT = getEffectiveScrubT();
@@ -464,17 +464,17 @@ export function JourneyCanvas({
       );
       tooltip!.style.left = `${clampedX}px`;
       tooltip!.style.top = `${clampedTop}px`;
-    }
+    };
 
-    function render() {
+    const render = () => {
       draw();
       updateTooltip();
-    }
+    };
     // Stored so the activeIndex-sync effect above can trigger a redraw
     // without re-running this setup effect.
     renderRef.current = render;
 
-    function onPointerMove(event: PointerEvent) {
+    const onPointerMove = (event: PointerEvent) => {
       const rect = stage!.getBoundingClientRect();
       const x = event.clientX - rect.left;
       scrubT = Math.min(
@@ -483,16 +483,16 @@ export function JourneyCanvas({
       );
       onHoverIndexChangeRef.current(nearestMilestone(scrubT, milestones).index);
       if (!raf) raf = requestAnimationFrame(() => { raf = 0; render(); });
-    }
+    };
 
-    function onPointerLeave() {
+    const onPointerLeave = () => {
       scrubT = -1;
       // Reports only this canvas's own hover state — JourneyInteraction
       // folds it into hoverIndex alone, so scrollIndex (the mobile reading
       // position) is untouched and activeIndex falls back to it naturally.
       onHoverIndexChangeRef.current(null);
       render();
-    }
+    };
 
     const resizeObserver = new ResizeObserver(() => render());
     resizeObserver.observe(stage);
@@ -546,4 +546,4 @@ export function JourneyCanvas({
       </div>
     </div>
   );
-}
+};

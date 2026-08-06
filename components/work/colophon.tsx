@@ -8,7 +8,7 @@ import type { Project } from "@/lib/content/projects";
 // second, separately-authored list — is what that guarantee actually
 // rests on: edit one project's stack and this updates with it, with no
 // second edit required anywhere.
-export function Colophon({ projects }: { projects: Project[] }) {
+export const Colophon = ({ projects }: { projects: Project[] }) => {
   const stack = Array.from(new Set(projects.flatMap((p) => p.stack))).sort();
 
   return (
@@ -18,4 +18,4 @@ export function Colophon({ projects }: { projects: Project[] }) {
       </p>
     </footer>
   );
-}
+};

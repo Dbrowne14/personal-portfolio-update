@@ -22,7 +22,7 @@ interface HalftonePortraitProps {
 // only starts for a fine pointer with no reduced-motion preference; static
 // only otherwise — confirmed by no requestAnimationFrame call happening in
 // either of those cases, not just by intent.
-export function HalftonePortrait({ src, alt }: HalftonePortraitProps) {
+export const HalftonePortrait = ({ src, alt }: HalftonePortraitProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -55,24 +55,24 @@ export function HalftonePortrait({ src, alt }: HalftonePortraitProps) {
     const image = new window.Image();
     image.src = src;
 
-    function inkColor(): string {
+    const inkColor = (): string => {
       return (
         getComputedStyle(document.documentElement)
           .getPropertyValue("--color-ink")
           .trim() || "#1b1a17"
       );
-    }
+    };
 
-    function dotFor(lum: number): { r: number; a: number } | null {
+    const dotFor = (lum: number): { r: number; a: number } | null => {
       const v = Math.pow(
         Math.max(0, Math.min(1, (1 - lum - 0.08) / 0.8)),
         0.9,
       );
       if (v < 0.05) return null;
       return { r: 0.6 + v * 2.4, a: 0.3 + v * 0.7 };
-    }
+    };
 
-    function layout() {
+    const layout = () => {
       const width = container!.clientWidth;
       const height = container!.clientHeight;
       if (!width || !height || !image.complete) return;
@@ -108,9 +108,9 @@ export function HalftonePortrait({ src, alt }: HalftonePortraitProps) {
       }
 
       drawStatic();
-    }
+    };
 
-    function drawStatic() {
+    const drawStatic = () => {
       const width = container!.clientWidth;
       const height = container!.clientHeight;
       ctx!.clearRect(0, 0, width, height);
@@ -124,9 +124,9 @@ export function HalftonePortrait({ src, alt }: HalftonePortraitProps) {
         ctx!.fill();
       }
       ctx!.globalAlpha = 1;
-    }
+    };
 
-    function tick() {
+    const tick = () => {
       const width = container!.clientWidth;
       const height = container!.clientHeight;
       ctx!.clearRect(0, 0, width, height);
@@ -157,18 +157,18 @@ export function HalftonePortrait({ src, alt }: HalftonePortraitProps) {
       }
       ctx!.globalAlpha = 1;
       raf = requestAnimationFrame(tick);
-    }
+    };
 
-    function onPointerMove(event: PointerEvent) {
+    const onPointerMove = (event: PointerEvent) => {
       const rect = container!.getBoundingClientRect();
       mouseX = event.clientX - rect.left;
       mouseY = event.clientY - rect.top;
-    }
+    };
 
-    function onPointerLeave() {
+    const onPointerLeave = () => {
       mouseX = -9999;
       mouseY = -9999;
-    }
+    };
 
     image.onload = () => {
       layout();
@@ -233,4 +233,4 @@ export function HalftonePortrait({ src, alt }: HalftonePortraitProps) {
       )}
     </div>
   );
-}
+};

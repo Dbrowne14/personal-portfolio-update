@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 // with the real" — the ruled index below is deliberately denser and
 // less airy than earlier sections, matching the Visual Rhythm doctrine's
 // "densest, busiest stretch on the site."
-export default function WorkPage() {
+const WorkPage = () => {
   // ItemList for the whole index, same dangerouslySetInnerHTML pattern
   // used per-project on /work/[slug].
   const itemList = {
@@ -60,4 +60,6 @@ export default function WorkPage() {
       </section>
     </main>
   );
-}
+};
+
+export default WorkPage;

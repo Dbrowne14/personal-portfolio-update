@@ -18,7 +18,7 @@ const SCROLL_THRESHOLD = 24;
 // The scroll listener is rAF-throttled since `scroll` fires far more often
 // than the browser can paint; passive: true keeps it off the scrolling
 // thread's critical path.
-export function Masthead() {
+export const Masthead = () => {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -75,4 +75,4 @@ export function Masthead() {
       </Link>
     </div>
   );
-}
+};

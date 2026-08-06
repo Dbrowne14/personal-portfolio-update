@@ -44,7 +44,7 @@ const PRINCIPLES: Principle[] = [
 // a persistent mono numeral per principle is the whole visual device —
 // hierarchy, spacing and a thin rule between entries carry the rhythm,
 // nothing else. InPracticeToggle is the only client piece, used four times.
-export function HowIBuild() {
+export const HowIBuild = () => {
   return (
     <section className="border-t border-ink/16 bg-ivory px-7 py-24 md:py-28">
       <div className="mx-auto max-w-350">
@@ -103,4 +103,4 @@ export function HowIBuild() {
       </div>
     </section>
   );
-}
+};

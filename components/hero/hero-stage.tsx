@@ -21,7 +21,7 @@ const useIsomorphicLayoutEffect =
 // Full motion: tracked via a rAF-throttled scroll handler. Reduced motion:
 // no continuous transform at all — a plain threshold swap between two
 // instant states, per 03-roadmap.md's M2 risk note.
-export function HeroStage({ children }: { children: React.ReactNode }) {
+export const HeroStage = ({ children }: { children: React.ReactNode }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useIsomorphicLayoutEffect(() => {
@@ -73,4 +73,4 @@ export function HeroStage({ children }: { children: React.ReactNode }) {
       {children}
     </div>
   );
-}
+};

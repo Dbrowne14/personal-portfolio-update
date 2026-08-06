@@ -7,7 +7,7 @@ const TICK_COUNT = 28;
 // line is still running"). Fades and stops short of the far edge rather
 // than spanning full width — "unfinished on purpose," per Act V's linework
 // doctrine, not a chart to be read, just the line still running.
-export function TickMotif() {
+export const TickMotif = () => {
   return (
     <div
       aria-hidden="true"
@@ -28,4 +28,4 @@ export function TickMotif() {
       ))}
     </div>
   );
-}
+};

@@ -4,7 +4,7 @@
 // contact-language guidance: full-time roles, recruiter conversations,
 // product/technical discussions, collaboration, networking, and occasional
 // freelance work — no sales language, no mailto link.
-export function ElsewhereCard() {
+export const ElsewhereCard = () => {
   return (
     <div className="reveal-on-scroll border-t border-ink/16 pt-8 md:border-t-0 md:border-l md:pt-0 md:pl-10">
       <p className={labelClass}>Elsewhere</p>
@@ -34,7 +34,7 @@ export function ElsewhereCard() {
       </p>
     </div>
   );
-}
+};
 
 const labelClass =
   "font-mono text-meta text-ink/62 uppercase tracking-[0.1em]";

@@ -6,8 +6,8 @@
 // (ADR-011). Which of the two labels below is visible is decided entirely
 // by CSS keyed to that attribute (see .theme-label-* in globals.css), so
 // there is nothing here for React to get right or wrong on first render.
-export function ThemeToggle() {
-  function toggleTheme() {
+export const ThemeToggle = () => {
+  const toggleTheme = () => {
     const root = document.documentElement;
     const next = root.dataset.theme === "dark" ? "light" : "dark";
     root.dataset.theme = next;
@@ -17,7 +17,7 @@ export function ThemeToggle() {
       // Private browsing / storage disabled: theme still applies for this
       // page view, it just won't persist across a reload.
     }
-  }
+  };
 
   return (
     <button
@@ -35,4 +35,4 @@ export function ThemeToggle() {
       <span className="theme-label-dark">Light</span>
     </button>
   );
-}
+};

@@ -7,7 +7,7 @@ import { PortfolioArtifactCard } from "./portfolio-artifact-card";
 // feature on the left (lg:grid-cols-[5fr_3fr]), the supporting projects
 // stacked as a compact index on the right. Homepage role/order come from
 // lib/content/projects.ts — this file only composes and lays out.
-export function WorkTeaser() {
+export const WorkTeaser = () => {
   const flagship = projects.find(
     (project) => project.homepageRole === "flagship",
   );
@@ -70,4 +70,4 @@ export function WorkTeaser() {
       </div>
     </section>
   );
-}
+};

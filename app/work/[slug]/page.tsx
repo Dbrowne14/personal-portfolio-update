@@ -9,15 +9,15 @@ import { ProjectGallery } from "@/components/work/project-gallery";
 // Real routes, not client-managed in-place expansion (02-architecture.md,
 // ADR-008) — generateStaticParams and generateMetadata exported directly
 // from this file, not a separate convention file, per 02-architecture.md.
-export async function generateStaticParams() {
+export const generateStaticParams = async () => {
   return projects.map((project) => ({ slug: project.slug }));
-}
+};
 
-export async function generateMetadata({
+export const generateMetadata = async ({
   params,
 }: {
   params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+}): Promise<Metadata> => {
   const { slug } = await params;
   const project = projects.find((p) => p.slug === slug);
   if (!project) return {};
@@ -30,13 +30,13 @@ export async function generateMetadata({
     openGraph: { title, description: project.oneLiner, url },
     twitter: { title, description: project.oneLiner },
   };
-}
+};
 
-export default async function CaseStudyPage({
+const CaseStudyPage = async ({
   params,
 }: {
   params: Promise<{ slug: string }>;
-}) {
+}) => {
   const { slug } = await params;
   const project = projects.find((p) => p.slug === slug);
   if (!project) notFound();
@@ -117,4 +117,6 @@ export default async function CaseStudyPage({
       </section>
     </main>
   );
-}
+};
+
+export default CaseStudyPage;

@@ -1,13 +1,13 @@
 import Image from "next/image";
 import type { Project } from "@/lib/content/projects";
 
-export function ProjectImage({
+export const ProjectImage = ({
   project,
   variant,
 }: {
   project: Project;
   variant: "featured" | "compact";
-}) {
+}) => {
   const featured = variant === "featured";
 
   if (project.heroImage) {
@@ -42,4 +42,4 @@ export function ProjectImage({
       </span>
     </div>
   );
-}
+};

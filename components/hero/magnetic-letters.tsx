@@ -16,7 +16,7 @@ interface MagneticLettersProps {
 // subtree is aria-hidden. No-ops entirely — no listeners, no rAF loop — for
 // coarse pointers or prefers-reduced-motion: those visitors get the exact
 // same static markup with none of the interaction cost.
-export function MagneticLetters({ lines }: MagneticLettersProps) {
+export const MagneticLetters = ({ lines }: MagneticLettersProps) => {
   const stageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,20 +45,20 @@ export function MagneticLetters({ lines }: MagneticLettersProps) {
     // settled instead of running forever; onPointerMove restarts it.
     const REST_EPSILON = 0.02;
 
-    function onPointerMove(event: PointerEvent) {
+    const onPointerMove = (event: PointerEvent) => {
       const rect = stage!.getBoundingClientRect();
       mouseX = event.clientX - rect.left;
       mouseY = event.clientY - rect.top;
       if (!raf) raf = requestAnimationFrame(tick);
-    }
+    };
 
-    function onPointerLeave() {
+    const onPointerLeave = () => {
       mouseX = -9999;
       mouseY = -9999;
       if (!raf) raf = requestAnimationFrame(tick);
-    }
+    };
 
-    function tick() {
+    const tick = () => {
       const stageRect = stage!.getBoundingClientRect();
       let settled = mouseX === -9999;
       letters.forEach((el, i) => {
@@ -93,7 +93,7 @@ export function MagneticLetters({ lines }: MagneticLettersProps) {
         el.style.transform = `translate(${s.x.toFixed(1)}px, ${s.y.toFixed(1)}px) rotate(${s.rot.toFixed(2)}deg)`;
       });
       raf = settled ? 0 : requestAnimationFrame(tick);
-    }
+    };
 
     stage.addEventListener("pointermove", onPointerMove);
     stage.addEventListener("pointerleave", onPointerLeave);
@@ -134,4 +134,4 @@ export function MagneticLetters({ lines }: MagneticLettersProps) {
       ))}
     </div>
   );
-}
+};

@@ -17,7 +17,7 @@ import { navItems } from "./nav-items";
 // Active match is prefix-based, not exact-only: `pathname === href` or
 // `pathname` starts with `href + "/"`, so a nested route like
 // `/work/[slug]` still keeps Work active, not just `/work` itself.
-export function NavLinks() {
+export const NavLinks = () => {
   const pathname = usePathname();
 
   return (
@@ -49,4 +49,4 @@ export function NavLinks() {
       })}
     </>
   );
-}
+};

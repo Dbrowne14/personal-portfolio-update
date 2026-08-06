@@ -18,17 +18,17 @@ const JourneyCanvas = dynamic(
 // No live subscription: the capability check is deliberately one-shot (see
 // below), so the subscribe callback is never invoked and the snapshot is
 // read exactly once, on the client's first render after hydration.
-function subscribe() {
+const subscribe = () => {
   return () => {};
-}
+};
 
-function getSnapshot(): boolean {
+const getSnapshot = (): boolean => {
   return window.matchMedia("(min-width: 768px)").matches;
-}
+};
 
-function getServerSnapshot(): boolean {
+const getServerSnapshot = (): boolean => {
   return false;
-}
+};
 
 // Not named in 03-roadmap.md's file list, but required by its own
 // architectural decision: "JourneyCanvas is loaded via a dynamic import
@@ -50,11 +50,11 @@ function getServerSnapshot(): boolean {
 // hydration mismatch. The check still only ever runs once per mount:
 // deciding whether to fetch a JS chunk at all shouldn't re-fire as someone
 // resizes their window mid-session.
-export function JourneyCanvasLoader({
+export const JourneyCanvasLoader = ({
   milestones,
   activeIndex,
   onHoverIndexChange,
-}: JourneyCanvasLoaderProps) {
+}: JourneyCanvasLoaderProps) => {
   const capable = useSyncExternalStore(
     subscribe,
     getSnapshot,
@@ -69,4 +69,4 @@ export function JourneyCanvasLoader({
       onHoverIndexChange={onHoverIndexChange}
     />
   );
-}
+};

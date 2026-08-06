@@ -4,7 +4,7 @@ import Link from "next/link";
 // interactive state, so it needs no client boundary. Styled to match the
 // rest of the site (same kicker/h1/body pattern as every other page)
 // rather than left as Next's unstyled default.
-export default function NotFound() {
+const NotFound = () => {
   return (
     <main className="flex flex-1 flex-col items-center justify-center border-t border-ink/16 bg-ivory px-7 py-32 text-center">
       <p className="font-mono text-meta text-accent uppercase tracking-[0.14em]">
@@ -25,4 +25,6 @@ export default function NotFound() {
       </Link>
     </main>
   );
-}
+};
+
+export default NotFound;

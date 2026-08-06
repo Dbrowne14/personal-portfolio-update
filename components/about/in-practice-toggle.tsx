@@ -6,7 +6,11 @@ import { useId, useState } from "react";
 // local state, not coordinated like the Work page's single-open accordion,
 // since these read as footnotes on their own principle, not siblings in
 // one list where only one should be open at a time.
-export function InPracticeToggle({ children }: { children: React.ReactNode }) {
+export const InPracticeToggle = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [open, setOpen] = useState(false);
   const panelId = useId();
 
@@ -56,4 +60,4 @@ export function InPracticeToggle({ children }: { children: React.ReactNode }) {
       </div>
     </div>
   );
-}
+};

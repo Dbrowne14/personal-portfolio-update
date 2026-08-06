@@ -6,22 +6,22 @@ import type { Project } from "@/lib/content/projects";
 import { TechCredit } from "./tech-credit";
 import { ArtifactLink } from "./artifact-link";
 
-function subscribeToHash(callback: () => void) {
+const subscribeToHash = (callback: () => void) => {
   window.addEventListener("hashchange", callback);
   return () => window.removeEventListener("hashchange", callback);
-}
-function getHash() {
+};
+const getHash = () => {
   return window.location.hash.slice(1);
-}
-function getServerHash() {
+};
+const getServerHash = () => {
   return "";
-}
+};
 
 // The one client boundary for the whole index (ADR-005 precedent, see
 // MobileMenu): only one project may be expanded at a time, so the open/
 // closed state has to live above the individual rows. Everything else in
 // components/work stays a Server Component.
-export function ExpandableProjectList({ projects }: { projects: Project[] }) {
+export const ExpandableProjectList = ({ projects }: { projects: Project[] }) => {
   const ordered = [...projects].sort((a, b) => a.order - b.order);
 
   // Deep-linkable rows: /work#staple opens that project pre-expanded,
@@ -39,7 +39,7 @@ export function ExpandableProjectList({ projects }: { projects: Project[] }) {
   );
   const openSlug = manualOpenSlug === undefined ? hashSlug : manualOpenSlug;
 
-  function handleToggle(slug: string) {
+  const handleToggle = (slug: string) => {
     const current = manualOpenSlug === undefined ? hashSlug : manualOpenSlug;
     const next = current === slug ? null : slug;
     window.history.replaceState(
@@ -48,7 +48,7 @@ export function ExpandableProjectList({ projects }: { projects: Project[] }) {
       next ? `#${next}` : window.location.pathname + window.location.search,
     );
     setManualOpenSlug(next);
-  }
+  };
 
   return (
     <ol className="border-t border-ink/16">
@@ -62,9 +62,9 @@ export function ExpandableProjectList({ projects }: { projects: Project[] }) {
       ))}
     </ol>
   );
-}
+};
 
-function ExpandableProjectRow({
+const ExpandableProjectRow = ({
   project,
   isOpen,
   onToggle,
@@ -72,7 +72,7 @@ function ExpandableProjectRow({
   project: Project;
   isOpen: boolean;
   onToggle: (slug: string) => void;
-}) {
+}) => {
   const triggerId = `${project.slug}-trigger`;
   const panelId = `${project.slug}-panel`;
 
@@ -151,7 +151,7 @@ function ExpandableProjectRow({
       </div>
     </li>
   );
-}
+};
 
 // Mechanical categorisation of each project's own `stack` entries — not
 // hand-authored per project, so it can't drift out of sync the way a
@@ -168,7 +168,7 @@ const TECH_CATEGORIES: Record<string, string> = {
 };
 const CATEGORY_ORDER = ["Frontend", "Backend", "CMS", "Database", "Deployment"];
 
-function groupStack(stack: string[]) {
+const groupStack = (stack: string[]) => {
   const groups = new Map<string, string[]>();
   for (const tech of stack) {
     const category = TECH_CATEGORIES[tech] ?? "Other";
@@ -177,26 +177,26 @@ function groupStack(stack: string[]) {
   return [...groups.keys()]
     .sort((a, b) => CATEGORY_ORDER.indexOf(a) - CATEGORY_ORDER.indexOf(b))
     .map((category) => ({ category, items: groups.get(category)! }));
-}
+};
 
 // Reading width for narrative copy (Overview, Highlights) — the left
 // column is 3fr (~60% of the row), too wide for comfortable line length
 // on its own.
 const READING_WIDTH = "max-w-[540px]";
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
+const SectionLabel = ({ children }: { children: React.ReactNode }) => {
   return (
     <p className="font-mono text-meta text-accent uppercase tracking-[0.14em]">
       {children}
     </p>
   );
-}
+};
 
 // The right column's metadata rows: a muted grey label next to its value,
 // both on one line — deliberately not the bronze section-label treatment,
 // since these are facts, not narrative sections. Shared by the standard
 // Technologies panel and the NDA facts panel below.
-function FactRow({ label, value }: { label: string; value: string }) {
+const FactRow = ({ label, value }: { label: string; value: string }) => {
   return (
     <div className="grid grid-cols-[6rem_1fr] items-baseline gap-x-6">
       <span className="font-mono text-meta text-ink/62 uppercase tracking-[0.08em]">
@@ -205,7 +205,7 @@ function FactRow({ label, value }: { label: string; value: string }) {
       <span className="text-body font-semibold text-ink">{value}</span>
     </div>
   );
-}
+};
 
 // NDA projects replace the image + Technologies panel with this text-led
 // facts panel — no lock icons, no blurred/placeholder imagery, just the
@@ -213,7 +213,7 @@ function FactRow({ label, value }: { label: string; value: string }) {
 // (engagement, stack, outcome) by whitespace alone, matching the
 // engagement facts / tech facts / outcome facts split in the approved
 // content model.
-function NdaFactsPanel({ project }: { project: Project }) {
+const NdaFactsPanel = ({ project }: { project: Project }) => {
   const nda = project.nda ?? {};
   return (
     <div>
@@ -240,9 +240,9 @@ function NdaFactsPanel({ project }: { project: Project }) {
       </div>
     </div>
   );
-}
+};;
 
-function ExpandedProjectContent({ project }: { project: Project }) {
+const ExpandedProjectContent = ({ project }: { project: Project }) => {
   // Only the flagship gets a dedicated case-study page from here — every
   // other project's actions are inline Live Site / Source links.
   const isFlagship = project.homepageRole === "flagship";
@@ -377,4 +377,4 @@ function ExpandedProjectContent({ project }: { project: Project }) {
       </div>
     </div>
   );
-}
+};

@@ -19,7 +19,7 @@ export const alt = "David Browne — Full-stack product engineer";
 // A generic bold sans reads clearly at this size; the trade-off is a
 // slightly different typeface from the rest of the site, accepted here
 // rather than adding a font-fetching dependency for one static image.
-export default async function OpengraphImage() {
+const OpengraphImage = async () => {
   return new ImageResponse(
     (
       <div
@@ -71,4 +71,6 @@ export default async function OpengraphImage() {
     ),
     { ...size },
   );
-}
+};
+
+export default OpengraphImage;

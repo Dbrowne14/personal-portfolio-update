@@ -11,7 +11,7 @@ const fieldClass =
 // SubmitStatus supplies only the <form> action binding and the
 // pending/error state around them (02-architecture.md's client-wraps-
 // server-content pattern, reused from HeroStage and TimelineActivator).
-export function ContactForm() {
+export const ContactForm = () => {
   return (
     <div className="reveal-on-scroll">
       <p className="font-mono text-meta text-accent uppercase tracking-[0.14em]">
@@ -74,4 +74,4 @@ export function ContactForm() {
       </div>
     </div>
   );
-}
+};

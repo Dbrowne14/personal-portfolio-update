@@ -1,4 +1,4 @@
-export function Footer() {
+export const Footer = () => {
   return (
     <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-ink/16 px-7 py-5 font-mono text-meta tracking-[0.08em] text-ink/62">
       <span>© {new Date().getFullYear()} David Browne</span>
@@ -16,4 +16,4 @@ export function Footer() {
       </span>
     </footer>
   );
-}
+};

@@ -17,7 +17,7 @@ import { ThemeToggle } from "./theme-toggle";
 // the hero name — it doesn't compete with the monumental "DAVID BROWNE"
 // below it the way full text would on page load — then crossfades to the
 // name once the hero has scrolled out of view (see Masthead).
-export function Header() {
+export const Header = () => {
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between border-b border-ink/16 bg-ivory/85 px-7 backdrop-blur-md">
       <Masthead />
@@ -55,4 +55,4 @@ export function Header() {
       </div>
     </header>
   );
-}
+};

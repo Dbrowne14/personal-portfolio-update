@@ -5,7 +5,7 @@ import { ArtifactLink } from "../artifact-link";
 // No thumbnail (the visitor is already on the site) and two independent
 // destinations (case study, public repo), so unlike ProjectCard this isn't
 // wrapped in one outer <Link> — each action needs its own click target.
-export function PortfolioArtifactCard({ project }: { project: Project }) {
+export const PortfolioArtifactCard = ({ project }: { project: Project }) => {
   return (
     <div className="py-12 first:pt-0 last:pb-0">
       <div className="flex items-baseline justify-between gap-4">
@@ -32,4 +32,4 @@ export function PortfolioArtifactCard({ project }: { project: Project }) {
       </div>
     </div>
   );
-}
+};

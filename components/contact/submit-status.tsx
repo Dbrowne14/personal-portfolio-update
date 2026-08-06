@@ -26,7 +26,7 @@ const initialState: ContactFormState = { status: "idle" };
 // reload" for the cases where that's the better experience. Success
 // still redirects deliberately: a real page moment reads better than a
 // toast for the thing this whole site has been building toward.
-export function SubmitStatus({ children }: { children: React.ReactNode }) {
+export const SubmitStatus = ({ children }: { children: React.ReactNode }) => {
   const [state, formAction, isPending] = useActionState(
     submitContactForm,
     initialState,
@@ -69,4 +69,4 @@ export function SubmitStatus({ children }: { children: React.ReactNode }) {
       </button>
     </form>
   );
-}
+};

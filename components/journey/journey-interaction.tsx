@@ -49,10 +49,10 @@ interface JourneyInteractionProps {
 // onHoverIndexChange; it never touches scrollIndex, so activeIndex falls
 // back to the mobile reading position on its own where that's relevant,
 // rather than this component having to special-case which input cleared it.
-export function JourneyInteraction({
+export const JourneyInteraction = ({
   milestones,
   children,
-}: JourneyInteractionProps) {
+}: JourneyInteractionProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLElement[]>([]);
   const fillRef = useRef<HTMLElement | null>(null);
@@ -91,7 +91,7 @@ export function JourneyInteraction({
     );
     if (items.length === 0) return;
 
-    function updateFill(index: number | null) {
+    const updateFill = (index: number | null) => {
       const fill = fillRef.current;
       if (!fill || index === null) return;
       const activeRect = items[index].getBoundingClientRect();
@@ -99,7 +99,7 @@ export function JourneyInteraction({
       const height =
         activeRect.top - containerRect.top + activeRect.height / 2;
       fill.style.height = `${Math.max(height, 0)}px`;
-    }
+    };
 
     const hoverCleanups = items.map((item, i) => {
       const onEnter = () => setHoverIndex(i);
@@ -178,4 +178,4 @@ export function JourneyInteraction({
       </div>
     </div>
   );
-}
+};

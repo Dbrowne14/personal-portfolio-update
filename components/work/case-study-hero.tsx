@@ -6,7 +6,7 @@ import { TechCredit } from "./tech-credit";
 // Server Component. No image asset exists for any project yet — the
 // hairline placeholder (same pattern as WorkTeaser's, M4) stands in until
 // real screenshots exist, rather than a fake path or a broken image.
-export function CaseStudyHero({ project }: { project: Project }) {
+export const CaseStudyHero = ({ project }: { project: Project }) => {
   return (
     <section className="reveal-on-scroll border-t border-ink/16 bg-ivory px-7 pt-24 pb-12 md:pt-28">
       <div className="mx-auto max-w-350">
@@ -56,4 +56,4 @@ export function CaseStudyHero({ project }: { project: Project }) {
       </div>
     </section>
   );
-}
+};

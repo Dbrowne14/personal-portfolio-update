@@ -5,7 +5,7 @@ import { MagneticLetters } from "./magnetic-letters";
 // HeroStage (scroll-compress) and MagneticLetters (cursor physics) are
 // client-side, and both receive this content as children/props rather than
 // owning it — see 02-architecture.md.
-export function Hero() {
+export const Hero = () => {
   return (
     <section className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden px-7 pb-10">
       <HeroStage>
@@ -35,4 +35,4 @@ export function Hero() {
       </div>
     </section>
   );
-}
+};

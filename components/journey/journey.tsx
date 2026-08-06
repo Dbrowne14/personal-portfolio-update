@@ -2,7 +2,7 @@ import { journeyMilestones } from "@/lib/content/journey";
 import { MilestoneList } from "./milestone-list";
 import { JourneyInteraction } from "./journey-interaction";
 
-export function Journey() {
+export const Journey = () => {
   const firstYear = journeyMilestones[0]?.year;
   const lastYear = journeyMilestones[journeyMilestones.length - 1]?.year;
 
@@ -26,4 +26,4 @@ export function Journey() {
       </div>
     </section>
   );
-}
+};

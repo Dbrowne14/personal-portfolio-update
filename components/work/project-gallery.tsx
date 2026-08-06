@@ -11,7 +11,7 @@ interface GalleryImage {
 // only added if it proves genuinely necessary, and nothing about a simple
 // horizontal strip of images requires one. Renders nothing when no
 // project has gallery images yet, rather than an empty scroll strip.
-export function ProjectGallery({ images }: { images: GalleryImage[] }) {
+export const ProjectGallery = ({ images }: { images: GalleryImage[] }) => {
   if (images.length === 0) return null;
 
   return (
@@ -32,4 +32,4 @@ export function ProjectGallery({ images }: { images: GalleryImage[] }) {
       ))}
     </div>
   );
-}
+};

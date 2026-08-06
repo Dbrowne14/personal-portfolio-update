@@ -3,13 +3,13 @@ import type { Project } from "@/lib/content/projects";
 import { TechCredit } from "../tech-credit";
 import { ProjectImage } from "./project-image";
 
-export function ProjectCard({
+export const ProjectCard = ({
   project,
   variant = "compact",
 }: {
   project: Project;
   variant?: "featured" | "compact";
-}) {
+}) => {
   const featured = variant === "featured";
 
   return (
@@ -76,4 +76,4 @@ export function ProjectCard({
       ) : null}
     </Link>
   );
-}
+};

@@ -3,7 +3,7 @@ import Link from "next/link";
 // Plain typeset link — no icon, no boxed button. Two real consumers
 // (homepage's PortfolioArtifactCard, /work's expanded rows), so this lives
 // in its own file rather than being duplicated or awkwardly cross-imported.
-export function ArtifactLink({
+export const ArtifactLink = ({
   href,
   external = false,
   children,
@@ -11,7 +11,7 @@ export function ArtifactLink({
   href: string;
   external?: boolean;
   children: React.ReactNode;
-}) {
+}) => {
   const linkProps = external ? { target: "_blank", rel: "noreferrer" } : {};
   return (
     <Link
@@ -30,4 +30,4 @@ export function ArtifactLink({
       </span>
     </Link>
   );
-}
+};

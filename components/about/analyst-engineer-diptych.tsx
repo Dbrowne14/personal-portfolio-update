@@ -26,13 +26,13 @@ const diptychSides: DiptychSide[] = [
   },
 ];
 
-function DiptychCopy({
+const DiptychCopy = ({
   range,
   title,
   copy,
   alignment,
   accent = false,
-}: DiptychSide) {
+}: DiptychSide) => {
   const isRight = alignment === "right";
 
   return (
@@ -75,9 +75,9 @@ function DiptychCopy({
       </p>
     </div>
   );
-}
+};
 
-function DiptychPortrait() {
+const DiptychPortrait = () => {
   return (
     <div className="reveal-on-scroll relative z-10 mx-auto [animation-delay:150ms] lg:absolute lg:top-1/2 lg:left-1/2 lg:mx-0 lg:-translate-x-1/2 lg:-translate-y-1/2">
       <div className="relative h-40 w-40 overflow-hidden rounded-full border border-ink/16 bg-ivory sm:h-48 sm:w-48">
@@ -101,9 +101,9 @@ function DiptychPortrait() {
       </div>
     </div>
   );
-}
+};
 
-export function AnalystEngineerDiptych() {
+export const AnalystEngineerDiptych = () => {
   const [analyst, engineer] = diptychSides;
 
   return (
@@ -130,4 +130,4 @@ export function AnalystEngineerDiptych() {
       </div>
     </section>
   );
-}
+};

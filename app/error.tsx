@@ -12,12 +12,12 @@ import Link from "next/link";
 // general safety net so an unexpected regression shows a page consistent
 // with the site rather than the framework's default error screen, not
 // because a specific failure is anticipated.
-export default function Error({
+const ErrorPage = ({
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
-}) {
+}) => {
   return (
     <main className="flex flex-1 flex-col items-center justify-center border-t border-ink/16 bg-ivory px-7 py-32 text-center">
       <p className="font-mono text-meta text-accent uppercase tracking-[0.14em]">
@@ -47,4 +47,6 @@ export default function Error({
       </div>
     </main>
   );
-}
+};
+
+export default ErrorPage;

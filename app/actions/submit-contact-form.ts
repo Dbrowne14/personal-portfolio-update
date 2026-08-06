@@ -25,10 +25,10 @@ const MESSAGE_MAX_LENGTH = 4000;
 // input it belongs to without restructuring the RSC boundary around it.
 // One clear, specific sentence in the shared aria-live region is simpler
 // and just as usable.
-export async function submitContactForm(
+export const submitContactForm = async (
   _prevState: ContactFormState,
   formData: FormData,
-): Promise<ContactFormState> {
+): Promise<ContactFormState> => {
   // Honeypot: a field real visitors never see or fill in (see
   // contact-form.tsx). Pretend success rather than revealing detection.
   if (formData.get("company")) {
@@ -104,4 +104,4 @@ export async function submitContactForm(
   }
 
   redirect("/contact?sent=true");
-}
+};

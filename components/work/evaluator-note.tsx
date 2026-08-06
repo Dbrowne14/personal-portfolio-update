@@ -3,7 +3,7 @@
 // note in the register of someone who used to evaluate work like this,
 // now shipping it instead. An editorial device, not a claim — see
 // lib/content/projects.ts's own note on this field.
-export function EvaluatorNote({ note }: { note: string }) {
+export const EvaluatorNote = ({ note }: { note: string }) => {
   return (
     <div className="border-y border-ink/16 py-6">
       <p className="font-mono text-meta text-accent uppercase tracking-[0.1em]">
@@ -12,4 +12,4 @@ export function EvaluatorNote({ note }: { note: string }) {
       <p className="mt-3 max-w-xl text-body text-ink/70">{note}</p>
     </div>
   );
-}
+};

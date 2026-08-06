@@ -9,7 +9,7 @@ import { navItems } from "./nav-items";
 // else in components/chrome is a Server Component. Scope is deliberately
 // narrow — open/close state and the focus trap it requires — rather than
 // making Header itself a client component.
-export function MobileMenu() {
+export const MobileMenu = () => {
   const [open, setOpen] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
@@ -24,7 +24,7 @@ export function MobileMenu() {
     focusable?.[0]?.focus();
     document.body.style.overflow = "hidden";
 
-    function onKeyDown(event: KeyboardEvent) {
+    const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
         setOpen(false);
@@ -43,7 +43,7 @@ export function MobileMenu() {
         event.preventDefault();
         first.focus();
       }
-    }
+    };
 
     document.addEventListener("keydown", onKeyDown);
 
@@ -115,4 +115,4 @@ export function MobileMenu() {
         : null}
     </>
   );
-}
+};

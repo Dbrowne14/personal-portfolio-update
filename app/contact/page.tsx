@@ -28,11 +28,11 @@ export const metadata: Metadata = {
 // same confirmation via a real page navigation. It replaces the form
 // rather than sitting alongside it, since once a message has been sent
 // there is nothing left to submit.
-export default async function ContactPage({
+const ContactPage = async ({
   searchParams,
 }: {
   searchParams: Promise<{ sent?: string }>;
-}) {
+}) => {
   const { sent } = await searchParams;
 
   return (
@@ -64,4 +64,6 @@ export default async function ContactPage({
       </div>
     </main>
   );
-}
+};
+
+export default ContactPage;

@@ -9,7 +9,7 @@ const SITE_URL = "https://davidbrowne.dev";
 // The confidential project keeps its page indexed: the page itself
 // carries no confidential detail, only NDA-safe copy already meant to be
 // public, so there's no reason to exclude it from discovery.
-export default function sitemap(): MetadataRoute.Sitemap {
+const sitemap = (): MetadataRoute.Sitemap => {
   const staticRoutes = ["", "/about", "/work", "/contact"].map((path) => ({
     url: `${SITE_URL}${path}`,
   }));
@@ -19,4 +19,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   return [...staticRoutes, ...projectRoutes];
-}
+};
+
+export default sitemap;

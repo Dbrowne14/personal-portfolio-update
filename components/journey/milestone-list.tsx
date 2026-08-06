@@ -34,7 +34,7 @@ interface MilestoneListProps {
 // Each `<li>` is a `tabIndex={0}` focus target purely so keyboard users get
 // the same graph-highlight affordance as a mouse hover — a deliberate
 // exception to leaving static content unfocusable, not an oversight.
-export function MilestoneList({ milestones }: MilestoneListProps) {
+export const MilestoneList = ({ milestones }: MilestoneListProps) => {
   const switchIndex = milestones.findIndex((m) => m.isSwitch);
 
   return (
@@ -176,4 +176,4 @@ export function MilestoneList({ milestones }: MilestoneListProps) {
       </ol>
     </div>
   );
-}
+};

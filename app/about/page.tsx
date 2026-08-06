@@ -15,11 +15,13 @@ export const metadata: Metadata = {
   twitter: { title: TITLE, description: DESCRIPTION },
 };
 
-export default function AboutPage() {
+const AboutPage = () => {
   return (
     <main className="flex flex-1 flex-col">
       <AnalystEngineerDiptych />
       <HowIBuild />
     </main>
   );
-}
+};
+
+export default AboutPage;
