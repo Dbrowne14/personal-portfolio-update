@@ -80,7 +80,7 @@ export function HowIBuild() {
           {PRINCIPLES.map((principle, i) => (
             <li
               key={principle.headline}
-              className="grid grid-cols-[3rem_1fr] gap-x-6 border-b border-ink/16 py-12 md:grid-cols-[4rem_1fr] md:gap-x-10 md:py-16"
+              className="grid grid-cols-[3rem_1fr] gap-x-6 border-b last:border-none border-ink/16 py-12 md:grid-cols-[4rem_1fr] md:gap-x-10 md:py-16"
             >
               <span
                 aria-hidden="true"
