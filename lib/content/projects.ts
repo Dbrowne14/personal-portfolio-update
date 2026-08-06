@@ -3,7 +3,9 @@ export interface Project {
   title: string;
   oneLiner: string;
   stack: string[];
-  featured: boolean;
+  // Homepage inclusion and role, explicit and independent of `order` (which
+  // stays a pure display-order field, also used by /work's full index).
+  homepageRole: "flagship" | "supporting" | null;
   order: number;
   // Optional here, unlike the roadmap's original shape: no real project
   // screenshots exist yet. WorkTeaser falls back to the site's hairline
@@ -46,7 +48,7 @@ export const projects: Project[] = [
     title: "Default Social",
     oneLiner: "The flagship build — production, live, shipped.",
     stack: ["Next.js", "Sanity CMS", "Vercel"],
-    featured: true,
+    homepageRole: "flagship",
     order: 1,
     detail:
       "Built for a real client using Next.js, Sanity CMS and a modern editorial architecture. Designed, developed and shipped into production with accessibility, performance and maintainability as first-class priorities.",
@@ -78,7 +80,7 @@ export const projects: Project[] = [
     title: "Staple",
     oneLiner: "A complete daily game, not just an interface.",
     stack: ["React", "Supabase", "PostgreSQL"],
-    featured: true,
+    homepageRole: "supporting",
     order: 2,
     evaluatorNote:
       "The riskiest of the four to build — a full game loop, not a CRUD app. Worth it as the clearest proof of full-stack ownership.",
@@ -98,7 +100,7 @@ export const projects: Project[] = [
     title: "10 Songs",
     oneLiner: "A playlist game, built around a daily habit.",
     stack: ["React", "Next.js", "TypeScript"],
-    featured: true,
+    homepageRole: "supporting",
     order: 3,
     evaluatorNote:
       "Small scope, high polish — closer to a design portfolio piece than a commercial brief, and treated that way.",
@@ -118,7 +120,7 @@ export const projects: Project[] = [
     title: "This portfolio",
     oneLiner: "The site you're browsing now.",
     stack: ["TypeScript", "React", "Next.js", "Tailwind CSS"],
-    featured: true,
+    homepageRole: "supporting",
     order: 4,
     detail:
       "Built in public. Design system, architecture and implementation documented.",
@@ -150,7 +152,7 @@ export const projects: Project[] = [
     title: "Private equity platform",
     oneLiner: "A confidential client platform — details under NDA.",
     stack: ["Next.js", "PostgreSQL"],
-    featured: false,
+    homepageRole: null,
     order: 5,
     confidential: true,
     evaluatorNote:
@@ -167,7 +169,7 @@ export const projects: Project[] = [
     title: "Our wedding website",
     oneLiner: "A personal project — built for our wedding, not a client brief.",
     stack: ["React", "Next.js"],
-    featured: false,
+    homepageRole: null,
     order: 6,
     evaluatorNote:
       "Not a commercial brief — included because craft doesn't take a day off just because the stakes are personal.",

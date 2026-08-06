@@ -1,6 +1,6 @@
 import { Hero } from "@/components/hero/hero";
 import { Journey } from "@/components/journey/journey";
-import { WorkTeaser } from "@/components/work/work-teaser";
+import { WorkTeaser } from "@/components/work/work-teaser/work-teaser";
 
 export default function Home() {
   return (
