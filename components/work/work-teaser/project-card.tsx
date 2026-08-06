@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Project } from "@/lib/content/projects";
-import { TechCredit } from "./tech-credit";
-import { ProjectImage } from "./work-teaser/project-image";
+import { TechCredit } from "../tech-credit";
+import { ProjectImage } from "./project-image";
 
 export function ProjectCard({
   project,

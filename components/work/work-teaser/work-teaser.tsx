@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { projects } from "@/lib/content/projects";
-import { ProjectCard } from "../project-card";
+import { ProjectCard } from "./project-card";
 import { PortfolioArtifactCard } from "./portfolio-artifact-card";
 
 // Asymmetric pairing, not a uniform grid: the flagship as a large editorial
