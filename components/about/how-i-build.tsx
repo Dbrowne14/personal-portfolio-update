@@ -58,7 +58,7 @@ export const HowIBuild = () => {
           <h2 className="mt-4 text-h1 max-w-2xl font-bold text-balance text-ink">
             Where the two halves actually meet.
           </h2>
-          <div className="mt-6 max-w-[100ch] text-body text-ink/70 space-y-2">
+          <div className="mt-6 max-w-[100ch] leading-[1.7] text-[18px] text-ink/70 space-y-2">
             <p>
               For eight years, I advised technology companies from the other
               side of the table — modelling their businesses and sitting across

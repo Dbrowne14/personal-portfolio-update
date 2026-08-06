@@ -12,7 +12,7 @@ export const CaseStudyHero = ({ project }: { project: Project }) => {
       <div className="mx-auto max-w-350">
         <Link
           href="/work"
-          className="font-mono text-meta text-ink/62 uppercase tracking-[0.1em] transition-colors duration-200 hover:text-accent"
+          className="font-mono text-meta text-ink/62 uppercase tracking-widest transition-colors duration-200 hover:text-accent"
         >
           ← All work
         </Link>
@@ -33,7 +33,7 @@ export const CaseStudyHero = ({ project }: { project: Project }) => {
           )}
         </div>
 
-        <div className="relative mt-10 aspect-16/9 w-full overflow-hidden border border-ink/16">
+        <div className="relative mt-10 aspect-video w-full overflow-hidden border border-ink/16">
           {project.heroImage ? (
             <Image
               src={project.heroImage.src}
@@ -45,7 +45,7 @@ export const CaseStudyHero = ({ project }: { project: Project }) => {
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,color-mix(in_srgb,var(--color-ink)_16%,transparent)_10px,color-mix(in_srgb,var(--color-ink)_16%,transparent)_11px)]">
-              <span className="bg-ivory px-3 py-1.5 font-mono text-meta text-ink/62 uppercase tracking-[0.1em]">
+              <span className="bg-ivory px-3 py-1.5 font-mono text-meta text-ink/62 uppercase tracking-widest">
                 {project.disclosure === "nda"
                   ? "Under NDA — no imagery"
                   : "Case study imagery to follow"}
