@@ -18,6 +18,12 @@ export interface Project {
   evaluatorNote?: string;
   highlights?: { title: string; body: string }[];
   links?: { label: string; href: string }[];
+  // The project's own codebase — rendered in the /work accordion directly
+  // below Highlights, for every project except disclosure === "nda" (an
+  // NDA project's repo isn't public by definition). Separate from `links`
+  // (Live Site / Source, rendered in the right column's Actions row)
+  // because this always means the same specific thing: a link to the code.
+  repoUrl?: string;
   // Selects the /work accordion's right-column variant: "nda" swaps the
   // image + Technologies panel for a text-led facts panel (see `nda`
   // below) instead of the image-placeholder pattern used elsewhere.
@@ -63,6 +69,8 @@ export const projects: Project[] = [
     homepageRole: "flagship",
     order: 1,
     disclosure: "public",
+    // Confirmed shareable — fill in the real repo URL.
+    repoUrl: "https://github.com/Dbrowne14/Default_Social_AI",
     detail:
       "Built for a real client using Next.js, Sanity CMS and a modern editorial architecture. Designed, developed and shipped into production with accessibility, performance and maintainability as first-class priorities.",
     // First tag is the WorkTeaser footer's own group heading (no trailing
@@ -96,6 +104,8 @@ export const projects: Project[] = [
     homepageRole: "supporting",
     order: 2,
     disclosure: "public",
+    // Pending real repo URL.
+    repoUrl: "",
     detail:
       "A daily puzzle game built end to end — real game logic and server-tracked state, not a static interface bolted onto someone else's backend.",
     evaluatorNote:
@@ -119,6 +129,8 @@ export const projects: Project[] = [
     homepageRole: "supporting",
     order: 3,
     disclosure: "public",
+    // Pending real repo URL.
+    repoUrl: "",
     detail:
       "A tightly scoped playlist game designed around a daily habit — small in scope, built for polish and repeat play rather than an open-ended feature set.",
     evaluatorNote:
@@ -202,6 +214,8 @@ export const projects: Project[] = [
     homepageRole: null,
     order: 6,
     disclosure: "public",
+    // Pending real repo URL.
+    repoUrl: "",
     detail:
       "A personal project built for our wedding day, with a fixed deadline and no client to negotiate scope with but ourselves.",
     evaluatorNote:

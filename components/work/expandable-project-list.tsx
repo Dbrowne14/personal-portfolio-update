@@ -298,6 +298,20 @@ const ExpandedProjectContent = ({ project }: { project: Project }) => {
           </div>
         ) : null}
 
+        {/* Every project's own codebase, directly below Highlights — never
+            rendered for disclosure === "nda", since an NDA project's repo
+            isn't public by definition. */}
+        {project.repoUrl ? (
+          <div className="mt-14">
+            <SectionLabel>Source</SectionLabel>
+            <div className="mt-4 font-mono text-meta font-semibold uppercase tracking-widest text-ink">
+              <ArtifactLink href={project.repoUrl} external>
+                GitHub
+              </ArtifactLink>
+            </div>
+          </div>
+        ) : null}
+
         {/* Default Social is the only project with featuredTags today —
             this is what gives the flagship "slightly more" without
             hardcoding by slug. */}
