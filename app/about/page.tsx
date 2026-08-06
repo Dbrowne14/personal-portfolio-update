@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { AnalystEngineerDiptych } from "@/components/about/analyst-engineer-diptych";
 import { HowIBuild } from "@/components/about/how-i-build";
-import { DecisionIntro } from "@/components/about/decision-intro";
+
 
 const TITLE = "About — David Browne";
 const DESCRIPTION =
@@ -20,7 +20,6 @@ export default function AboutPage() {
     <main className="flex flex-1 flex-col">
       <AnalystEngineerDiptych />
       <HowIBuild />
-      <DecisionIntro />
     </main>
   );
 }

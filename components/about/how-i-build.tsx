@@ -48,25 +48,32 @@ export function HowIBuild() {
   return (
     <section className="border-t border-ink/16 bg-ivory px-7 py-24 md:py-28">
       <div className="mx-auto max-w-350">
-        <div className="max-w-2xl">
+        <div>
           <p className="font-mono text-meta text-accent uppercase tracking-[0.14em]">
             Chapter 01
           </p>
           <p className="mt-1 font-mono text-meta text-ink/50 uppercase tracking-[0.14em]">
             How I build
           </p>
-          <h2 className="mt-4 text-h1 font-bold text-balance text-ink">
+          <h2 className="mt-4 text-h1 max-w-2xl font-bold text-balance text-ink">
             Where the two halves actually meet.
           </h2>
-          <p className="mt-6 max-w-xl text-body text-ink/70">
-            Eight years spent evaluating technology businesses left habits
-            that carried straight into engineering — reading a codebase the
-            way I once read a business, and asking the same question of
-            both: is this actually going to hold up? What follows isn&rsquo;t a
-            list of best practices copied from somewhere else. It&rsquo;s what
-            that habit of scrutiny looks like once it&rsquo;s pointed at my own
-            work.
-          </p>
+          <div className="mt-6 max-w-[100ch] text-body text-ink/70 space-y-2">
+            <p>
+              For eight years, I advised technology companies from the other
+              side of the table — modelling their businesses and sitting across
+              from the founders and teams actually building the products I was
+              pricing. By 2022 I’d reached VP, advising purely on technology
+              deals. The closer I got, the less advising on it felt like enough.
+            </p>
+            <p>
+              So I learned to build. In 2025 I made the switch to engineering —
+              properly, not as a side project. What carried over from banking
+              wasn&rsquo;t the finance, but the judgment: how to scope
+              what&rsquo;s actually worth building, and how to treat a product
+              like it has to earn its keep.
+            </p>
+          </div>
         </div>
 
         <ol className="mt-16 border-t border-ink/16 md:mt-20">
