@@ -1,6 +1,6 @@
-import Link from "next/link";
 import type { Project } from "@/lib/content/projects";
 import { TechCredit } from "../tech-credit";
+import { ArtifactLink } from "../artifact-link";
 
 // No thumbnail (the visitor is already on the site) and two independent
 // destinations (case study, public repo), so unlike ProjectCard this isn't
@@ -23,7 +23,7 @@ export function PortfolioArtifactCard({ project }: { project: Project }) {
       </div>
 
       <div className="mt-3 pt-2 flex border-t border-ink/30 items-center gap-8 font-mono text-meta font-semibold uppercase tracking-widest text-ink">
-        <ArtifactLink href={`/work/${project.slug}`}>Case study</ArtifactLink>
+        <ArtifactLink href={`/work#${project.slug}`}>Case study</ArtifactLink>
         {project.links?.map((link) => (
           <ArtifactLink key={link.href} href={link.href} external>
             {link.label}
@@ -31,37 +31,5 @@ export function PortfolioArtifactCard({ project }: { project: Project }) {
         ))}
       </div>
     </div>
-  );
-}
-
-// Plain typeset link — no icon, no boxed button — shared by the case
-// study and GitHub entries above so the underline/arrow/colour treatment
-// only exists in one place.
-function ArtifactLink({
-  href,
-  external = false,
-  children,
-}: {
-  href: string;
-  external?: boolean;
-  children: React.ReactNode;
-}) {
-  const linkProps = external ? { target: "_blank", rel: "noreferrer" } : {};
-  return (
-    <Link
-      href={href}
-      {...linkProps}
-      className="group inline-flex items-baseline gap-1.5 transition-colors duration-200 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-    >
-      <span className="border-b border-transparent transition-colors duration-200 group-hover:border-accent">
-        {children}
-      </span>
-      <span
-        aria-hidden="true"
-        className="transition-transform duration-200 group-hover:translate-x-1"
-      >
-        →
-      </span>
-    </Link>
   );
 }

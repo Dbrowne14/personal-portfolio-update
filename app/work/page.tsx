@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { projects } from "@/lib/content/projects";
-import { ProjectIndex } from "@/components/work/project-index";
+import { ExpandableProjectList } from "@/components/work/expandable-project-list";
 import { Colophon } from "@/components/work/colophon";
 
 const TITLE = "Work — David Browne";
@@ -20,8 +20,27 @@ export const metadata: Metadata = {
 // less airy than earlier sections, matching the Visual Rhythm doctrine's
 // "densest, busiest stretch on the site."
 export default function WorkPage() {
+  // ItemList for the whole index, same dangerouslySetInnerHTML pattern
+  // used per-project on /work/[slug].
+  const itemList = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: [...projects]
+      .sort((a, b) => a.order - b.order)
+      .map((project, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: project.title,
+        url: `/work/${project.slug}`,
+      })),
+  };
+
   return (
     <main className="flex flex-1 flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemList) }}
+      />
       <section className="reveal-on-scroll border-t border-ink/16 bg-ivory px-7 pt-24 pb-16 md:pt-28">
         <div className="mx-auto max-w-350">
           <p className="font-mono text-meta text-accent uppercase tracking-[0.14em]">
@@ -35,7 +54,7 @@ export default function WorkPage() {
 
       <section className="bg-ivory px-7 pb-16">
         <div className="mx-auto max-w-350">
-          <ProjectIndex projects={projects} />
+          <ExpandableProjectList projects={projects} />
           <Colophon projects={projects} />
         </div>
       </section>

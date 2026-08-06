@@ -18,12 +18,7 @@ export interface Project {
   links?: { label: string; href: string }[];
   confidential?: boolean;
   // A short second line of description, beyond the one-liner — used by
-  // WorkTeaser wherever a project's homepage treatment has room for more
-  // than one sentence (the featured card, and This Portfolio's link-only
-  // artefact layout). Not every project needs one: evaluatorNote's
-  // reflective, wry register doesn't fit a plain factual paragraph, and
-  // highlights are sized for the full case-study page, not a homepage
-  // aside.
+  // WorkTeaser's featured card and the /work index's expanded-row overview.
   detail?: string;
   // Short factual tags for the featured project's editorial footer on the
   // homepage (e.g. "Live.", "Commercial client.") — kept as data rather
@@ -82,6 +77,8 @@ export const projects: Project[] = [
     stack: ["React", "Supabase", "PostgreSQL"],
     homepageRole: "supporting",
     order: 2,
+    detail:
+      "A daily puzzle game built end to end — real game logic and server-tracked state, not a static interface bolted onto someone else's backend.",
     evaluatorNote:
       "The riskiest of the four to build — a full game loop, not a CRUD app. Worth it as the clearest proof of full-stack ownership.",
     highlights: [
@@ -102,6 +99,8 @@ export const projects: Project[] = [
     stack: ["React", "Next.js", "TypeScript"],
     homepageRole: "supporting",
     order: 3,
+    detail:
+      "A tightly scoped playlist game designed around a daily habit — small in scope, built for polish and repeat play rather than an open-ended feature set.",
     evaluatorNote:
       "Small scope, high polish — closer to a design portfolio piece than a commercial brief, and treated that way.",
     highlights: [
@@ -155,6 +154,8 @@ export const projects: Project[] = [
     homepageRole: null,
     order: 5,
     confidential: true,
+    detail:
+      "A confidential platform built and shipped for a real client under NDA — the value here is delivery discipline under real constraints, not the specifics.",
     evaluatorNote:
       "Confidential by necessity — the value here is delivery under real client constraints, not the specifics.",
     highlights: [
@@ -171,6 +172,8 @@ export const projects: Project[] = [
     stack: ["React", "Next.js"],
     homepageRole: null,
     order: 6,
+    detail:
+      "A personal project built for our wedding day, with a fixed deadline and no client to negotiate scope with but ourselves.",
     evaluatorNote:
       "Not a commercial brief — included because craft doesn't take a day off just because the stakes are personal.",
     highlights: [

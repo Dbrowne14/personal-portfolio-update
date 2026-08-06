@@ -14,7 +14,7 @@ export function ProjectCard({
 
   return (
     <Link
-      href={`/work/${project.slug}`}
+      href={`/work#${project.slug}`}
       // -mx/px cancel out visually — they exist only to give the
       // hover/focus tint (bg-accent/3) room around the content instead of
       // hugging it, so the whole card reads as one hoverable unit.
