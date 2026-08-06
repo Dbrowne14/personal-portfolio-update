@@ -24,7 +24,7 @@ export function CaseStudyHero({ project }: { project: Project }) {
           {project.oneLiner}
         </p>
         <div className="mt-4">
-          {project.confidential ? (
+          {project.disclosure === "nda" ? (
             <p className="font-mono text-meta text-ink/62 uppercase tracking-[0.08em]">
               NDA
             </p>
@@ -46,7 +46,7 @@ export function CaseStudyHero({ project }: { project: Project }) {
           ) : (
             <div className="absolute inset-0 flex items-center justify-center bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,color-mix(in_srgb,var(--color-ink)_16%,transparent)_10px,color-mix(in_srgb,var(--color-ink)_16%,transparent)_11px)]">
               <span className="bg-ivory px-3 py-1.5 font-mono text-meta text-ink/62 uppercase tracking-[0.1em]">
-                {project.confidential
+                {project.disclosure === "nda"
                   ? "Under NDA — no imagery"
                   : "Case study imagery to follow"}
               </span>

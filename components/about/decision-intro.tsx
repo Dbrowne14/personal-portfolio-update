@@ -21,7 +21,7 @@ export function DecisionIntro() {
   const credentialLine = `${first.year} — ${first.headline} → ${last.year} — ${last.headline}`;
 
   return (
-    <section className="border-t border-ink/16 bg-ivory px-7 py-24 md:py-28">
+    <section className="bg-ivory px-7 py-24 md:py-28">
       <div className="mx-auto grid max-w-350 grid-cols-1 gap-16 md:grid-cols-[3fr_2fr] md:items-start md:gap-20">
         <div className="reveal-on-scroll max-w-xl">
           <p className="font-mono text-meta text-accent uppercase tracking-[0.14em]">

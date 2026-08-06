@@ -1,3 +1,5 @@
+export type ProjectDisclosure = "public" | "nda";
+
 export interface Project {
   slug: string;
   title: string;
@@ -16,7 +18,22 @@ export interface Project {
   evaluatorNote?: string;
   highlights?: { title: string; body: string }[];
   links?: { label: string; href: string }[];
-  confidential?: boolean;
+  // Selects the /work accordion's right-column variant: "nda" swaps the
+  // image + Technologies panel for a text-led facts panel (see `nda`
+  // below) instead of the image-placeholder pattern used elsewhere.
+  disclosure: ProjectDisclosure;
+  // Populated only when disclosure === "nda". Not enforced at the type
+  // level (no discriminated union) — there's exactly one NDA project today,
+  // so that complexity isn't earning its cost yet. Every field is optional
+  // and simply doesn't render its row if absent.
+  nda?: {
+    sector?: string;
+    projectType?: string;
+    role?: string;
+    delivery?: string;
+    outcome?: string;
+    disclosureNote?: string;
+  };
   // A short second line of description, beyond the one-liner — used by
   // WorkTeaser's featured card and the /work index's expanded-row overview.
   detail?: string;
@@ -45,6 +62,7 @@ export const projects: Project[] = [
     stack: ["Next.js", "Sanity CMS", "Vercel"],
     homepageRole: "flagship",
     order: 1,
+    disclosure: "public",
     detail:
       "Built for a real client using Next.js, Sanity CMS and a modern editorial architecture. Designed, developed and shipped into production with accessibility, performance and maintainability as first-class priorities.",
     // First tag is the WorkTeaser footer's own group heading (no trailing
@@ -77,6 +95,7 @@ export const projects: Project[] = [
     stack: ["React", "Supabase", "PostgreSQL"],
     homepageRole: "supporting",
     order: 2,
+    disclosure: "public",
     detail:
       "A daily puzzle game built end to end — real game logic and server-tracked state, not a static interface bolted onto someone else's backend.",
     evaluatorNote:
@@ -99,6 +118,7 @@ export const projects: Project[] = [
     stack: ["React", "Next.js", "TypeScript"],
     homepageRole: "supporting",
     order: 3,
+    disclosure: "public",
     detail:
       "A tightly scoped playlist game designed around a daily habit — small in scope, built for polish and repeat play rather than an open-ended feature set.",
     evaluatorNote:
@@ -121,6 +141,7 @@ export const projects: Project[] = [
     stack: ["TypeScript", "React", "Next.js", "Tailwind CSS"],
     homepageRole: "supporting",
     order: 4,
+    disclosure: "public",
     detail:
       "Built in public. Design system, architecture and implementation documented.",
     // The one project that links off-site — WorkTeaser's link-only
@@ -150,10 +171,18 @@ export const projects: Project[] = [
     slug: "private-equity-platform",
     title: "Private equity platform",
     oneLiner: "A confidential client platform — details under NDA.",
-    stack: ["Next.js", "PostgreSQL"],
+    stack: ["React", "Wordpress"],
     homepageRole: null,
     order: 5,
-    confidential: true,
+    disclosure: "nda",
+    nda: {
+      sector: "Private equity",
+      projectType: "Client platform",
+      role: "Lead developer",
+      delivery: "Production build",
+      disclosureNote:
+        "Client identity, product imagery and commercially sensitive details withheld under NDA.",
+    },
     detail:
       "A confidential platform built and shipped for a real client under NDA — the value here is delivery discipline under real constraints, not the specifics.",
     evaluatorNote:
@@ -172,6 +201,7 @@ export const projects: Project[] = [
     stack: ["React", "Next.js"],
     homepageRole: null,
     order: 6,
+    disclosure: "public",
     detail:
       "A personal project built for our wedding day, with a fixed deadline and no client to negotiate scope with but ourselves.",
     evaluatorNote:

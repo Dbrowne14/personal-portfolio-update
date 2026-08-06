@@ -70,7 +70,9 @@ export default async function CaseStudyPage({
     description: project.oneLiner,
     url: `/work/${project.slug}`,
     creator: { "@type": "Person", name: "David Browne" },
-    ...(project.confidential ? {} : { keywords: project.stack.join(", ") }),
+    ...(project.disclosure === "nda"
+      ? {}
+      : { keywords: project.stack.join(", ") }),
   };
 
   return (

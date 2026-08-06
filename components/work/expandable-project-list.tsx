@@ -105,7 +105,7 @@ function ExpandableProjectRow({
           </span>
 
           <span className="col-span-2 col-start-2 row-start-2 sm:col-span-1 sm:col-start-3 sm:row-start-1 sm:text-right">
-            {project.confidential ? (
+            {project.disclosure === "nda" ? (
               <span className="font-mono text-meta text-ink/62 uppercase tracking-[0.08em]">
                 NDA
               </span>
@@ -192,16 +192,52 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-// The right column's Technologies rows: a muted grey category label next
-// to its value, both on one line — deliberately not the bronze section-
-// label treatment, since these are metadata rows, not narrative sections.
-function TechRow({ category, value }: { category: string; value: string }) {
+// The right column's metadata rows: a muted grey label next to its value,
+// both on one line — deliberately not the bronze section-label treatment,
+// since these are facts, not narrative sections. Shared by the standard
+// Technologies panel and the NDA facts panel below.
+function FactRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="grid grid-cols-[6rem_1fr] items-baseline gap-x-6">
       <span className="font-mono text-meta text-ink/62 uppercase tracking-[0.08em]">
-        {category}
+        {label}
       </span>
       <span className="text-body font-semibold text-ink">{value}</span>
+    </div>
+  );
+}
+
+// NDA projects replace the image + Technologies panel with this text-led
+// facts panel — no lock icons, no blurred/placeholder imagery, just the
+// same row primitive used elsewhere, grouped into three clusters
+// (engagement, stack, outcome) by whitespace alone, matching the
+// engagement facts / tech facts / outcome facts split in the approved
+// content model.
+function NdaFactsPanel({ project }: { project: Project }) {
+  const nda = project.nda ?? {};
+  return (
+    <div>
+      <SectionLabel>NDA Project</SectionLabel>
+
+      <div className="mt-4 flex flex-col gap-3">
+        {nda.sector ? <FactRow label="Sector" value={nda.sector} /> : null}
+        {nda.projectType ? (
+          <FactRow label="Project type" value={nda.projectType} />
+        ) : null}
+        {nda.role ? <FactRow label="Role" value={nda.role} /> : null}
+        {nda.delivery ? <FactRow label="Delivery" value={nda.delivery} /> : null}
+      </div>
+
+      <div className="mt-6 flex flex-col gap-3">
+        <FactRow label="Stack" value={project.stack.join(" · ")} />
+      </div>
+
+      <div className="mt-6 flex flex-col gap-3">
+        {nda.outcome ? <FactRow label="Status" value={nda.outcome} /> : null}
+        {nda.disclosureNote ? (
+          <FactRow label="Disclosure" value={nda.disclosureNote} />
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -280,49 +316,49 @@ function ExpandedProjectContent({ project }: { project: Project }) {
       {/* One coherent information column, not two unrelated blocks:
           image, technologies and actions share a tighter mt-8 rhythm here
           rather than the left column's generous mt-14 between narrative
-          sections. */}
+          sections. NDA projects swap this whole column for NdaFactsPanel —
+          no image, no lock icons, no "image unavailable" messaging, just a
+          text-led facts panel using the same FactRow primitive. */}
       <div>
-        <div className="relative aspect-4/3 overflow-hidden border border-ink/16">
-          {project.heroImage ? (
-            <Image
-              src={project.heroImage.src}
-              alt={project.heroImage.alt}
-              fill
-              sizes="(min-width: 1024px) 40vw, 100vw"
-              className="object-cover"
-            />
-          ) : (
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 flex items-center justify-center bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,color-mix(in_srgb,var(--color-ink)_16%,transparent)_10px,color-mix(in_srgb,var(--color-ink)_16%,transparent)_11px)]"
-            >
-              <span className="bg-ivory px-3 py-1.5 font-mono text-meta text-ink/62 uppercase tracking-[0.1em]">
-                {project.confidential
-                  ? "Under NDA — no imagery"
-                  : "Case study imagery to follow"}
-              </span>
-            </div>
-          )}
-        </div>
-
-        <div className="mt-8">
-          <SectionLabel>Technologies</SectionLabel>
-          {project.confidential ? (
-            <span className="mt-4 block font-mono text-meta text-ink/62 uppercase tracking-[0.08em]">
-              NDA
-            </span>
-          ) : (
-            <div className="mt-4 flex flex-col gap-3">
-              {groupStack(project.stack).map((group) => (
-                <TechRow
-                  key={group.category}
-                  category={group.category}
-                  value={group.items.join(" · ")}
+        {project.disclosure === "nda" ? (
+          <NdaFactsPanel project={project} />
+        ) : (
+          <>
+            <div className="relative aspect-4/3 overflow-hidden border border-ink/16">
+              {project.heroImage ? (
+                <Image
+                  src={project.heroImage.src}
+                  alt={project.heroImage.alt}
+                  fill
+                  sizes="(min-width: 1024px) 40vw, 100vw"
+                  className="object-cover"
                 />
-              ))}
+              ) : (
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 flex items-center justify-center bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,color-mix(in_srgb,var(--color-ink)_16%,transparent)_10px,color-mix(in_srgb,var(--color-ink)_16%,transparent)_11px)]"
+                >
+                  <span className="bg-ivory px-3 py-1.5 font-mono text-meta text-ink/62 uppercase tracking-[0.1em]">
+                    Case study imagery to follow
+                  </span>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+
+            <div className="mt-8">
+              <SectionLabel>Technologies</SectionLabel>
+              <div className="mt-4 flex flex-col gap-3">
+                {groupStack(project.stack).map((group) => (
+                  <FactRow
+                    key={group.category}
+                    label={group.category}
+                    value={group.items.join(" · ")}
+                  />
+                ))}
+              </div>
+            </div>
+          </>
+        )}
 
         {isFlagship || (project.links && project.links.length > 0) ? (
           <div className="mt-8 flex flex-wrap items-center gap-8 font-mono text-meta font-semibold uppercase tracking-widest text-ink">
