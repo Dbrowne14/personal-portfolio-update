@@ -65,9 +65,16 @@ export const projects: Project[] = [
     slug: "default-social",
     title: "Default Social",
     oneLiner: "The flagship build — production, live, shipped.",
-    stack: ["Next.js", "Sanity CMS", "Vercel"],
+    stack: ["TypeScript", "Next.js", "React", "Sanity CMS", "NodeJs", "Vercel"],
     homepageRole: "flagship",
     order: 1,
+    heroImage: {
+      src: "/projects-Images/default-social-2.png",
+      alt: "default social hero",
+    },
+    links: [
+      { label: "live site", href: "https://default-social-ai.vercel.app/" },
+    ],
     disclosure: "public",
     // Confirmed shareable — fill in the real repo URL.
     repoUrl: "https://github.com/Dbrowne14/Default_Social_AI",
@@ -76,23 +83,25 @@ export const projects: Project[] = [
     // First tag is the WorkTeaser footer's own group heading (no trailing
     // period, unlike the rest) — rendered separately from the tags that
     // follow it, not just another item in the same flat list.
-    featuredTags: [
-      "Production build",
-      "Commercial client.",
-      "Editorial CMS.",
-      "Accessible.",
-      "Live.",
-    ],
+
     evaluatorNote:
       "Low technical risk, real client, real deadline — the kind of build that proves delivery discipline as much as craft.",
     highlights: [
       {
         title: "Content-first architecture",
-        body: "Built on a headless CMS so the client can publish without a developer in the loop.",
+        body: "Built a typed Sanity content model around reusable schemas, giving the client control of production content without coupling publishing to development.",
       },
       {
-        title: "Shipped to a deadline",
-        body: "Scoped, staged, and delivered as a real commercial engagement, not an open-ended side project.",
+        title: "Production-grade Next.js",
+        body: "Built with the App Router, Server Components and ISR, combining server-rendered performance with CMS content that updates without a full redeploy.",
+      },
+      {
+        title: "Performance and accessibility",
+        body: "Shipped with responsive image handling, semantic structure and production optimisation, reaching 100 Lighthouse accessibility and 96 performance.",
+      },
+      {
+        title: "AI concierge — coming next",
+        body: "Next phase adds an AI concierge using the Vercel AI SDK, turning the site's existing content architecture into a conversational product experience.",
       },
     ],
   },
@@ -100,9 +109,11 @@ export const projects: Project[] = [
     slug: "staple",
     title: "Staple",
     oneLiner: "A complete daily game, not just an interface.",
-    stack: ["React", "Supabase", "PostgreSQL"],
+    stack: ["TypeScript", "React", "Supabase", "NodeJs", "PostgreSQL"],
     homepageRole: "supporting",
     order: 2,
+    heroImage: { src: "/projects-Images/playstaple.png", alt: "staple hero" },
+    links: [{ label: "live site", href: "https://playstaple.app/" }],
     disclosure: "public",
     // Pending real repo URL.
     repoUrl: "",
@@ -112,12 +123,20 @@ export const projects: Project[] = [
       "The riskiest of the four to build — a full game loop, not a CRUD app. Worth it as the clearest proof of full-stack ownership.",
     highlights: [
       {
-        title: "A real game loop",
-        body: "Daily puzzle mechanics with server-tracked state, not a static interface wrapped around content.",
+        title: "Persistent game engine",
+        body: "Built the game logic around PostgreSQL-backed state, preserving guesses and progress while enforcing the rules of a daily Wordle-style challenge.",
       },
       {
-        title: "Full-stack, not just front-of-house",
-        body: "Database design and game logic owned end to end, not bolted onto someone else's backend.",
+        title: "RESTful backend",
+        body: "Designed Node.js and Express API endpoints for serving daily challenges, retrieving card data, validating guesses, and coordinating persisted game state.",
+      },
+      {
+        title: "Automated daily rotation",
+        body: "Implemented cron-based automation to select and rotate the daily card, turning the game into a self-running recurring experience rather than a manually managed demo.",
+      },
+      {
+        title: "Interactive React frontend",
+        body: "Built the responsive TypeScript and React interface in Tailwind, connecting real-time gameplay feedback to the API and underlying game state.",
       },
     ],
   },
@@ -125,9 +144,11 @@ export const projects: Project[] = [
     slug: "10-songs",
     title: "10 Songs",
     oneLiner: "A playlist game, built around a daily habit.",
-    stack: ["React", "Next.js", "TypeScript"],
+    stack: ["TypeScript", "React", "OAuth", "Tailwind CSS"],
     homepageRole: "supporting",
     order: 3,
+    heroImage: { src: "/projects-Images/tenSongs.png", alt: "10 songs hero" },
+    links: [{ label: "live site", href: "https://davejams.netlify.app/" }],
     disclosure: "public",
     // Pending real repo URL.
     repoUrl: "",
@@ -137,12 +158,16 @@ export const projects: Project[] = [
       "Small scope, high polish — closer to a design portfolio piece than a commercial brief, and treated that way.",
     highlights: [
       {
-        title: "Small, deliberate scope",
-        body: "A tightly scoped daily game rather than an open-ended feature set.",
+        title: "Spotify OAuth integration",
+        body: "Implemented Spotify’s OAuth 2.0 flow and token handling to authenticate users and securely access personalised Spotify data.",
       },
       {
-        title: "Built for replay",
-        body: "Designed around a repeatable daily habit, not a one-time interaction.",
+        title: "Rule-based game engine",
+        body: "Built dynamic TypeScript logic that turns Spotify data into structured playlist challenges, with game rules determining valid selections and progression.",
+      },
+      {
+        title: "Live API-driven experience",
+        body: "Integrated real-time Spotify API data into the React interface, translating external music data into responsive, interactive gameplay.",
       },
     ],
   },
@@ -170,12 +195,20 @@ export const projects: Project[] = [
       "The one project where the deliverable and the pitch are the same object — the site is its own case study.",
     highlights: [
       {
-        title: "Documented as it was built",
-        body: "Every milestone recorded in an implementation log — architectural decisions, not just outcomes.",
+        title: "Next.js architecture",
+        body: "Built with the App Router, Server Components and typed content models, keeping content, presentation and client-side interaction cleanly separated.",
       },
       {
-        title: "Built on real constraints",
-        body: "Server Components by default, accessibility and reduced motion treated as requirements, not polish.",
+        title: "Purpose-built interactions",
+        body: "Engineered custom interactions including the synchronized Journey timeline and graph, with shared React state coordinating hover, focus and mobile scroll behaviour.",
+      },
+      {
+        title: "Responsive by composition",
+        body: "Designed desktop and mobile experiences around the strengths of each viewport, adapting complex layouts and interactions rather than simply shrinking them.",
+      },
+      {
+        title: "Performance and accessibility",
+        body: "Built semantic navigation, keyboard and focus states, reduced-motion support and responsive image handling into the component system from the outset.",
       },
     ],
   },
@@ -210,9 +243,19 @@ export const projects: Project[] = [
     slug: "our-wedding-website",
     title: "Our wedding website",
     oneLiner: "A personal project — built for our wedding, not a client brief.",
-    stack: ["React", "Next.js"],
+    stack: ["TypeScript", "React", "Next.js", "Tailwind CSS"],
     homepageRole: null,
     order: 6,
+    heroImage: {
+      src: "/projects-Images/weddingSD.png",
+      alt: "sd wedding hero",
+    },
+    links: [
+      {
+        label: "live site",
+        href: "https://sush-and-david-wedding.vercel.app/",
+      },
+    ],
     disclosure: "public",
     // Pending real repo URL.
     repoUrl: "",
@@ -222,8 +265,20 @@ export const projects: Project[] = [
       "Not a commercial brief — included because craft doesn't take a day off just because the stakes are personal.",
     highlights: [
       {
-        title: "Built for one day, not iterated forever",
-        body: "A fixed deadline, with no client to negotiate scope with but ourselves.",
+        title: "Information architecture for real users",
+        body: "Structured complex event, travel, accommodation and destination information into a clear multi-page experience for an international guest list.",
+      },
+      {
+        title: "Responsive content design",
+        body: "Designed dense logistical content to remain easy to navigate on mobile, using adaptive layouts, collapsible sections and clear information hierarchy.",
+      },
+      {
+        title: "Reusable Next.js system",
+        body: "Built the platform around reusable typed components for events, travel guidance, contacts and destination content, keeping a content-heavy site consistent and maintainable.",
+      },
+      {
+        title: "Production-ready delivery",
+        body: "Deployed a complete guest-facing platform with responsive imagery, social sharing metadata and polished navigation designed for use throughout the wedding journey.",
       },
     ],
   },

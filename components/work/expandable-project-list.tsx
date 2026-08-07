@@ -162,9 +162,10 @@ const TECH_CATEGORIES: Record<string, string> = {
   TypeScript: "Frontend",
   "Tailwind CSS": "Frontend",
   "Sanity CMS": "CMS",
-  Supabase: "Backend",
+  Supabase: "Deployment",
   PostgreSQL: "Database",
   Vercel: "Deployment",
+  NodeJs: "Backend"
 };
 const CATEGORY_ORDER = ["Frontend", "Backend", "CMS", "Database", "Deployment"];
 
@@ -270,7 +271,7 @@ const ExpandedProjectContent = ({ project }: { project: Project }) => {
   }
 
   return (
-    <div className="grid gap-10 pt-12 pb-12 lg:grid-cols-[3fr_2fr] lg:items-start lg:gap-14">
+    <div className="grid gap-10 pt-12 pb-12 lg:pl-17 lg:grid-cols-[3fr_2fr] lg:items-start lg:gap-14">
       <div>
         <SectionLabel>Overview</SectionLabel>
         <p className={`${READING_WIDTH} mt-3 text-body text-ink/70`}>
