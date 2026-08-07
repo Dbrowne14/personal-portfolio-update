@@ -85,7 +85,7 @@ const ExpandableProjectRow = ({
           aria-expanded={isOpen}
           aria-controls={panelId}
           onClick={() => onToggle(project.slug)}
-          className="group -mx-4 grid w-full grid-cols-[2.5rem_1fr_auto] items-baseline gap-x-4 gap-y-2 px-4 py-6 text-left transition-colors duration-200 hover:bg-accent/3 focus-visible:bg-accent/3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent motion-reduce:transition-none sm:grid-cols-[2.5rem_1fr_auto_auto] sm:gap-x-8 md:-mx-6 md:px-6"
+          className={`group grid w-full grid-cols-[2.5rem_1fr_auto] items-baseline gap-x-4 gap-y-2 px-4 py-6 text-left transition-colors duration-200 hover:bg-accent/3 focus-visible:bg-accent/3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent motion-reduce:transition-none sm:grid-cols-[2.5rem_1fr_auto_auto] sm:gap-x-8 md:px-6 ${isOpen ? "bg-accent/3" :"bg-none"}`}
         >
           <span className="col-start-1 row-start-1 font-mono text-meta text-accent">
             {String(project.order).padStart(2, "0")}
