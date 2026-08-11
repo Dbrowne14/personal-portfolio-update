@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-const PORTRAIT_SRC: string | undefined = undefined;
+const PORTRAIT_SRC: string | undefined = "/supporting-images/display-photo.png";
 
 type DiptychSide = {
   range: string;
@@ -80,7 +80,7 @@ const DiptychCopy = ({
 const DiptychPortrait = () => {
   return (
     <div className="reveal-on-scroll relative z-10 mx-auto [animation-delay:150ms] lg:absolute lg:top-1/2 lg:left-1/2 lg:mx-0 lg:-translate-x-1/2 lg:-translate-y-1/2">
-      <div className="relative h-40 w-40 overflow-hidden rounded-full border border-ink/16 bg-ivory sm:h-48 sm:w-48">
+      <div className="relative h-40 w-40 overflow-hidden rounded-full border border-ink/16 bg-ivory sm:h-78 sm:w-78">
         {PORTRAIT_SRC ? (
           <Image
             src={PORTRAIT_SRC}
@@ -112,7 +112,7 @@ export const AnalystEngineerDiptych = () => {
         <div className="relative grid flex-1 grid-cols-1 place-content-center gap-y-14 lg:grid-cols-[1fr_13rem_1fr] lg:place-content-start lg:gap-x-12 lg:pt-16 xl:gap-x-20">
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-ink/16"
+            className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-ink/16 hidden sm:block"
           />
 
           <DiptychCopy {...analyst} />
