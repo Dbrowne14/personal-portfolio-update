@@ -22,12 +22,12 @@ export const Hero = () => {
           />
         </h1>
 
-        <p className="mt-10 max-w-md text-center font-sans text-lg font-medium text-ink/62 md:text-xl">
+        <p className="mt-10 max-w-md text-center font-sans text-[12px] font-medium text-ink/62 md:text-xl">
           From evaluating products to shipping them.
         </p>
       </HeroStage>
 
-      <div className="absolute inset-x-7 text-[14px] bottom-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center font-mono text-meta text-ink/62 sm:justify-between sm:text-left">
+      <div className="absolute inset-x-7 text-[10px] bottom-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center font-mono text-meta text-ink/62 sm:justify-between sm:text-left sm:text-[14px]">
         <span>TypeScript · React · Next.js · Node · PostgreSQL</span>
         <span aria-hidden="true" className="hidden sm:inline">
           Scroll ↓
