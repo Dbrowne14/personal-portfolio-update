@@ -6,7 +6,7 @@
 export const EvaluatorNote = ({ note }: { note: string }) => {
   return (
     <div className="border-y border-ink/16 py-6">
-      <p className="font-mono text-meta text-accent uppercase tracking-[0.1em]">
+      <p className="font-mono text-meta text-accent uppercase tracking-widest">
         Evaluator&rsquo;s note
       </p>
       <p className="mt-3 max-w-xl text-body text-ink/70">{note}</p>

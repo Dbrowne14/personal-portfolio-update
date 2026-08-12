@@ -60,9 +60,7 @@ const DiptychCopy = ({
         ].join(" ")}
       >
         <span className="block text-[clamp(2.5rem,5vw,5.25rem)]">The</span>
-        <span className="block text-[clamp(2.5rem,5vw,5.25rem)]">
-          {title}
-        </span>
+        <span className="block text-[clamp(2.5rem,5vw,5.25rem)]">{title}</span>
       </h2>
 
       <p
@@ -107,12 +105,14 @@ export const AnalystEngineerDiptych = () => {
   const [analyst, engineer] = diptychSides;
 
   return (
-    <section className="flex min-h-[calc(100vh-4rem)] flex-col border-t border-ink/16 bg-ivory px-7 py-16 md:py-20">
+    <section
+      className="flex h-[calc(100dvh-4rem)] flex-col border-t border-ink/16 bg-ivory px-7 py-8 md:h-auto md:min-h-[calc(100vh-4rem)] md:py-20"
+    >
       <div className="mx-auto flex w-full max-w-350 flex-1 flex-col">
-        <div className="relative grid flex-1 grid-cols-1 place-content-center gap-y-14 lg:grid-cols-[1fr_13rem_1fr] lg:place-content-start lg:gap-x-12 lg:pt-16 xl:gap-x-20">
+        <div className="relative grid flex-1 grid-cols-1 place-content-between gap-y-4 lg:grid-cols-[1fr_13rem_1fr] py-6 lg:py-none lg:place-content-start  lg:gap-x-12 lg:gap-y-14 lg:pt-16 xl:gap-x-20">
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-ink/16 hidden sm:block"
+            className="absolute pointer-events-none inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-ink/16 sm:block "
           />
 
           <DiptychCopy {...analyst} />
@@ -122,8 +122,10 @@ export const AnalystEngineerDiptych = () => {
           <DiptychCopy {...engineer} />
         </div>
 
-        <div className="reveal-on-scroll border-t border-ink/16 pt-10 pb-6 text-center">
-          <p className="text-2xl font-bold text-ink md:text-3xl">
+        <div
+          className="reveal-on-scroll hidden border-t border-ink/16 pt-6 text-center md:block md:pt-10 md:pb-6"
+        >
+          <p className="text-xl font-bold text-ink md:text-3xl">
             Both halves compound.
           </p>
         </div>
