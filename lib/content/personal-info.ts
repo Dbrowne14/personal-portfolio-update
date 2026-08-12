@@ -3,7 +3,7 @@ export type PersonalInfo = {
   link: string;
 };
 
-export const personalinfo: PersonalInfo[] = [
+export const personalInfo: PersonalInfo[] = [
   {
     name: "GitHub",
     link: "https://github.com/Dbrowne14",
