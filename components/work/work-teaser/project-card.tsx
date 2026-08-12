@@ -26,7 +26,7 @@ function FeaturedProjectCard({ project }: { project: Project }) {
   const PREVIEW_SIZE = `${100 / PREVIEW_SCALE}%`;
 
   return (
-    <article className="-my-3 flex h-full flex-col py-3 md:-my-4 md:py-4">
+    <article className="-my-3 flex h-full flex-col py-3 md:-my-4 md:py-4 ">
       <div className="flex items-baseline justify-between gap-4">
         <span className="font-mono text-meta text-accent">
           {String(project.order).padStart(2, "0")}
@@ -109,9 +109,9 @@ function CompactProjectCard({ project }: { project: Project }) {
     <Link
       href={`/work#${project.slug}`}
       className="
-        group -mx-4 block px-4 py-12
+        group -mx-4 block px-4 pt-4 pb-8 sm:py-12
         transition-colors duration-300 ease-out
-        first:pt-0 last:pb-0
+        sm:first:pt-0 last:pb-0
         hover:bg-accent/3
         focus-visible:bg-accent/3
         focus-visible:outline-2
@@ -119,6 +119,7 @@ function CompactProjectCard({ project }: { project: Project }) {
         focus-visible:outline-accent
         motion-reduce:transition-none
         md:-mx-6 md:px-6
+        border-t border-accent/20 sm:border-none
       "
     >
       <div className="flex items-baseline justify-between gap-4">

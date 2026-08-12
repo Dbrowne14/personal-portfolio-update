@@ -46,13 +46,13 @@ export const WorkTeaser = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[5fr_3fr] lg:items-stretch lg:gap-14 lg:divide-x lg:divide-ink/20 pt-8 ">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[5fr_3fr] lg:items-stretch lg:gap-14 pt-4 sm:pt-8 border-t border-accent/20 sm:border-none">
           {flagship ? (
             <ProjectCard project={flagship} variant="featured" />
           ) : null}
 
           {supporting.length > 0 ? (
-            <div className="flex flex-col lg:pl-12">
+            <div className="flex flex-col lg:pl-12 ">
               {supporting.map((project) =>
                 project.slug === "this-portfolio" ? (
                   <PortfolioArtifactCard key={project.slug} project={project} />

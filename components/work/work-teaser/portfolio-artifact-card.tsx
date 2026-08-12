@@ -7,7 +7,7 @@ import { ArtifactLink } from "../artifact-link";
 // wrapped in one outer <Link> — each action needs its own click target.
 export const PortfolioArtifactCard = ({ project }: { project: Project }) => {
   return (
-    <div className="py-12 first:pt-0 last:pb-0">
+    <div className="first:pt-0 mt-4  bg-none lg:mt-none bg-accent/3 p-4 border border-accent/16 lg:mt-none">
       <div className="flex items-baseline justify-between gap-4">
         <span className="font-mono text-meta text-accent">
           {String(project.order).padStart(2, "0")}
