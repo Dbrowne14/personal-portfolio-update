@@ -105,6 +105,7 @@ export const MobileMenu = () => {
                     onClick={() => setOpen(false)}
                     className="border-b border-ink/16 py-5 font-sans text-2xl font-extrabold tracking-tight text-ink"
                   >
+                    <span className="text-accent mr-4">{`0${item.id}`}</span>
                     {item.label}
                   </Link>
                 ))}

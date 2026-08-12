@@ -1,4 +1,5 @@
 export interface NavItem {
+  id: number;
   label: string;
   href: string;
 }
@@ -11,7 +12,7 @@ export interface NavItem {
 // numbering makes the order itself part of the design, not an incidental
 // detail free to diverge from the reference.
 export const navItems: NavItem[] = [
-  { label: "Work", href: "/work" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  { id: 1, label: "Work", href: "/work" },
+  { id: 2, label: "About", href: "/about" },
+  { id: 3, label: "Contact", href: "/contact" },
 ];
