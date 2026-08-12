@@ -1,6 +1,6 @@
 import type { Project } from "@/lib/content/projects";
-import { TechCredit } from "../tech-credit";
-import { ArtifactLink } from "../artifact-link";
+import { TechCredit } from "../../tech-credit";
+import { ArtifactLink } from "../../artifact-link";
 
 // No thumbnail (the visitor is already on the site) and two independent
 // destinations (case study, public repo), so unlike ProjectCard this isn't
