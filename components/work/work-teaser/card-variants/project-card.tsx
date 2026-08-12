@@ -45,7 +45,7 @@ function FeaturedProjectCard({ project }: { project: Project }) {
         <p className="mt-4 max-w-lg text-body text-ink/55">{project.detail}</p>
       ) : null}
 
-      <div className="relative mt-8 aspect-16/10 overflow-hidden border border-ink/16">
+      <div className="relative mt-8 aspect-6.5/6 sm:aspect-16/10 overflow-hidden border border-ink/16">
         <div
           className="absolute inset-0 origin-top-left"
           style={{
