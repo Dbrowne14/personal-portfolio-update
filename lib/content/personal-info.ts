@@ -14,6 +14,6 @@ export const personalInfo: PersonalInfo[] = [
   },
   {
     name: "CV",
-    link: "#",
+    link: "/david-CV.pdf",
   },
 ];
