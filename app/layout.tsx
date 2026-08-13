@@ -91,7 +91,7 @@ const RootLayout = ({
         */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(()=>{try{var s=localStorage.getItem("theme");var t=s==="dark"||s==="light"?s:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t;}catch(e){}})();`,
+            __html: `(()=>{try{var s=localStorage.getItem("theme");var t=s==="dark"||s==="light"?s:"light";document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme="light";}})();`,
           }}
         />
         {structuredData.map((entry) => (

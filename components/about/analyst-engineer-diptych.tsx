@@ -13,7 +13,7 @@ type DiptychSide = {
 const diptychSides: DiptychSide[] = [
   {
     range: "2017 — 2025",
-    title: "Analyst",
+    title: "Investor",
     copy: "Priced the companies. Modelled the businesses. Learned to ask what was worth investing in.",
     alignment: "left",
   },
